@@ -1,0 +1,256 @@
+<apex:page id="page" controller="GanttViewHomeController" showHeader="true" sidebar="true">
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery-1.4.3.min.js')}" />
+    <style type="text/css">
+    .holder{
+        padding-bottom: 20px;  /* space for the scrollbar */
+        width: 880px;           /* gives pagewide scrollbar on the div */
+        margin: 0 auto;
+        overflow: auto;
+        overflow-y: hidden;
+        position:relative;
+    }
+    .row-table {
+        /*margin-top: 0px;*/
+        /*margin-left: -160px;*/
+        position: absolute;
+        width: 160px;
+        border-collapse: collapse;
+        background: #fff;
+        z-index:9;
+    }
+    .row-table thead th{
+        padding-top: 1px;      /* even out crossbrowser total height difference */
+        height: 50px;
+        background: #e1ecf4;
+        overflow:hidden;
+    }
+    .row-table th,
+    .data-table th {
+        border: 1px solid #c9dded;
+        /*padding: 0 3px;*/
+        height: 30px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .row-table td,
+    .data-table td {
+        border: 1px solid #c9dded;
+        /*padding: 0px 3px;*/
+        height: 24px;
+    }
+    .data-table td div
+    {
+        /*width: 24px;*/
+    }
+    .data-table {
+        /*table-layout:fixed;*/
+        /*margin-top: 0px;*/
+        margin-left: 160px;
+        border-collapse: collapse;
+        border: 1px solid #c9dded;
+        white-space: nowrap;
+        z-index:1;
+    }
+    .data-table thead th{
+        height: 25px;
+    }
+
+    .GMonth
+    {
+        /*padding-left:5px;*/
+        font-family:tahoma, arial, verdana;
+        font-size:11px;
+        font-weight:bold;
+        text-align:center;
+    }
+    .GMonth div
+    {
+        text-align:center;
+    }
+    .GToday
+    {
+        background-color: #FDFDE0;
+        width: 24px;
+    }
+    .GWeekend
+    {
+        font-family:tahoma, arial, verdana;
+        font-size:11px;
+        background-color:gray;
+        text-align:center;
+        width: 24px;
+    }
+    .GDay
+    {
+        font-family:tahoma, arial, verdana;
+        font-size:11px;
+        text-align:center;
+        width: 24px;
+    }
+    .GTask
+    {
+        border-top:1px solid #CACACA;
+        border-bottom:1px solid #CACACA;
+        height:14px;
+        background-color:#ECF8E0;
+    }
+    .GProgress
+    {
+        background-color:red;
+        height:2px;
+        overflow: hidden;
+        margin-top:5px;
+    }
+    </style>
+    <apex:sectionHeader title="{!title}" />
+    	<apex:outputLink value="/apex/GanttChart" rendered="{!OR(NOT(ISBLANK($CurrentPage.Parameters.uid)), NOT(ISBLANK($CurrentPage.Parameters.pid)))}">« Back to Gantt Home</apex:outputLink>
+        <apex:form >
+            <apex:pageBlock id="block">
+                <apex:pageBlockButtons location="top">
+                	<span style="text-align:left;float:left;"><apex:inputCheckbox value="{!includeProjects}" onclick="refreshPage()" />Projects</span>
+                	<span style="text-align:left;float:left;"><apex:inputCheckbox value="{!includeChanges}" onclick="refreshPage()" />Changes</span>
+                    <apex:commandButton value=" Today " action="{!refresh}" rerender="block" status="refreshStatus"/>
+                    <apex:actionFunction name="refreshPage" action="{!refresh}" rerender="block" status="refreshStatus"/>
+                    <apex:actionStatus startText="refreshing..." id="refreshStatus">
+                    	<apex:facet name="stop">
+                    		<script type="text/javascript">
+                    			fillDateGrid();
+					            rejustPosition();
+					            $(window).resize(rejustPosition);
+					            $(document).scroll(rejustPosition);
+                    		</script>
+                    	</apex:facet>
+                    </apex:actionStatus>
+                    
+                </apex:pageBlockButtons>
+                <script type="text/javascript" src="{!$Resource.ToolTip_JS}" ></script>
+                                    <table class="row-table" cellpadding="0">
+                        <thead>
+                            <tr>
+                                <th>Projects/Changes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:repeat value="{!projects}" var="prj">
+                                <tr>
+                                    <td style=""><div style="width:139px;overflow:hidden;white-space:nowrap;padding-left:{!prj.Indent*5}px;padding-top:5px;" title="{!prj.Name}"><a href="/{!prj.Id}" target="_top" style="text-decoration:none;color:deepblue">{!prj.Name}</a></div></td>
+                                </tr> 
+                            </apex:repeat> 
+                        </tbody>
+                    </table>
+                <div class="holder" id="dateContainer">
+
+                    <div id="dateGrid">
+                        <table class="data-table" cellpadding="0">
+                        </table>
+                    </div>
+                    <ul id="progressBars" style="margin-top:-{!projects.size * 25}px;list-style-type:none;">
+                        <apex:repeat value="{!projects}" var="prj">
+                        	<li style="height:25px">
+                            <div style="padding-top:5px;margin-left:{!FLOOR((prj.StartDate-minDate)*24+103)}px;width:{!FLOOR((prj.EndDate - prj.StartDate) * 24 - 24 + 300)}px">
+                                <a href="{!IF(prj.Indent == 0, '?pid=' + prj.Id, '#')}">
+                                	<div class="GTask" style="float:left; width:{!FLOOR((prj.EndDate - prj.StartDate + 1) * 24)}px;cursor:pointer;" onmouseover="Tip('{!prj.tip}')" onmouseout="UnTip()">
+                                    	<div class="GProgress" style="width:{!prj.Progress}%; overflow:hidden"></div>
+                                	</div>
+                                </a>
+                                <div style="float:left; padding-left:3px">
+                                	<apex:repeat value="{!prj.Resources}" var="res">
+                                		<a href="?uid={!res.Id}">{!res.Name}</a>,&nbsp;
+                                	</apex:repeat>
+                                </div>
+                            </div>
+                            </li>
+                        </apex:repeat>
+                    </ul>
+                </div>
+                <div id="result"></div>
+            </apex:pageBlock>
+        </apex:form>
+    <script type="text/javascript">
+        Date.prototype.getMonthName = function() 
+        {
+            var month = this.getMonth() + 1;
+            switch(month)
+            {
+                case 1: return "Jan";
+                case 2: return "Feb";
+                case 3: return "Mar";
+                case 4: return "Apr";
+                case 5: return "May";
+                case 6: return "Jun";
+                case 7: return "Jul";
+                case 8: return "Aug";
+                case 9: return "Sep";
+                case 10: return "Oct";
+                case 11: return "Nov";
+                case 12: return "Dec";
+                default: return "Error";
+            }
+        }
+        Date.prototype.daysBetween = function(d2)
+        {
+            return Math.ceil((this.getTime() - d2.getTime())/1000/60/60/24);
+        }
+        function fillDateGrid()
+        {
+            var minDate = new Date("{!minDate}");
+            var maxDate = new Date("{!maxDate}");
+            var tempDate = minDate;
+            var currentDate = new Date();
+            var firstRow = "";
+            var secondRow = "";
+            var thirdRow = "";
+            while(Date.parse(tempDate) < Date.parse(maxDate))
+            {
+                var nextMonth = (tempDate.getMonth() <= 11)? new Date(tempDate.getFullYear(), tempDate.getMonth()+1, 1) : new Date(tempDate.getFullYear()+1, 1, 1);
+                if(Date.parse(nextMonth) > Date.parse(maxDate))
+                {
+                    nextMonth = maxDate;
+                }
+                var colspan = nextMonth.daysBetween(tempDate);
+                firstRow += '<th class="GMonth" colspan="' + colspan + '" ><div style="width:'+(colspan*23)+'px;overflow:hidden;">' + tempDate.getMonthName() + '/' + tempDate.getFullYear() + '</div></th>';
+                tempDate = nextMonth;
+            }
+            tempDate = minDate;
+            while(Date.parse(tempDate) <= Date.parse(maxDate))
+            {
+                if(tempDate.getDate() == currentDate.getDate() && tempDate.getMonth() == currentDate.getMonth() && tempDate.getYear() == currentDate.getYear()) // is today
+                {
+                    secondRow += '<th class="GToday" id="todayCell"><div style="width:23px">' + tempDate.getDate() + '</div></th>';
+                    thirdRow += '<td class="GToday" style="height:'+{!projects.size * 25}+'px">&nbsp;</td>';
+                }
+                else if(tempDate.getDay() % 6 == 0) // weekend
+                {
+                    secondRow += '<th class="GWeekend"><div style="width:23px">' + tempDate.getDate() + '</div></th>';
+                    thirdRow += '<td class="GWeekend">&nbsp;</td>';
+                }
+                else
+                {
+                    secondRow += '<th class="GDay"><div style="width:23px">' + tempDate.getDate() + '</div></th>';
+                    thirdRow += '<td class="GDay">&nbsp;</td>';
+                }
+                tempDate.setDate(tempDate.getDate() + 1);
+            }
+            firstRow = '<thead><tr>' + firstRow + '</tr>';
+            secondRow = '<tr>' + secondRow + '</tr></thead>';
+            thirdRow = '<tbody>' + thirdRow + '</tbody>';
+            $("#dateGrid").html('<table class="data-table" cellpadding="0" border="1">' + firstRow + secondRow + thirdRow + '</table>');
+            $(".holder").scrollLeft($("#todayCell").offset().left - $(".holder").offset().left - 160);
+        }
+        function rejustPosition()
+        {
+            $(".holder").width(($(".bPageHeader").width() - $("#sidebarDiv").width()) * 0.9 + 'px');
+            $(".holder").height('{!projects.size*25+60}px');
+            var pos = $(".holder").offset();
+            $(".row-table").css("top", pos.top - 94);
+            $(".row-table").css("left", pos.left);
+        }
+        $(document).ready(function() {
+            fillDateGrid();
+            rejustPosition();
+            $(window).resize(rejustPosition);
+            $(document).scroll(rejustPosition);
+           
+        });
+    </script>
+</apex:page>

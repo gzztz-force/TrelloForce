@@ -1,0 +1,18 @@
+<apex:page standardController="KnowledgeEntry__c" extensions="KnowledgeDetailExtension" tabStyle="KnowledgeEntry__c">
+    <apex:sectionHeader title="Knowledge Base (Beta)" subtitle="Post Article"/>
+    <apex:pageMessages />
+    <apex:form >
+        <apex:pageBlock title="Describe Your Knowledge">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Post" action="{!save}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1">
+                <apex:inputfield value="{!KnowledgeEntry__c.Name}" />
+                <apex:inputField value="{!KnowledgeEntry__c.Tags__c}"  />
+                <apex:inputField value="{!KnowledgeEntry__c.Content__c}" />
+                <apex:inputField value="{!KnowledgeEntry__c.IsPublished__c}" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,3 @@
+<apex:page showHeader="false" controller="NewTimeCardOnChangeController" action="{!redirect}">
+  <!-- will automatically redirect the user to a new page of the time card object-->
+</apex:page>

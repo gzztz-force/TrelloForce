@@ -1,0 +1,12 @@
+<apex:component id="headerComponent">
+    <div class="header subpageHeader">
+        <h1><apex:outputLink value="{!$Page.home}">meginfo</apex:outputLink></h1>
+        <ul class="nav">
+            <li><apex:outputLink value="{!$Page.aboutus}">About Us</apex:outputLink></li>
+            <li><apex:outputLink value="{!$Page.solutions}">Solutions</apex:outputLink></li>
+            <li><apex:outputLink value="{!$Page.experience}">Experience</apex:outputLink></li>
+            <li><apex:outputLink value="{!$Page.contactus}">Contact</apex:outputLink></li>
+            <div class="clearfix"></div>
+        </ul>
+    </div>
+</apex:component>

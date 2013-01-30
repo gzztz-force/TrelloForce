@@ -1,0 +1,60 @@
+<apex:page controller="KnowledgeBaseController" tabstyle="KnowledgeEntry__c">
+    <style type="text/css">
+        div#nourls {
+            margin: 10px auto;
+            border: 3px dashed gray;
+            color: gray;
+            padding: 20px;
+            font-size: 20px;
+            width: 200px;
+            text-align: center;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+        }
+    </style>
+    <apex:sectionHeader title="Knowledge Base" />
+    <c:KbSearch />
+    <apex:form >
+        <apex:pageBlock rendered="{!Tags.size > 0}">
+            <apex:repeat value="{!Tags}" var="tag" >
+                <a href="{!$Page.KnowledgeBaseHome}?tag={!tag.TagName}" style="font-size: {!tag.TagSize}px; color: {!tag.TagColor}">{!tag.TagName}</a>&nbsp;
+            </apex:repeat>
+        </apex:pageBlock>
+        <apex:pageBlock id="KTable">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="New" action="{!URLFOR($Action.KnowledgeEntry__c.New)}" />&nbsp;&nbsp;&nbsp;
+                <apex:outputPanel rendered="{!(KnowledgeEntries.size > 0)}" style="float: right;">
+                    <apex:selectList value="{!Sortby}" size="1" multiselect="false">
+                        <apex:selectOption itemLabel="Recently Created" itemValue="create" />
+                        <apex:selectOption itemLabel="Recently Commented" itemValue="date" />
+                        <apex:selectOption itemLabel="Most Commented" itemValue="count" />
+                        <apex:actionsupport event="onchange" action="{!refresh}" rerender="KTable" />
+                    </apex:selectList>
+                </apex:outputPanel>
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!KnowledgeEntries}" var="entry" rendered="{!KnowledgeEntries.size > 0}">
+                <apex:column headerValue="Subject">
+                    <div><a href="/{!entry.Id}" title="open">{!entry.Name}</a><span style="background-color:#F7F7AB;font-weight: bold;margin-left:8px">{!IF(entry.IsPublished__c, '', ' Draft ')}</span></div>
+                </apex:column>
+                <apex:column headerValue="Comments" value="{!entry.CommentsCount__c}" width="90px" />
+                <apex:column headerValue="Author" width="90px">
+                    <a href="{!$Page.KnowledgeBaseHome}?author={!URLENCODE(entry.CreatedBy.Name)}">{!entry.CreatedBy.Name}</a>
+                </apex:column>
+                <apex:column headerValue="Date" width="90px">
+                    <apex:outputText value="{0, date, yyyy-MM-dd}">
+                        <apex:param value="{!entry.CreatedDate}" />
+                    </apex:outputText>
+                </apex:column>
+                <apex:column width="100">
+                    <chatter:follow entityId="{!entry.Id}" />
+                </apex:column>
+            </apex:pageBlockTable>
+            <div id="nourls" style="display: {!IF(KnowledgeEntries.size = 0, 'block', 'none' )}">No Records. :-(</div>
+            <p style="display: {!IF(KnowledgeEntries.size > 0, 'block', 'none' )}; float: right;">
+                <apex:commandLink value="Previous" action="{!prevPage}" rerender="KTable" rendered="{!HasPrevPage}" styleClass="prevNext"/>
+                Page <span>{!pageNum}</span> of <span>{!totalPages}</span>&nbsp;
+                <apex:commandLink value="Next" action="{!nextPage}" rerender="KTable" rendered="{!HasNextPage}" styleClass="prevNext" />
+            </p>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,40 @@
+<apex:page showHeader="false" sidebar="false">
+    <apex:composition template="SiteTemplate">
+        <apex:define name="title">Meginfo | About Us</apex:define>
+        <apex:define name="body">
+            <div class="subpageContent">
+                <c:SiteLeftNav active="aboutus" />
+                <div class="subpageContentRight">
+                    <h3>About Us</h3>
+                    <div class="subpageTextArea">
+                        <h5 class="roles">A Word From Our Founder</h5>
+                        <!-- div class="photoArea"><img src="{!URLFOR($Resource.SiteResourceNew, '/res/pic/photoArea.jpg')}" alt=""/></div -->
+                        <p class="photoLeftText">
+                            Meginfo was founded February 2008 in Beijing China with one purpose in mind, delivering cost 
+                            effective Salesforce.com solutions. Since then we have been dedicated to providing our customers 
+                            with a full spectrum of SFDC solutions. This has included simple tweeks to custom AppExchange 
+                            applications and out of the box approaches for business challenges. With a growing staff of SFDC 
+                            development specialists our solution experience has consistently delivered and expanded our 
+                            capabilities. We maintain a culture that encourages an open and responsive attitude toward each 
+                            other and our customers. Through this we have developed strong work ethics and commitment to 
+                            integrity. I am confident that we can continue this tradition and deliver value to you our customer.
+                        </p>
+                        <div class="clearfix"></div>
+                        <p>
+                            Meginfo is a Salesforce.com outsourcing company based in China providing Salesforce.com range 
+                            consulting and development to enterprises across various domains globally. Founded in 2008 we set 
+                            out to build relationships with firms that desired a competitive advantage through value based 
+                            development outsourcing. Our Center of Excellence model provides global delivery operation and is 
+                            a cost-effective solution for all your SFDC delivery needs. Whether it is custom application 
+                            development or enterprise wide implementations our growing team can support you. Our approach helps 
+                            our clients control costs while leveraging benefits of matured processes, methodologies as well as 
+                            best practices for timely and quality deliverables.
+                        </p>
+                        <div class="ourTeamLink"><a href="{!$Page.ourteam}">About Our Team</a></div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>   
+        </apex:define>
+    </apex:composition>
+</apex:page>

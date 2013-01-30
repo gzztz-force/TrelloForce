@@ -1,0 +1,236 @@
+<apex:page tabStyle="Forecasting__tab" controller="ForecastingController" readonly="true">
+    <apex:stylesheet value="{!URLFOR($Resource.Forecasting, 'FiscalQuarter.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery-1.4.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'highcharts.js')}" />
+    <style>
+    .highcharts-tooltip
+    {
+        color: #333333,
+        font-size: 9pt,
+        padding: 5px,
+        width:200px,
+        word-wrap: wrap
+        
+    }
+    </style>
+    <script>
+        function refreshDateFrame(dateFrame)
+        {
+            window.open("/apex/Forecasting?uid={!CurrentViewingUser.Id}&date=" + dateFrame, "_top");
+        }
+
+        function createSimpleColumnChart(domId, title, data)
+        {
+            var compact = (data.Columns.length > 5);
+            if(data.Columns.length > 0)
+            {
+                chart = new Highcharts.Chart(
+                {
+                    chart: 
+                    {
+                        renderTo: domId,
+                        defaultSeriesType: 'column',
+                        width: 300,
+                        height: 200
+                    },
+                    credits:
+                    {
+                        enabled: false
+                    },
+                    title:
+                    {
+                        text: title
+                    },
+                    tooltip: 
+                    {
+                        formatter: function()
+                        {
+                            return '<b>'+ this.x +'</b>: '+ this.y +' hrs';
+                        }
+                    },
+                    plotOptions: 
+                    {
+                        column: {
+                            pointPadding: 0.2,
+                            borderWidth: 0
+                        }
+                    },
+                    legend:
+                    {
+                        enabled: false
+                    },
+                    xAxis: {
+                        categories: data.Columns,
+                        tickmarkPlacement: 'on',
+                        title: {
+                            enabled: false
+                        },
+                        labels: {
+                            formatter: function() {
+                                return (this.value.length > 10) ? this.value.substring(0, 10) + "..." : this.value;
+                            },
+                            enabled: !compact
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: compact ? null : "Hours",
+                        },
+                        labels: {
+                            formatter: function() {
+                                return this.value;
+                            }
+                        }
+                    },
+                    series: 
+                    [
+                        {
+                            data: data.Rows[0].Cells
+                        }
+                    ]
+                });
+            }
+        }
+        function callback(result, event)
+        {
+            $("#" + result.Context + " .changes").html(result.ChangeCount);
+            $("#" + result.Context + " .hours").html(result.LoggedHours);
+            createSimpleColumnChart(result.Context + "Project", "Time By Projects", result.TimeByProjects);
+            createSimpleColumnChart(result.Context + "Customer", "Time By Customers", result.TimeByCustomers);
+        }
+    </script>
+    <apex:sectionHeader title="Retrospective & Forecasting [Beta]" subTitle="This Week"/>
+    <!--<div style="float:right">
+        <a href="#">Forecasting Guidelines</a>
+    </div>-->
+    <apex:form >
+         <div class="ptBreadcrumb">
+             <apex:variable var="index" value="{!1}" />
+             <apex:repeat value="{!Navigations}" var="usr" rendered="{!Navigations.size > 1}">
+                 <apex:outputText rendered="{!index < Navigations.size}">
+                     <a href="/apex/Forecasting?uid={!usr.Id}&date={!DateFrame}" target="_top">{!usr.Name}</a> &gt;
+                 </apex:outputText>
+                 <apex:outputText rendered="{!index == Navigations.size}">
+                     {!usr.Name}
+                 </apex:outputText>
+                 <apex:variable var="index" value="{!index + 1}" />
+             </apex:repeat>
+         </div>
+         <br/>
+         <div id="wrap">
+            <div class="fqTitleCon">
+                <span class="fqNum">Date Frame</span>
+                <span class="fqNum" style="padding-top:7px">
+                    <apex:selectList value="{!DateFrame}" size="1" onchange="refreshDateFrame(this.value)">
+                        <apex:selectOption itemValue="ThisWeek" itemLabel="This Week" /> 
+                        <apex:selectOption itemValue="LastWeek" itemLabel="Last Week" />
+                        <apex:selectOption itemValue="ThisMonth" itemLabel="This Month" />
+                        <apex:selectOption itemValue="LastMonth" itemLabel="Last Month" />
+                        <apex:selectOption itemValue="ThisYear" itemLabel="This Year" />
+                        <apex:selectOption itemValue="LastYear" itemLabel="Last Year" />
+                    </apex:selectList>
+                </span>
+                <span class="userName">User: {!CurrentViewingUser.Name}</span>
+            </div>
+        </div>
+        <apex:pageBlock title="{!CurrentViewingUser.Name}">
+            <div id="selfBlock">
+            <table style="width:100%">
+                <tr>
+                    <td>
+                        <table class="report" style="text-align:center;width:200px">         
+                            <tr class="line">
+                                <td>Time logged (hrs)</td>
+                                <td class="hours"></td>
+                            </tr>
+                            <tr class="line2">
+                                <td>Changes Involved</td>
+                                <td class="changes"></td>
+                            </tr>               
+                        </table>
+                    </td>
+                    <td>
+                        <div id="selfBlockProject"></div>
+                    </td>
+                    <td>
+                        <div id="selfBlockCustomer"></div>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <script>
+                var param = {UserId: "{!CurrentViewingUser.Id}", StartDate: (new Date("{!StartDate}")).toUTCString(), EndDate:  (new Date("{!EndDate}")).toUTCString(), RollupSummary: false, Context: "selfBlock"};
+                ForecastingController.getUserForecasting(param, callback);
+            </script>
+        </apex:pageBlock>
+        <apex:pageBlock title="Team Summary" rendered="{!TeamMembers.size > 0}">
+            <div id="teamBlock">
+            <table style="width:100%">
+                <tr>
+                    <td>
+                        <table class="report" style="text-align:center;width:200px">         
+                            <tr class="line">
+                                <td>Time logged (hrs)</td>
+                                <td class="hours"></td>
+                            </tr>
+                            <tr class="line2">
+                                <td>Changes Involved</td>
+                                <td class="changes"></td>
+                            </tr>               
+                        </table>
+                    </td>
+                    <td>
+                        <div id="teamBlockProject"></div>
+                    </td>
+                    <td>
+                        <div id="teamBlockCustomer"></div>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <script>
+                var param = {UserId: "{!CurrentViewingUser.Id}", StartDate: (new Date("{!StartDate}")).toUTCString(), EndDate:  (new Date("{!EndDate}")).toUTCString(), RollupSummary: true, Context: "teamBlock"};
+                ForecastingController.getUserForecasting(param, callback);
+            </script>
+        </apex:pageBlock>
+        <apex:pageBlock title="Team Detail" rendered="{!TeamMembers.size > 0}">
+            <apex:variable var="memberIndex" value="{!0}" />
+            <apex:repeat value="{!TeamMembers}" var="member">
+                <div id="teamListBlock{!FLOOR(memberIndex)}">
+                <table style="width:100%">
+                <tr>
+                    <td>
+                        <table class="report" style="text-align:center;width:200px">  
+                            <tr class="header">
+                                <th style="width:100px"><a href="/apex/Forecasting?uid={!member.Id}&date={!DateFrame}" target="_top">{!member.Name}</a></th>
+                                <th style="width:100px;text-align:center">&nbsp;</th>
+                            </tr>              
+                            <tr class="line">
+                                <td>Time logged (hrs)</td>
+                                <td class="hours"></td>
+                            </tr>
+                            <tr class="line2">
+                                <td>Changes Involved</td>
+                                <td class="changes"></td>
+                            </tr>               
+                        </table>
+                    </td>
+                    <td>
+                        <div id="teamListBlock{!FLOOR(memberIndex)}Project"></div>
+                    </td>
+                    <td>
+                        <div id="teamListBlock{!FLOOR(memberIndex)}Customer"></div>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <hr />
+            <script>
+                var param = {UserId: "{!member.Id}", StartDate: (new Date("{!StartDate}")).toUTCString(), EndDate:  (new Date("{!EndDate}")).toUTCString(), RollupSummary: true, Context: "teamListBlock{!FLOOR(memberIndex)}"};
+                ForecastingController.getUserForecasting(param, callback);
+            </script>
+            <apex:variable var="memberIndex" value="{!memberIndex + 1}" />
+            </apex:repeat>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

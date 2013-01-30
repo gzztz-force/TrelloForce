@@ -1,0 +1,39 @@
+<apex:page showHeader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}"/>    
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}"/>  
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>  
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="body">
+            <div class="subpageMainContent">
+                <div class="subpageLeft">
+                    <div class="crumbNav">
+                        <a href="{!$Page.Index}">Home</a>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+                        <a href="#">About Meginfo</a>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+                        <span class="crumbNavTitle">Our Value</span>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+                    </div>
+                    <div class="subpageLeftContent">
+                        <div class="subpageLeftContent">
+                            <h2>This is gg a title.</h2>
+                            <div class="subpageLeftTextBlock">
+                                <p>We reassure ourselves that we understand what we're doing to create values for the customers, we understand what value is. We define values through the eyes of our customers, and because of that our products and services are different from what our competitors provide.</p>
+                
+                                <p>What drive our values:</p>
+                
+                                <p> * Unrecognized Problem: We see problems that our customers did not see without our expertise, we help our customers look over the horizon.<br />
+                                    * Unanticipated Solution: When our customers understand all problems and see solutions, we provide other ways of resolving problems, a better path to success.<br />
+                                    * Unforeseen Opportunity: We help our customers recognize opportunities they did not recognize so as to expand their businesses.</p>
+                
+                                <p>We help our customers see problems they didn't see, solutions they didn't know existed and opportunities they didn't recognize, that's how we create values.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>        
+                <c:SubpageRight id="subpageRight"/>   
+            </div>        
+        </apex:define>
+    </apex:composition>        
+</apex:page>

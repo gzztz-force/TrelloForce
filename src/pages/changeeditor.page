@@ -1,0 +1,76 @@
+<apex:page standardController="Change__c" extensions="ChangeEditorController" id="page" action="{!redirect}">
+    <apex:form id="form">
+        <apex:pageMessages />
+        <apex:sectionHeader title="Change Edit" subtitle="{!If(IsBlank(Change.Id), 'New Change', '#' + Change.ChangeNumber__c)}" rendered="{!IsEditable}"/>
+        <apex:outputPanel layout="block" rendered="{!Not(IsEditable)}">
+            You don&apos;t have the permission to edit this change.<br/>
+            <a href="/{!Change.Id}">Go back.</a>
+        </apex:outputPanel>
+        <apex:pageBlock title="Change Edit" mode="edit" id="detailsBlock" rendered="{!IsEditable}">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value=" Save "/>
+                <apex:commandButton action="{!saveAndNew}" value=" Save & New"/>
+                <apex:commandButton action="{!cancel}" value=" Cancel "/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1" title="Information" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Subject</apex:outputLabel>
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputText value="{!Change.Name}" size="80" required="true"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" id="section">
+                <apex:pageBlockSectionItem id="lineItem">
+                    <apex:outputLabel >Project</apex:outputLabel>
+                    <apex:actionRegion >
+                        <apex:actionFunction action="{!refreshFollowers}" name="refreshFollowers" reRender="form"/>
+                        <apex:inputField value="{!Change.Project__c}" id="project" onchange="refreshFollowers();"/>
+                        <script type="text/javascript">
+                            // Sets the project field as read only.
+                            document.getElementById("page:form:detailsBlock:section:lineItem:project").readOnly = true;
+                        </script>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Assign To</apex:outputLabel>
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <!--<apex:inputField value="{!Change.AssignedTo__c}" required="true"/>-->
+                        <apex:selectList value="{!Change.AssignedTo__c}" required="true" size="1">
+                            <apex:selectOptions value="{!AssignToUsers}"/>
+                        </apex:selectList>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2">            
+                <apex:inputField value="{!Change.Type__c}" />
+                <apex:inputField value="{!Change.Priority__c}" />
+                <apex:inputField value="{!Change.Estimate__c}" />
+                <apex:inputField value="{!Change.Status__c}" required="true" />
+                <apex:inputField value="{!Change.DueDate__c}" required="true" />
+                <apex:inputField value="{!Change.Billed__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1" >
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Description</apex:outputLabel>
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputTextarea value="{!Change.Description__c}" cols="80" rows="5" required="true"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:outputPanel id="followers">
+                <apex:pageBlockSection title="Chatter Followers" rendered="{!Followers.size > 0}">
+                    <apex:repeat value="{!Followers}" var="follower">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputText >{!follower.Name}</apex:outputText>
+                            <apex:inputCheckbox value="{!follower.Selected}"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:repeat>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

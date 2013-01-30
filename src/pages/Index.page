@@ -1,0 +1,86 @@
+<apex:page showHeader="false">  
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}"/>    
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/homePage.css')}"/> 
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>  
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/homeShowStageControl.js')}"></script>
+    <link rel="shortcut icon" href="http://www.meginfo.com/resource/1302261630000/MeginfoResource/MeginfoResource/pic/favicon.ico" type="image/vnd.microsoft.icon" />   
+    <div id="wrap"> 
+        <div class="mainShowStage">
+            <div class="stageCandidate" id="stageCandidate2">
+                <a href="{!$Page.salesforcedevelopmentservice}"></a>                                    
+            </div>
+            <div class="stageCandidate" id="stageCandidate3">                       
+                <a href="{!$Page.appdevelopmentcycle}"></a>
+            </div>
+            <div class="stageCandidate" id="stageCandidate4">                       
+                <a href="{!$Page.companyintroduction}"></a> 
+            </div>
+        </div>    
+        <div class="header">
+            <a class="homeLink spA" href="{!$Page.index}">Meginfo Home</a>      
+            <div class="topNav">
+                <div class="topNavHead"></div>
+                  <div class="topNavBody">
+                    <div class="navLinkCon">
+                        <a href="#"><span class="linkTxt">About Meginfo</span><span class="linkHoverBkg"><span class="linkHoverBkgHead"></span><span class="linkHoverBkgTail"></span></span></a>
+                        <div class="dropLinkCon">
+                            <div class="dropLinkHead"></div>
+                            <ul class="dropLinkList">
+                                <li><a href="{!$Page.companyIntroduction}">Company Introduction</a></li>
+                                <li><a href="{!$Page.contactus}">Contact Us</a></li>
+                                <li><a href="{!$Page.privacypolicy}">Privacy Policy</a></li>
+                            </ul>
+                            <div class="dropLinkTail"></div>
+                        </div>
+                    </div>
+                    <div class="topNavSeparator"></div>
+                    <div class="navLinkCon">
+                        <a href="#"><span class="linkTxt">Services</span><span class="linkHoverBkg"><span class="linkHoverBkgHead"></span><span class="linkHoverBkgTail"></span></span></a>
+                        <div class="dropLinkCon">
+                            <div class="dropLinkHead"></div>
+                            <ul class="dropLinkList">
+                                <li><a href="{!$Page.salesforceconsulting}">Salesforce Consulting</a></li>
+                                <li><a href="{!$Page.salesforcedevelopmentservice}">Salesforce Development</a></li>
+                                <li><a href="{!$Page.appdevelopmentcycle}">Build AppExchange Apps</a></li>
+                                <li><a href="{!$Page.salesforcetraining}">Salesforce Training</a></li>
+                            </ul>
+                            <div class="dropLinkTail"></div>
+                        </div>
+                    </div>
+                    <div class="topNavSeparator"></div>
+                    <div class="navLinkCon">
+                        <a href="{!$Page.partner}"><span class="linkTxt">Partners</span><span class="linkHoverBkg"><span class="linkHoverBkgHead"></span><span class="linkHoverBkgTail"></span></span></a>
+                    </div>        
+                  </div>
+                <div class="topNavTail"></div>
+            </div>
+        </div>
+        <div class="candidatesOverview">
+            <a class="candidatesShortCon" id="Candidate1" href="{!$Page.partner}">
+                <div class="candidatesShort">
+                    <img src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/btmPanelImg1.gif')}" />         
+                </div>          
+            </a>
+            <div class="candidatesShortCon" id="Candidate2">
+                <div class="candidatesShort">
+                    <img src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/btmPanelImg2.gif')}" />                     
+                </div>
+            </div>
+            <div class="candidatesShortCon" id="Candidate3">
+                <div class="candidatesShort">
+                    <img src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/btmPanelImg3.gif')}" />                     
+                </div>
+            </div>
+            <div class="candidatesLongCon" id="Candidate4">
+                <div class="candidatesLong">
+                    <img src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/btmPanelImg4.gif')}" />                 
+                </div>
+            </div>
+        </div>    
+        <div class="footer">
+            © 2010 Meginfo Ltd. <a href="#">Privacy Policy</a><a href="#">Contact Us</a>
+        </div>  
+    </div>
+    <site:googleAnalyticsTracking />
+</apex:page>

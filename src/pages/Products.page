@@ -1,0 +1,26 @@
+<apex:page showHeader="false" sidebar="false">
+    <apex:composition template="SiteTemplate">
+        <apex:define name="body">
+            <div class="subpageContent">
+                <c:SiteLeftNav active="aboutus" />
+                <div class="subpageContentRight">
+              <h3> Products</h3>
+                <div class="subpageTextArea productsPageContent">
+                    <div class="MeginfoPMPart">
+                        <img src="{!URLFOR($Resource.MeginfoWebsiteNew, 'res/pic/PmLogo.png')}" alt=""  align="left" class="appLogo"/>
+                        <span class="LeadMeginfoPM">Meginfo PM+ </span><p class="detailText">is an application on AppExchange, a simple and easy way to manage your projects in Salesforce.com.
+Meginfo PM+ uses a change management flow to keep track of your tasks and their status. Time cards are used to track time spent on each task and project, which can be later displayed on dynamic charts that give a complete project overview. You can install Meginfo PM+ to your salesforce organization for free, click <a href="https://login.salesforce.com/packaging/installPackage.apexp?p0=04tE0000000HkFj" class="PMLink">here.</a><br />
+                        iOS users could download the iPhone/iPad edition from <a href="http://itunes.apple.com/us/app/meginfo-pm+/id553770277?ls=1&mt=8" class="PMLink">App Store</a> to hold the projects on your hands and manage in real time.</p>
+                    </div>
+                    <div class="dBridgePart">
+                        <img src="{!URLFOR($Resource.MeginfoWebsiteNew, 'res/pic/productLogoDB.png')}" alt="" align="right" />
+                        <p><span class="firstLetterDB">d</span><span class="letterBridge">Bridge</span>is an application that connects cloud storage services, such as Dropbox, Amazon S3 and others, with <a href="http://www.salesforce.com/">Salesforce.com</a>.<br />
+    dBridge provides a neat and comfortable user interface that allows Salesforce users to easily access documents stored in the cloud, from any Salesforce record.With dBridge Business Managers can easily link account plans, sales materials and financial sheets to the related Salesforce records and access them at any time. Customer Support users can quickly link knowledgebase articles and solutions to cases.<br />Setting up dBridge is fast and simple.<br />The first version of dBridge currently supports Dropbox integration. Other services will shortly follow.<br />dBridge can be found on the AppExchange (<a href="http://appexchange.salesforce.com/home">http://appexchange.salesforce.com</a>) or by contacting us at <a href="contactus@meginfo.com">contactus@meginfo.com</a>.<br />For any inquiries, please send us an email to <a href="contactus@meginfo.com">contactus@meginfo.com</a>.</p>
+                    </div>  
+                </div>
+            </div>
+                <div class="clearfix"></div>
+            </div>   
+        </apex:define>
+    </apex:composition>
+</apex:page>

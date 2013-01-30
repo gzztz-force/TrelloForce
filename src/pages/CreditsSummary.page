@@ -1,0 +1,108 @@
+<apex:page controller="CreditsSummaryController" standardStylesheets="false" showHeader="false" sidebar="false">
+<html>
+    <head>        
+        <script type='text/javascript' src="{!URLFOR($Resource.SiteResourceNew, '/res/js/jquery-1.6.1.min.js')}"/>
+        <script>
+            var maxValue = {!MaxCreditValue};
+        	function initCurrentRow(index, creditValue, adjustmentValue)
+            {
+                var currentTrWidth = creditValue/maxValue * 800 * 0.9;
+                var nameSpan = $("#creditTr" + index).children().eq(0).children("#nameSpan");
+                if(adjustmentValue != null && adjustmentValue > 0)
+                {
+                    nameSpan.css("backgroundColor", 'rgb(106, 194, 98)');
+                }
+                else if(adjustmentValue != null && adjustmentValue < 0)
+                {
+                    nameSpan.css("backgroundColor", 'rgb(226, 77, 77)');                    
+                }
+                nameSpan.css("width",currentTrWidth + 'px');            
+            }
+        </script>
+        <style>
+            body
+            {
+            	background-color:rgb(250, 250, 250);
+            }
+            .creditTable
+            {
+                width: 800px;
+                margin:50px auto 0px auto ;
+            	padding:20px 0px 20px;
+                border-collapse: collapse;
+                border: 1px solid gray;
+            }
+            .creditTitleTd
+            {
+            	border-bottom:1px dashed gray;            
+                text-align: center;
+            	padding:20px 0px 20px;
+                font-size: 30px;
+            }
+            .creditTableContentNameTd
+            {
+                width:90%;
+                padding-left:0px;
+                padding-top:0px;
+                padding-bottom:0px;
+                border-bottom:1px dashed gray;
+                white-space:nowrap;
+            }  
+            .creditTableValueTd
+            {
+                width:10%;
+                text-align:center;
+            	border-left:1px dashed gray;
+                border-bottom:1px dashed gray;        
+            }
+            .creditTableContentNameTd #nameSpan
+            {
+                color:white;
+                padding:5px 0px 5px 5px;
+                background-color:rgb(207, 196, 67);
+                display:inline-block;
+            }              
+            .creditTableContentNameTd #adjustmentSpan
+            {
+                color:green;
+                padding-left:10px;
+                font-size:17px;
+                display:inline-block;
+                font-weight:bold;
+            }
+            .illustrationTable
+            {
+            	margin:20px auto 0px;
+            }
+            .illustrationColorTd
+            {
+                width:50px;
+                height:20px;
+            }
+            .illustrationContentTd
+            {
+                font-size: 12px;
+            }            
+        </style>
+	</head>        
+    <body>        
+        <table class="creditTable" cellpadding="5">
+            <tr><td class="creditTitleTd" colspan='2'>Meginfo Credits Summary</td></tr>
+            <apex:variable value="{!0}" var="index"/>
+            <apex:repeat value="{!AllCredits}" var="credit">        
+                <tr id="creditTr{!index}">
+					<td class="creditTableContentNameTd"><span id="nameSpan">{!credit.Employee__r.Name}</span><span id="adjustmentSpan">{!IF(AND(credit.AdjustmentValue__c != null, credit.AdjustmentValue__c > 0), '+', '')}{!IF(OR(credit.AdjustmentValue__c = null, credit.AdjustmentValue__c = 0), '', TEXT(credit.AdjustmentValue__c))}</span></td>
+					<td class="creditTableValueTd"><span>{!credit.Value__c}</span></td>
+                </tr>
+                <script>
+					initCurrentRow({!index}, {!credit.Value__c}, {!credit.AdjustmentValue__c});
+                </script>
+                <apex:variable value="{!index + 1}" var="index"/>                
+            </apex:repeat>
+        </table>
+        <table class="illustrationTable">
+            <tr><td class="illustrationColorTd" style="background-color:rgb(207, 196, 67)"></td><td class="illustrationContentTd">No Adjustment &nbsp;&nbsp;&nbsp;&nbsp;</td><td class="illustrationColorTd" style="background-color:rgb(106, 194, 98)"></td><td class="illustrationContentTd">Positive Adjustment &nbsp;&nbsp;&nbsp;&nbsp;</td><td class="illustrationColorTd" style="background-color:rgb(226, 77, 77)"></td><td class="illustrationContentTd">Negative Adjustment</td></tr>
+        </table>
+    </body>
+</html>
+</apex:page>

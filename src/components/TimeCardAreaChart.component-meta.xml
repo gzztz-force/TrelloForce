@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>20.0</apiVersion>
+    <description>contains an area chart of time cards</description>
+    <label>Time Card Area Chart</label>
+</ApexComponent>

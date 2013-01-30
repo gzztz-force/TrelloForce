@@ -1,0 +1,57 @@
+<apex:page showHeader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}"/>    
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}"/> 
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>  
+    <link rel="shortcut icon" href="http://www.meginfo.com/resource/1302246720000/MeginfoResource/MeginfoResource/pic/favicon.ico" type="image/vnd.microsoft.icon" />    
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="title">Meginfo | Company Introduction</apex:define>
+        <apex:define name="body">
+            <div class="subpageMainContent">
+                <div class="subpageLeft">
+                    <div class="crumbNav">
+                        <a href="{!$Page.index}">Home</a>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+                        <a href="{!$Page.companyintroduction}">About Meginfo</a>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+                        <span class="crumbNavTitle">Company Introduction</span>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+                    </div>
+                    <div class="subpageLeftContent">
+                        <h2>Company Introduction</h2>
+                        <div class="subpageLeftTextBlock">
+                        <h3>Overview</h3>
+                        <p>Meginfo is a Salesforce development and consulting company located in Beijing, China. Since its foundation in February 2008, Meginfo has provided Salesforce implementations to over 50 global customers with hundreds projects. We strive to exceed expectations and achieve total customer satisfaction.</p>
+                        
+                        <h3>Meginfo’s Business Model</h3>
+                        <p>Meginfo partners with Salesforce consulting companies throughout North America and Europe by providing them with Salesforce development and consulting services, including:</p>
+                        <ul class="bulletList">
+                            <li><span class="normalColor">Salesforce.com architects and developers</span></li>
+                            <li><span class="normalColor">Project managers</span></li>
+                            <li><span class="normalColor">Testers and validation engineers</span></li>
+                            <li><span class="normalColor">Product development using AppExchange</span></li>
+                        </ul>
+                                                
+                        <h3>Why to Choose Meginfo</h3>
+                        <ol class="outerNumberOl">
+                            <li><span class="olNumber">1.</span>Simply put, we love Salesforce. Meginfo employees are Salesforce experts, doing Salesforce development and customizations every hour, of everyday. We believe in Salesforce and even use it to manage our projects, HR, and finance.</li>
+                            <li><span class="olNumber">2.</span>We have experience with years of dedicated development experience with Salesforce. We have evolved with Salesforce, from the early age integrations using C#, Java and PHP, to s-controls, Apex, Visualforce, <a href="http://www.salesforce.com/platform">Force.com</a> sites and the <a href="http://www.salesforce.com/platform">Force.com</a> cloud computing platform. Our projects have touched every technological aspect of Salesforce. We know everything there is to know about Salesforce.</li>
+                            <li><span class="olNumber">3.</span>We solve problems using an extensive knowledge base of Salesforce. We work through and resolve all of our technical issues or questions internally. Meginfo does not rely on help from online communities or Salesforce support. Because of our broad knowledge base we never run into problems in the midst of a project, as a result we save a lot of time on each project. Time is money, and we like saving our clients money.</li>
+                            <li><span class="olNumber">4.</span>We are a team. Compared to other development companies, we maintain the highest employee consistency. Our team has been steadily growing, and all of our employees have remained faithful to Meginfo. Meginfo has created for its team an environment where achieving company success is attained in a comfortable atmosphere. To provide sustainable development services, we strive to maintain workforce stability in all of our endeavors.</li>
+                        </ol>
+                        
+                        <h3>Where Are We Headed</h3>
+                        <p>Meginfo is the largest Salesforce development and consulting company in the greater China region. By 2013, we plan to become the largest Saleforce consulting company in the entire APEC (Asian Pacific Economic Cooperation) constituency. To achieve this goal, we must not only gain additional partners but also attain their recommendation and mutual support. Meginfo’s top priority is to work with its partners and produce projects of the highest quality. This precedence will never change.</p>
+                        
+                        <h3>Success Stories</h3>
+                        <p>Please <a href="{!$Page.contactus}">contact us</a> to learn more about our success stories.</p>
+                        <p>Meginfo is your Salesforce development partner.</p>
+
+                        </div>
+                    </div>
+                </div>
+                <c:SubpageRight id="subpageRight"/> 
+            </div>      
+        </apex:define>
+    </apex:composition>        
+</apex:page>

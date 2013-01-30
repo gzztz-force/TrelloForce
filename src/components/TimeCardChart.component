@@ -1,0 +1,38 @@
+<apex:component >
+    <apex:attribute name="members" description="A collection of TeamMember__c object" type="TeamMember__c[]"/>
+    <apex:attribute name="totalHours" description="Total hours of the project" type="Decimal" />
+    
+    <apex:includeScript value="https://www.google.com/jsapi" />
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawTimeChart);
+      function drawTimeChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('number', 'Total Hours');
+        <apex:variable var="index" value="{!0}"/>
+        <apex:variable var="sumHours" value="{!0}" />
+        <apex:repeat value="{!members}" var="member">
+            <apex:outputText rendered="{!member.TotalHours__c != 0}">
+            data.addRows(1);
+            data.setValue({!FLOOR(index)}, 0, '{!member.Name}');
+            data.setValue({!FLOOR(index)}, 1, {!member.TotalHours__c});
+            </apex:outputText>
+            <apex:variable var="index" value="{!IF(member.TotalHours__c != 0, index + 1, index)}" />
+            <apex:variable var="sumHours" value="{!sumHours + member.TotalHours__c}" />
+        </apex:repeat>
+        <apex:outputText rendered="{!sumHours < totalHours}">
+            data.addRows(1);
+            data.setValue({!FLOOR(index)}, 0, 'Others');
+            data.setValue({!FLOOR(index)}, 1, {!totalHours - sumHours});
+        </apex:outputText>
+        var height = {!members.size + 1} * 22;
+        height = (height < 150) ? 150 : height;
+        height = (height > 200) ? 200 : height;
+        var chart = new google.visualization.PieChart(document.getElementById('timeReportChart'));
+        chart.draw(data, {height: height, chartArea:{left:20,top:20,height:"80%"}});
+      }
+    </script>
+    <div id="timeReportChart">
+    </div>
+</apex:component>

@@ -1,0 +1,23 @@
+<apex:page showHeader="false" sidebar="false">
+    <apex:composition template="SiteTemplate">
+        <apex:define name="title">Meginfo | Experience</apex:define>
+        <apex:define name="body">
+            <div class="subpageContent">
+                <c:SiteLeftNav active="experience" />
+                <div class="subpageContentRight">
+                    <h3>Experience</h3>
+                    <div class="subpageTextArea">
+                        Meginfo's rich experience in developing SaaS solutions ranges from standard Salesforce.com CRM 
+                        systems to complex systems custom built on the Force.com hosted platform. Meginfo's key strength 
+                        is in taking on the technical challenges in integrating existing and legacy systems with the SaaS 
+                        model and delivering a successful solution.<br/>
+                        <img src="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/pic/skills.png')}" alt="" class="skillImg"/>
+                        <img src="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/pic/CRMProficiecies.png')}" alt="" class="ProficieciesImg"/>
+                        <img src="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/pic/logoImg.png')}" alt="" class="logoImg"/>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </apex:define>
+    </apex:composition>
+</apex:page>

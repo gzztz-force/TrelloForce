@@ -1,0 +1,167 @@
+<apex:page showHeader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}" />    
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/AppCircle.css')}" />
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>   
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/AppCircleDisplayControl.js')}"></script>           
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="title">Meginfo | Build AppExchange Apps</apex:define>
+        <apex:define name="body">
+            <div class="subpageMainContent">
+                <div class="subpageLeft">
+                    <div class="crumbNav">
+                        <a href="{!$Page.index}">Home</a>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />   
+                        <a href="{!$Page.services}">Services</a>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />   
+                        <span class="crumbNavTitle">Build AppExchange Apps</span>
+                        <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />   
+                    </div>
+                    <div class="subpageLeftContent">
+                        <h2>Build AppExchange Apps</h2>
+                        <div class="subpageLeftTextBlock">
+                            <div id="AppCircleMainNav">
+                                <p>Building AppExchange applications is part of Meginfo’s development service, but it involves more work than just building an app for one customer. It requires more design than your standard application, along with additional usability consideration, packaging, and publishing.</p>
+                                <p>Meginfo started building AppExchange applications soon after Salesforce released AppExchange. We are familiar with the entire process from development, to publishing, security review, demo org or free trail setup. We have worked alongside Salesforce’s AppExchange team to publish apps we have developed for our partners.</p>
+                                <p>The diagram below illustrates Meginfo’s AppExchange application development cycle. The cycle starts with “Proof of Concept” and it ends with “Security Review and Publishing.” Meginfo’s consulting and development services cover all of these phases.</p>
+                                <div class="mainCircleLinks">
+                                    <a class="circleLink1 spA" href="#">Proof of Concept</a>
+                                    <a class="circleLink2 spA" href="#">Requirement Analysis</a>
+                                    <a class="circleLink3 spA" href="#">Design</a>
+                                    <a class="circleLink4 spA" href="#">Development</a>
+                                    <a class="circleLink5 spA" href="#">Testing</a>
+                                    <a class="circleLink6 spA" href="#">Security Review &amp; Publishing</a>
+                                </div>
+                                <p>During the entire development process, our project manager will carefully monitor the project’s progress and incorporate the customer in all aspects of the project’s development. Involving the customer in the entire process allows us to make sure everyone, the customer and Meginfo’s team, is attuned.</p>
+                                <p>Because of Meginfo’s expanse experience, building apps on Salesforce Cloud Computing platform tends to make the development cycle simple and short. The most important advantage the Force.com platform has to offer over other traditional software development technologies is that there are no multiple iterations, even though an application can become quite complex.</p>
+                                <p>Please <a href="{!$Page.contactus}">contact us</a> for featured works.</p>
+                            </div>
+                            <div id="AppCircleStep1">
+                                <div class="circleStepNavCon">
+                                    <a class="spA circleStepLinks circleStepLink1" href="#">Proof of Concept</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />    
+                                    <a class="circleStepTxtLinks circleStepTxtLink2" href="#">Requirement Analysis</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink3" href="#">Design</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink4" href="#">Development</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink5" href="#">Testing</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink6" href="#">Security Review <br /> &amp; Publishing</a>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="circleStepsIntro round8">
+                                    <p><strong>Proof of Concept: </strong>Upon hearing of Salesforce’s cloud computing technological popularity, a potential client may not be able to see past what they want out of the <a href="http://www.salesforce.com/platform">Force.com</a> platform and realize whether or not the platform can actually meet all of their requirements. Through conference calls and onsite discoveries, our consulting service can help such a customer better understand the cloud computing platform so that they can become familiar with what it can and cannot do. After understanding any limitations that could potentially affect some of the customer’s requirements, a decision on whether or not to continue with this platform can now be made.</p>
+                                </div>
+                            </div>
+                            
+                            <div id="AppCircleStep2">
+                                <div class="circleStepNavCon">
+                                    <a class="circleStepTxtLinks circleStepTxtLink1" href="#">Proof of Concept</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="spA circleStepLinks circleStepLink2" href="#">Requirement Analysis</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink3" href="#">Design</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink4" href="#">Development</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink5" href="#">Testing</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink6" href="#">Security Review <br /> &amp; Publishing</a>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="circleStepsIntro round8">
+                                    <p><strong>Requirement Analysis: </strong>Once the customer is fully informed of the Force.com platform and still wants to utilize it to build an application, Meginfo identifies the technical requirements for the project. If the customer is unaware of the technical requirements needed to fulfill the project, Meginfo can convert their business requirements into technical ones. Technical requirements are necessary in order to define the scope of work and the cost of the project. These requirements are important to the User Interface design team, development team, and testing team. When the customer has these requirements, they can elect Meginfo to build their app or request quotes from other Salesforce development companies.</p>
+                                </div>
+                            </div>
+                            
+                            <div id="AppCircleStep3">
+                                <div class="circleStepNavCon">
+                                    <a class="circleStepTxtLinks circleStepTxtLink1" href="#">Proof of Concept</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink2" href="#">Requirement Analysis</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="spA circleStepLinks circleStepLink3" href="#">Design</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink4" href="#">Development</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink5" href="#">Testing</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink6" href="#">Security Review <br /> &amp; Publishing</a>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="circleStepsIntro round8">
+                                    <p><strong>Design: </strong>The design phase begins once the customer is comfortable with any previous work done by Meginfo and agrees upon the quote. The design work consists of two parts: architecture design and User Interface design. The architectural design is easier with Salesforce than with any other traditional software development technologies. Salesforce simplified the most complicated part, such as database access and network balancing. The User Interface design, however, can take a little bit more effort. Our experienced graphic designers will create the wireframe according to the technical requirements created in the Requirement Analysis phase. The customer can then click through the wireframe to see what his app will ultimately look like. In the chance that the customer may want to make changes to the wireframe, repeating the Requirement Analysis phase in considered necessary to update the technical requirements and redefine the Scope of Work. If the customer prefers to use Salesforce’s standard styles, the User Interface design work can become limited.</p>
+                                </div>
+                            </div>
+                            
+                            <div id="AppCircleStep4">
+                                <div class="circleStepNavCon">
+                                    <a class="circleStepTxtLinks circleStepTxtLink1" href="#">Proof of Concept</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink2" href="#">Requirement Analysis</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink3" href="#">Design</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="spA circleStepLinks circleStepLink4" href="#">Development</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink5" href="#">Testing</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink6" href="#">Security Review <br /> &amp; Publishing</a>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="circleStepsIntro round8">
+                                    <p><strong>Development: </strong>The Development phase is crucial to the AppExchange Application Development Cycle and can take up almost half of the entire process. With the design work from the previous phase, our development team joins the project and starts coding. We believe in keeping the customer involved during the Development phase because each time a module is finished, we have them test that section themselves and provide feedback.</p>
+                                </div>
+                            </div>
+                            
+                            <div id="AppCircleStep5">
+                                <div class="circleStepNavCon">
+                                    <a class="circleStepTxtLinks circleStepTxtLink1" href="#">Proof of Concept</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink2" href="#">Requirement Analysis</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink3" href="#">Design</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink4" href="#">Development</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="spA circleStepLinks circleStepLink5" href="#">Testing</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink6" href="#">Security Review <br /> &amp; Publishing</a>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="circleStepsIntro round8">
+                                    <p><strong>Testing: </strong>Testing is completed by our testing team and User Acceptance Testing is done by the customer. We test the application using test cases that our testing manager creates from the technical requirements. The development team completes the finished application. Once the testing team finishes testing the application, the customer will start the User Acceptance Testing. In this phase, we have our Change Management System track bugs and changes while the customer is notified of any progress that is made.</p>
+                                </div>
+                            </div>
+                            
+                            <div id="AppCircleStep6">
+                                <div class="circleStepNavCon">
+                                    <a class="circleStepTxtLinks circleStepTxtLink1" href="#">Proof of Concept</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink2" href="#">Requirement Analysis</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink3" href="#">Design</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink4" href="#">Development</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="circleStepTxtLinks circleStepTxtLink5" href="#">Testing</a>
+                                    <img class="circleStepNavArr" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/AppCircleArr.gif')}" />
+                                    <a class="spA circleStepLinks circleStepLink6" href="#">Security Review &amp; Publishing</a>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="circleStepsIntro round8">
+                                    <p><strong>Security review &amp; publishing: </strong>After testing, the application is now ready to be reviewed by Salesforce’s security review team. Reviewing the application allows any security leaks to be brought forward. Depending on whether or not the application has any risks, the security review may take anywhere between one to a few weeks. We take the security review into consideration during the Development phase and make sure both Visual Force pages and Apex classes are secured. This way we can save a lot of time and effort and pass the Salesforce security review without any setbacks. After the application passes the review, it can be published. Meginfo has extensive experience in the AppExchange application publishing process, from public listing and LMA association to free trial/test drive configuration.</p>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <c:SubpageRight id="subpageRight"/> 
+              </div>             
+        </apex:define>
+    </apex:composition>        
+</apex:page>

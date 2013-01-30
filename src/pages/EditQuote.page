@@ -1,0 +1,131 @@
+<apex:page standardController="Quote__c" extensions="EditQuoteController" id="page">
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery.min.js')}"/>
+    <script>
+        jQuery.noConflict();
+        jQuery(document).ready(function($)
+        {
+            sumTotal();
+            $(".snumerical").bind("blur", sumTotal);
+            $(".anumerical").bind("blur", sumTotal);
+        });
+        function sumTotal()
+        {
+            var subTotal = 0;
+            jQuery(".snumerical").each(function(index)
+            {
+                var value = parseFloat(jQuery(this).val().replace(/,/,''));
+                if(!isNaN(value))
+                {
+                    subTotal += value;
+                }
+            });
+            jQuery("#subTotalCon").html(subTotal);
+            grandTotal(subTotal);
+        }
+        function grandTotal(subTotal)
+        {
+            var total = subTotal;
+            var displayAmount = ("{!Quote__c.DisplayAmount__c}" == "true");
+            if(displayAmount)
+            {
+                var unitPrice = parseFloat(jQuery(".unitPrice").val().replace(/,/,''));
+                if(!isNaN(unitPrice))
+                {
+                    total *= unitPrice;
+                }
+            }
+            
+                jQuery(".anumerical").each(function(index)
+                {
+                    var value = parseFloat(jQuery(this).val().replace(/,/,''));
+                    if(!isNaN(value))
+                    {
+                        total += value;
+                    }
+                });
+            
+            jQuery("#grandTotalCon").html(total);
+        }
+    </script>
+    <apex:sectionHeader title="Quote {!Quote__c.Name}" subTitle="{!Quote__c.Project__r.Name}" />
+    <apex:pageMessages />
+    <apex:form id="form">
+        <apex:pageMessages />
+        <apex:pageBlock mode="edit" id="block">
+            <apex:pageBlockSection columns="2" id="section">
+                <apex:inputField value="{!Quote__c.Project__c}" />
+                <apex:inputField value="{!Quote__c.Date__c}" />
+                <apex:inputField value="{!Quote__c.DisplayAmount__c}" onchange="refresh()" />
+                <apex:inputHidden />
+                <apex:inputField value="{!Quote__c.UnitPrice__c}" rendered="{!Quote__c.DisplayAmount__c}" styleClass="unitPrice" />
+                <apex:pageBlockSectionItem rendered="{!Quote__c.DisplayAmount__c}">
+                    <apex:outputLabel value="Currency" />
+                    <apex:selectList size="1" value="{!Quote__c.Currency__c}" onchange="refresh()" styleClass="currency">
+                        <apex:selectOption itemLabel="USD" itemValue="USD" />
+                        <apex:selectOption itemLabel="RMB" itemValue="RMB" />
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1">
+                <apex:inputField value="{!Quote__c.Status__c}" />
+                <apex:inputField value="{!Quote__c.Description__c}" style="width:80%"/>
+                <apex:pageblockTable value="{!StandardLines}" var="line" id="slines">
+                    <apex:column styleClass="actionColumn">
+                        <apex:commandLink value="Del" styleClass="actionLink" onclick="return confirm('Are you sure?')" action="{!removeStandardLine}"><apex:param name="index" value="{!line.SortOrder__c}"/></apex:commandLink>&nbsp;|&nbsp;
+                        <apex:commandLink value="Up" styleClass="actionLink" action="{!raiseStandardLine}"><apex:param name="index" value="{!line.SortOrder__c}" /></apex:commandLink>&nbsp;|&nbsp;
+                        <apex:commandLink value="Down" styleClass="actionLink" action="{!lowerStandardLine}"><apex:param name="index" value="{!line.SortOrder__c}"/></apex:commandLink>
+                    </apex:column>
+                    <apex:column headerValue="#" width="20">
+                        <apex:outputText >&nbsp;{!FLOOR(line.SortOrder__c)}&nbsp;</apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="Task" footerClass="numericalColumn">
+                        <apex:inputText value="{!line.Task__c}" style="width:99%" />
+                        <apex:facet name="footer">
+                            Sub Total
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column headerClass="numericalColumn" styleClass="numericalColumn" footerClass="numericalColumn" width="100">
+                        <apex:inputField value="{!line.Amount__c}" style="width:80px" styleClass="snumerical" />
+                        <apex:facet name="header">
+                            <apex:selectList value="{!StandardLineUnit}" size="1" onchange="refresh()">
+                                <apex:selectOption itemLabel="Hours" itemValue="Hours" />
+                                <apex:selectOption itemLabel="Days" itemValue="Days" />
+                            </apex:selectList>
+                        </apex:facet>
+                        <apex:facet name="footer">
+                            <span id="subTotalCon">0</span>
+                        </apex:facet>
+                    </apex:column>
+                </apex:pageblockTable>
+                <apex:outputPanel layout="block" style="float:right;text-align:right;">
+                    <apex:commandLink value="+ more lines" action="{!addMoreStandardLines}" /><br/>
+                    <apex:inputCheckbox onchange="refresh()" value="{!ShowAdditionalLInes}" />With additional charge
+                </apex:outputPanel>
+                <apex:actionFunction action="{!refresh}" name="refresh" />
+                <apex:variable var="index2" value="{!0}"/>
+                <apex:pageBlockTable value="{!AdditionalLines}" var="line" rendered="{!ShowAdditionalLInes}">
+                    <apex:column styleClass="actionColumn">
+                        <apex:commandLink value="Del" styleClass="actionLink" onclick="return confirm('Are you sure?')" action="{!removeAdditionalLine}"><apex:param name="index" value="{!line.SortOrder__c}"/></apex:commandLink>
+                        <apex:variable var="index2" value="{!index2 + 1}"/>
+                    </apex:column>
+                    <apex:column headerValue="Additional Charge">
+                        <apex:inputText value="{!line.Task__c}" style="width:99%"/>
+                    </apex:column>
+                    <apex:column headerClass="numericalColumn" styleClass="numericalColumn" footerClass="numericalColumn" width="100">
+                        <apex:inputField value="{!line.Amount__c}" style="width:80px" styleClass="anumerical" />
+                        <apex:facet name="header">
+                            {!AdditionalLineUnit}
+                        </apex:facet>
+                    </apex:column>
+                </apex:pageBlockTable>
+                <apex:commandLink value="+ more lines" action="{!addMoreAdditionalLines}" rendered="{!ShowAdditionalLInes}" style="float:right" />
+                <apex:outputPanel layout="block" style="float:right;">
+                    <apex:outputText ><strong>Grand Total: <span id="grandTotalCon">0</span></strong></apex:outputText>
+                </apex:outputPanel>
+                <apex:outputPanel layout="block" style="width:100%;text-align:center">
+                    <apex:commandButton value="Save" action="{!save}" />&nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!cancel}" />
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

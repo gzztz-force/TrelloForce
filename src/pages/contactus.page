@@ -1,0 +1,60 @@
+<apex:page showHeader="false" sidebar="false" controller="ContactUsController">
+    <apex:composition template="SiteTemplate">
+        <apex:define name="title">Meginfo | Contact Us</apex:define>
+        <apex:define name="body">
+            <div class="subpageContent">
+                <c:SiteLeftNav active="contactus" />
+                <div class="subpageContentRight">
+                    <h3>Contact Us</h3>
+                    <div class="subpageTextArea">
+                        <span class="hintTitle">
+                            For additional information on how we can help you, please send us the following details 
+                            and<br/> we will contact you. In addition, you can contact us at<a href="mailto:contactus@meginfo.com"> contactus@meginfo.com</a><br/>
+                        </span>
+                        <apex:form >
+                            <table class="infoTable" width="70%">
+                                <tbody>
+                                    <tr>
+                                        <td align="right" width="30%">First Name</td>
+                                        <td width="70%"><apex:InputField value="{!partnerLead.FirstName}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"><span class="required"> * </span>Last Name</td>
+                                        <td><apex:InputField value="{!partnerLead.LastName}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"><span class="required"> * </span>Email</td>
+                                        <td><apex:InputField required="true" value="{!partnerLead.Email}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">Phone</td>
+                                        <td><apex:InputField value="{!partnerLead.Phone}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"><span class="required"> * </span>Company</td>
+                                        <td><apex:InputField value="{!partnerLead.Company}" /></td>
+                                    </tr> <tr>
+                                        <td align="right">Job Title</td>
+                                        <td><apex:InputField value="{!partnerLead.Title}" /></td>
+                                    </tr> 
+                                    <tr>
+                                        <td align="right" valign="top">Interests</td>
+                                        <td><apex:inputField value="{!partnerLead.Description}" styleClass="InterestsTextArea"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <apex:commandLink value="Submit" action="{!submit}" styleClass="submitBtn spA"/>
+                            <a href="http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=%E4%B9%90%E6%88%90%E4%B8%AD%E5%BF%83%20&sll=39.904667,116.408198&sspn=1.148244,2.469177&g=beijing&ie=UTF8&ll=39.894%20065,116.462224&spn=0.008561,0.01929&z=16&cid=5207689510573647717&iwloc=A" class="findUsOnGoogleMap spA">Find us on Google Maps</a><br />
+                            <span class="contactInfo">
+                                Tel (US): +1 (619) 618-0317<br />
+                                Tel (China): +86 10 67713956<br />
+                                Fax (China): +86 10 67713106
+                           </span>
+                       </apex:form>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </apex:define>
+    </apex:composition>
+</apex:page>

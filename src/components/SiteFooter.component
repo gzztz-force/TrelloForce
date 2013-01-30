@@ -1,0 +1,10 @@
+<apex:component id="footerComponent">
+    <div class="footer">
+        <ul class="footerText">
+            <li><apex:outputLink value="{!$Page.contactus}">Contact Us</apex:outputLink></li>
+            <li><apex:outputLink value="{!$Page.privacypolicy}">Privacy Policy</apex:outputLink></li>
+            <li>© 2012 Meginfo Ltd. </li>
+            <div class="clearfix"></div>
+        </ul>
+    </div>
+</apex:component>

@@ -1,0 +1,10 @@
+<apex:component >
+    <div class="subpageRight">
+        <div class="subpageRightBlock">
+            <a href="{!$Page.services}"><img src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/rightLink1Services.gif')}" /></a>
+        </div>
+        <div class="subpageRightBlock">
+            <a href="{!$Page.partner}"><img src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/rightLink2Partner.gif')}" /></a>
+        </div>
+    </div><div class="clearfix"></div>
+</apex:component>

@@ -1,0 +1,4 @@
+<apex:page showHeader="false" contentType="text/plain">
+User-agent: *
+Allow: /
+</apex:page>

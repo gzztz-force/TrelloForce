@@ -1,0 +1,85 @@
+<apex:component controller="DailyTimeCardReportController" access="global">
+    <apex:attribute name="userId" type="String" description="this is the owner of the time card" assignTo="{!UserId}" access="global"/> 
+    <apex:variable var="t0" value="{!TEXT(MONTH(TODAY())) & '/' & TEXT(DAY(TODAY())) & '/' & TEXT(YEAR(TODAY()))}"/>
+    <apex:variable var="t7" value="{!TEXT(MONTH(TODAY()-6)) & '/' & TEXT(DAY(TODAY()-6)) & '/' & TEXT(YEAR(TODAY()-6))}"/>
+    
+    <table width="800" border="0" cellpadding="5" cellspacing="0">
+    <tr>
+    <td>
+    <div style="font-family: helvetica,arial,sans-serif;font-size: 24px;color: #cf6c15;"><b>Project Dashboard</b></div>
+    <div style="margin: 9px 0 20px 0;border-top: 2px solid #E47911;"></div>
+    <div style="font:15px arial, sans-serif; margin: 0;color:#000000;"><strong>Your Logged Hours on <apex:outputText value="{0, Date, MM/dd/yyyy}"><apex:param value="{!TODAY()}"/></apex:outputText></strong></div>
+    <div id="loggedHours" style="padding: 10px 6px 0px 6px;">
+        <div style="width:490px; min-height:71px; text-align:center">
+            <div style="width:450px; min-height:66px; margin-left:0px">
+                <img src="http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'ruler.png')}" alt=""/>
+            </div>
+            <div id="movePart" style="float: left; min-height: 18px; width: {! 50 * MIN(TotalHours, 9.0)}px"></div>
+            <div style="float: left; width: 24px; min-height: 24px; margin-top:5px;">
+                <img src="http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'cursor.png')}" alt=""/>
+            </div>
+            <br/>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    <div style="font:15px arial, sans-serif; margin: 0;color:#cc762b;"><strong>Sum of Hours: <a href="https://na6.salesforce.com/00O80000004n3di?colDt_q=Custom&colDt_s={!t0}&colDt_e={!t0}&pv0={!UserFullName}">{!TotalHours}</a></strong></div>
+    <apex:outputPanel rendered="true">
+        <div style="margin: 20px 0 20px 0;border-top: 1px solid #E47911;"></div>
+        <div style="font:15px arial, sans-serif; margin: 0 0 10px;color:#000000;"><strong>Your Team&apos;s Logged Hours in Last 7 Days</strong></div>
+        <table cellpadding="0" cellspacing="0" style="width:800px;border-collapse:collapse;text-align:center;color:#8c8b8b;">
+                <tr style="background:url('http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'timelineBkg.png')}') repeat-x bottom; height:60px;">
+                    <td width="180px;">&nbsp;</td>
+                    <apex:repeat value="{!MyMembers.Columns}" var="day">
+                        <td style="padding:20px 10px;background:url('http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'Vline.png')}') no-repeat center bottom">{!day}</td>
+                    </apex:repeat>
+                    <td width="180px;">&nbsp;</td>
+                </tr>
+                <apex:repeat value="{!MyMembers.Rows}" var="member">
+                    <tr style="height:100px;background:url('http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'timelineBkg.png')}') repeat-x bottom;">
+                        <td style="font-size:14px;color:#716c6c;font-weight:bold;width:180px;"><a class="color:#716c6c;" href="https://na6.salesforce.com/00O80000004n3di?colDt_q=Custom&colDt_s={!t7}&colDt_e={!t0}&pv0={!member.PrimaryKey}">{!member.PrimaryKey}</a></td>
+                        <apex:repeat value="{!member.Cells}" var="hours">
+                            <apex:variable var="imageName" value="{!IF(hours>=6, 'greenCircle.png', IF(hours>=4, 'yellowCircle.png', 'redCircle.png'))}" />
+                            <apex:variable var="imageSize" value="{!MIN(hours*6, 48)}" />
+                            <td style="padding:15px 10px; background:url('http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'Vline.png')}') no-repeat center bottom"><img src="http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, imageName)}" alt="{!hours}" title="{!hours} hr(s)" style="width:{!imageSize}px; height:{!imageSize}px;"/></td>
+                        </apex:repeat>
+                        <td style="width:180px;">&nbsp;</td>
+                    </tr>
+                </apex:repeat>     
+            </table>
+    </apex:outputPanel>
+    <div style="min-height: 10px; clear: both"></div>
+    <apex:outputPanel rendered="{!Changes.size > 0}">
+        <div style="margin: 20px 0 20px 0;border-top: 1px solid #E47911;"></div>
+        <div style="font:15px arial, sans-serif; margin: 0 0 10px; color:#000000;"><strong>Your Open Changes</strong></div>
+        <table style="BORDER-COLLAPSE: collapse; text-align: left;margin-left:10px; borderColor:#000000; cellSpacing:0; align:left; width:700px; margin-bottom:15px;" border="1px;">
+            <tr style="background-color:#0E9ECF; color:#FFF; font-size:110%;">
+                <th style="padding:6px 6px 6px 10px; color:#FFF;font-weight:bold;background-color:#0E9ECF;font-size:90%;width:30px">#</th>
+                <th style="padding:6px 6px 6px 10px; color:#FFF;font-weight:bold;background-color:#0E9ECF;font-size:90%;width:300px">Subject</th>
+                <th style="padding:6px 6px 6px 10px; color:#FFF;font-weight:bold;background-color:#0E9ECF;font-size:90%;width:70px">Age (days)</th>
+                <th style="padding:6px 6px 6px 10px; color:#FFF;font-weight:bold;background-color:#0E9ECF;font-size:90%;width:75px">Due Date</th>
+                <th style="padding:6px 6px 6px 10px; color:#FFF;font-weight:bold;background-color:#0E9ECF;font-size:90%;">Status</th>
+                <th style="padding:6px 6px 6px 10px; color:#FFF;font-weight:bold;background-color:#0E9ECF;font-size:90%;width:60px">Priority</th>
+            </tr>
+            <apex:repeat value="{!Changes}" var="item">
+                <tr >
+                    <td style="padding:6px 6px 6px 10px;background-color:#eeeeee;"><a href="{!item.ChangeUrl}" target="_blank" class="actionLink" style="color:#000000;font-style:italic; text-decoration:underline;font-weight:bold">{!item.ChangeNumber}</a></td>
+                    <td style="padding:6px 6px 6px 10px;background-color:#eeeeee;">{!item.ChangeName}</td>
+                    <td style="padding:6px 15px 6px 10px;background-color:#eeeeee;text-align:right"><apex:outputText value="{0, Number, ###}"><apex:param value="{!item.Age}"/></apex:outputText></td>
+                    <td style="padding:6px 6px 6px 10px;background-color:#eeeeee;color:{!item.PriorityColor}">
+                        <apex:outputText value="{0, Date, MM/dd/yyyy}">
+                            <apex:param value="{!item.DueDate}"/>
+                        </apex:outputText>
+                    </td>
+                    <td style="padding:6px 6px 6px 10px;background-color:#eeeeee;">{!item.Status}</td>
+                    <td style="padding:6px 6px 6px 10px;background-color:#eeeeee;color:{!item.PriorityColor}">{!item.Priority}</td>
+                </tr>
+            </apex:repeat>
+        </table>
+        <span style="color:#555;font-size:12px;margin-left:10px"><a href="https://na6.salesforce.com/00O80000004n44A?pv1={!UserFullName}" target="_blank">All Open Changes</a></span>
+    </apex:outputPanel>
+    <br/><br/>
+    <div style="font: 11px arial, sans-serif;border-top: 1px solid #ccc;margin-top:18px;padding-top:4px;color:#555;">THIS EMAIL IS GENERATED BY SYSTEM. PLEASE DO NOT REPLY.</div>
+    </td>
+    </tr>
+    </table>
+</apex:component>

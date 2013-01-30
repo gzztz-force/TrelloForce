@@ -1,0 +1,6 @@
+<apex:page standardController="Change__c" extensions="ChangeDetailController" action="{!redirect}" showChat="true">
+    <apex:form >
+        <apex:detail inlineEdit="true" relatedList="true" showChatter="true"/>
+        <apex:outputField value="{!Change__c.Project__c}" rendered="false" />
+    </apex:form>
+</apex:page>

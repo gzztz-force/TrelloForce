@@ -1,0 +1,31 @@
+<apex:page showHeader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}"/>    
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}"/> 
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>  
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="body">
+		    <div class="subpageMainContent">
+				<div class="subpageLeft">
+			    	<div class="crumbNav">
+						<a href="{!$Page.index}">Home</a>
+						<img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+		        		<a href="{!$Page.services}">Services</a>
+						<img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+			        	<span class="crumbNavTitle">Salesforce Training</span>
+						<img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />
+			        </div>
+			        <div class="subpageLeftContent">
+			        	<h2>Salesforce Training</h2>
+			            <div class="subpageLeftTextBlock">
+						<p>Meginfo provides Salesforce training in both English and Mandarin. Our training of Salesforce.com SFA can be very beneficial to a company’s marketing division, sales, and customer support branches. Almost anyone is capable of embracing the Salesforce Cloud 2 apps to manage their company’s leads and customers. We also provide training of Salesforce Mobile, AppExchange, Chatter, and all other Salesforce content.</p>
+			
+						<p>Meginfo invites companies with employees located in China that need Salesforce training in Mandarin, as well as businesses that also provide Salesforce training services, to take a look at our partnership program <a href="{!$Page.partner}">here</a>.</p>
+			            </div>
+			        </div>
+				</div>		  
+				<c:SubpageRight id="subpageRight"/>   
+		    </div>        
+        </apex:define>
+    </apex:composition>        
+</apex:page>

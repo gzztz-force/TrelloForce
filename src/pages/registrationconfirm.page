@@ -1,0 +1,17 @@
+<apex:page showHeader="false" sidebar="false" >
+    <apex:composition template="SiteTemplate">
+        <apex:define name="title">Meginfo | Contact Us</apex:define>
+        <apex:define name="body">
+            <div class="subpageContent">
+                <c:SiteLeftNav active="contactus" />
+                <div class="subpageContentRight">
+                    <h3>Email Sent Successfully</h3>
+                    <div class="subpageTextArea" style="height:300px;">
+                       <p>Thanks for leaving your contact details. We will be in touch shortly</p>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </apex:define>
+    </apex:composition>
+</apex:page>

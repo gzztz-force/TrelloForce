@@ -1,0 +1,182 @@
+<apex:component controller="TimeCardAreaChartController">
+    <apex:attribute name="projectId" type="Id" description="Id of the project" assignTo="{!ProjectId}"/>
+    <apex:attribute name="chartType" type="String" description="Chart of the Type, 3 values: Day, Week or Month" assignTo="{!chartType}" default="Day" />
+    <apex:attribute name="width" type="Integer" description="width in pixel" />
+    <apex:attribute name="height" type="Integer" description="height in pixel" />
+    <apex:attribute name="title" type="String" description="title of the chart" default="Time Cards by Date" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'highcharts.js')}" />
+    <script type="text/javascript">
+        initChartFunctions.push(function() {
+            areaChart = new Highcharts.Chart({
+                chart: {
+                    renderTo: 'areaChartContainer{!chartType}',
+                    defaultSeriesType: 'areaspline'
+                },
+                title: {
+                    text: "{!title}"
+                },
+                credits: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false,
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: "middle"
+                },
+                xAxis: {
+                    categories: [{!builder.Columns}],
+                    tickmarkPlacement: 'off',
+                    title: {
+                        enabled: false
+                    },
+                    labels: {
+                        step: 2
+                    },
+                    plotBands: getPlotBands([{!builder.Columns}], "{!chartType}")// visualize the weekend for daily chart
+                },
+                yAxis: {
+                    title: {
+                        text: 'Hours'
+                    },
+                    labels: {
+                        formatter: function() {
+                            return this.value;
+                        }
+                    }
+                },
+                tooltip: {
+                    crosshairs: false,
+                    shared: false
+                },
+                plotOptions: {
+                    areaspline: {
+                        stacking: 'normal',
+                        lineColor: '#666666',
+                        lineWidth: 1,
+                        marker: {
+                            enabled: false,
+                            lineWidth: 1,
+                            lineColor: '#666666'
+                        },
+                        /*events: {
+                            click: navigateToReport
+                        },*/
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{!builder.Rows}]
+            });
+            areaChart.showUser = function(user) {
+                for(var i = 0; i < this.series.length; i++)
+                {
+                    var serie = this.series[i];
+                    if(serie.name == user)
+                    {
+                        serie.show();
+                    }
+                }
+            };
+            areaChart.hideUser = function(user) {
+                for(var i = 0; i < this.series.length; i++)
+                {
+                    var serie = this.series[i];
+                    if(serie.name == user)
+                    {
+                        serie.hide();
+                    }
+                }
+            };
+            if(typeof(allCharts) == "undefined")
+            {
+                allCharts = [];
+            }
+            allCharts.push(areaChart);
+        }); 
+        function navigateToReport(event) 
+        { 
+            var username = this.name;
+            var dateValue = event.point.category;
+            var datePair = parseDatePair(dateValue);
+            window.open("/00O80000004nb2l?pv0=" + username + "&pv1={!LEFT(projectId, 15)}&colDt_q=custom&colDt_s=" + Highcharts.dateFormat("%m/%d/%Y", datePair.start) + "&colDt_e=" + Highcharts.dateFormat("%m/%d/%Y", datePair.end), "_blank");
+        }
+        function getPlotBands(dates, chartType)
+        {
+            var result = [];
+            if(chartType == "Day")
+            {
+                for(var i = 0; i < dates.length; i++)
+                {
+                    var date = dates[i];
+                    var dayOfWeek = parseDateValue(date).getDay();
+                    if(dayOfWeek == 0 || dayOfWeek == 6)
+                    {
+                        result.push({from:i-0.5, to:i+0.5, color:"rgba(68, 170, 213, .2)"});
+                    }
+                }
+            }
+            return result;
+        }
+        function parseDatePair(dateValue)
+        {
+            //Day: Mar 1
+            //Week: Feb 2-7, Feb 27-Mar 3
+            //Month: Feb 2012
+            var startDate, endDate;
+            if("{!chartType}" == "Day")
+            {
+                startDate = parseDateValue(dateValue);
+                endDate = parseDateValue(dateValue);
+            }
+            else if("{!chartType}" == "Week")
+            {
+                var dates = dateValue.split('-', 2);
+                startDate = parseDateValue(dates[0]);
+                if(dates[1].indexOf(' ') >= 0)
+                {
+                    endDate = parseDateValue(dates[1]);
+                }
+                else
+                {
+                    endDate = parseDateValue(dates[0]);
+                    endDate.setDate(parseInt(dates[1]));
+                }
+            }
+            else if("{!chartType}" == "Month")
+            {
+                var months = { "Jan":0, "Feb":1, "Mar":2, "Apr":3, "May":4, "Jun":5, "Jul":6, "Aug":7, "Sep":8, "Oct":9, "Nov":10, "Dec":11};
+                var dateParts = dateValue.split(' ', 2);
+                var month = months[dateParts[0]];
+                var year = parseInt(dateParts[1]);
+                startDate = new Date();
+                startDate.setMonth(month);
+                startDate.setDate(1);
+                startDate.setYear(year);
+                endDate = new Date();
+                endDate.setMonth(month + 1);
+                endDate.setDate(0);
+                endDate.setYear(year);
+            }
+            return {start: startDate, end: endDate};
+        }
+        //parses sth like 'Mar 3'
+        function parseDateValue(dateValue)
+        {
+            var months = { "Jan":0, "Feb":1, "Mar":2, "Apr":3, "May":4, "Jun":5, "Jul":6, "Aug":7, "Sep":8, "Oct":9, "Nov":10, "Dec":11};
+            var dateParts = dateValue.split(' ', 2);
+            var month = months[dateParts[0]];
+            var day = parseInt(dateParts[1]);
+            var result =  new Date();
+            result.setMonth(month);
+            result.setDate(day);
+            if(result > new Date())
+            {
+                result.setYear(result.getYear() - 1);
+            }
+            return result;
+        }
+        </script>
+        <div id="areaChartContainer{!chartType}" style="width: {!width}px; height:{!height}px;">No records to display.</div>
+</apex:component>

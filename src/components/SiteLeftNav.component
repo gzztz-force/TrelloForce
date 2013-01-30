@@ -1,0 +1,12 @@
+<apex:component >
+    <apex:attribute name="active" description="Which tab is selected" type="String" />
+    <div class="subpageContentLeft">
+        <ul class="leftnav">
+            <li class="{!IF(active='aboutus', 'active', '')}"><apex:outputLink value="{!$Page.aboutus}">About Us</apex:outputLink></li>
+            <li class="{!IF(active='solutions', 'active', '')}"><apex:outputLink value="{!$Page.solutions}">Solutions</apex:outputLink></li>
+            <li class="{!IF(active='experience', 'active', '')}"><apex:outputLink value="{!$Page.experience}">Experience</apex:outputLink></li>
+            <li class="{!IF(active='ourteam', 'active', '')}"><apex:outputLink value="{!$Page.ourteam}">Our Team</apex:outputLink></li>
+            <li class="{!IF(active='contactus', 'active', '')}"><apex:outputLink value="{!$Page.contactus}">Contact</apex:outputLink></li>
+        </ul>
+    </div>
+</apex:component>

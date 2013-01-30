@@ -1,0 +1,32 @@
+<apex:page showHeader="false" controller="PartnerRegistrationController">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}"/>    
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}"/> 
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>  
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/RegistrationTable.js')}"></script>      
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="title">Meginfo | Partners</apex:define>
+        <apex:define name="body">
+            <apex:form >
+                <div class="subpageMainContent">
+                    <div class="subpageLeft">
+                        <div class="crumbNav">
+                            <a href="{!$Page.index}">Home</a>
+                            <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />                   
+                            <a href="{!$Page.partner}">Partners</a>
+                            <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />                   
+                        </div>
+                        <div class="subpageLeftContent">
+                            <h2>We'll be in touch</h2>
+                            <div class="subpageLeftTextBlock" style="height:200px">
+                                <p>Thanks for registering for Meginfo for Partners, your registration is being reviewed. If you’ve got questions, we’re happy to help.</p>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>              
+                    </div>
+                    <c:SubpageRight id="subpageRight"/>   
+                </div>        
+            </apex:form>
+        </apex:define>
+    </apex:composition>        
+</apex:page>

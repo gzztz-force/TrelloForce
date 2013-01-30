@@ -1,0 +1,101 @@
+<apex:page showHeader="false" controller="PartnerRegistrationController">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}"/>    
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}"/> 
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>      
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="title">Meginfo | Partners</apex:define>
+        <apex:define name="body">
+            <apex:form >
+                <div class="subpageMainContent">
+                    <div class="subpageLeft">
+                        <div class="crumbNav">
+                            <a href="{!$Page.index}">Home</a>
+                            <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />                   
+                            <a href="{!$Page.partner}">Partners</a>
+                            <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />                   
+                        </div>
+                        <div class="subpageLeftContent">
+                            <h2>Partners</h2>
+                            <div class="subpageLeftTextBlock">
+                                <p>Meginfo is a partner-based company and generates most of its revenue through its collaborations. Our partners usually consists of Salesforce consulting partners or Salesforce ISV partners. They have their own customers and products, and we work very closely with them to deliver their projects and support their products.</p>
+                                
+                                <p>We are willing to share our Salesforce experience and skills with our partners. Whenever our partners have any technical questions about Salesforce we can provide them with answers in a quick and efficient manner. We pride ourselves in being a very strong technical support, helping our partners win new customers and new projects by providing technical solutions and quotes.</p>
+                                
+                                <p>If you are interested in partnering with Meginfo, please fill out the following form and we will contact you as soon as possible.</p>
+                                
+                                <h3>Partner Registration</h3>
+                                
+                                <p>
+                                    Your information will be protected according to our <a href="{!$Page.PrivacyPolicy}">privacy policy</a>.<br />
+                                    All <span class="requiredMark" style="display:inline">*</span> fields are required
+                                </p>
+                                <h4 class="registrationTitle round5">About You</h4>
+                                <table class="registrationTable" width="100%" border="0" cellspacing="2" cellpadding="2">
+                                    <tbody>
+                                        <tr>
+                                            <td width="20%" class="txtRight"><span class="requiredMark" style="display:inline">*</span>First Name:</td>
+                                            <td width="30%"><apex:InputField required="true" value="{!partnerLead.FirstName}" /></td>
+                                            <td width="20%" class="txtRight"><span class="requiredMark" style="display:inline">*</span>Last Name:</td>
+                                            <td width="30%"><apex:InputField required="true" value="{!partnerLead.LastName}" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>Job Title:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.Title}" /></td>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>E-mail:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.Email}" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>Phone:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.Phone}" /></td>
+                                            <td class="txtRight">&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                  </tbody>
+                                </table>
+                                <h4 class="registrationTitle round5">Your Company</h4>
+                                <table class="registrationTable" width="100%" border="0" cellspacing="2" cellpadding="2">
+                                    <tbody>
+                                        <tr>
+                                            <td width="20%" class="txtRight"><span class="requiredMark" style="display:inline">*</span>Company:</td>
+                                            <td width="30%"><apex:InputField required="true" value="{!partnerLead.Company}" /></td>
+                                            <td width="20%" class="txtRight"><span class="requiredMark" style="display:inline">*</span>Industry:</td>
+                                            <td width="30%"><apex:InputField required="true" value="{!partnerLead.Industry}" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>Website:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.Website}" /></td>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>Street:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.Street}" style="width:173px"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>City:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.City}" /></td>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>State/Province:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.State}" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>Zip/Postal Code:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.PostalCode}" /></td>
+                                            <td class="txtRight"><span class="requiredMark" style="display:inline">*</span>Country:</td>
+                                            <td><apex:InputField required="true" value="{!partnerLead.Country}" /></td>
+                                        </tr>
+                                  </tbody>
+                                </table>
+                                <h4 class="registrationTitle round5"><span class="requiredMark" style="display:inline">*</span>Your Interests</h4>
+                                <table class="registrationTable" width="100%" border="0" cellspacing="2" cellpadding="2">
+                                    <tbody>                             
+                                        <tr><td><apex:InputField required="true" value="{!partnerLead.Description}" style="width:700px;height:100px"/></td></tr>
+                                    </tbody>
+                                </table>
+                                <apex:commandLink styleClass="submitBtn spA" action="{!submit}">Submitd</apex:commandLink>                               
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>              
+                    </div>
+                    <c:SubpageRight id="subpageRight"/>   
+                </div>        
+            </apex:form>
+        </apex:define>
+    </apex:composition>        
+</apex:page>

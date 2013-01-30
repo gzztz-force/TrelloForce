@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Time Card</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Time Cards</value>
+    </caseValues>
+    <fields>
+        <label><!-- Billable --></label>
+        <name>Billable__c</name>
+    </fields>
+    <fields>
+        <label><!-- Change --></label>
+        <name>Change__c</name>
+        <relationshipLabel><!-- Time Cards --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Date --></label>
+        <name>Date__c</name>
+    </fields>
+    <fields>
+        <label><!-- Description --></label>
+        <name>Description__c</name>
+    </fields>
+    <fields>
+        <label><!-- Hours --></label>
+        <name>Hours__c</name>
+    </fields>
+    <fields>
+        <label><!-- Project --></label>
+        <name>Project__c</name>
+        <relationshipLabel><!-- Time Cards --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Team Member --></label>
+        <name>TeamMember__c</name>
+        <relationshipLabel><!-- Time Cards --></relationshipLabel>
+    </fields>
+    <layouts>
+        <layout>Time Card Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- You cannot create time cards for other people. --></errorMessage>
+        <name>Time_Cards_On_Wrong_User</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- New_Time_Card --></label>
+        <name>New_Time_Card</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- New_Time_Card_Change --></label>
+        <name>New_Time_Card_Change</name>
+    </webLinks>
+</CustomObjectTranslation>

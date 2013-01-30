@@ -1,0 +1,59 @@
+<apex:page showHeader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}" />    
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>           
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="title">Meginfo | Development Service</apex:define>
+        <apex:define name="body">
+        <div class="subpageMainContent">
+            <div class="subpageLeft">
+                <div class="crumbNav">
+                    <a href="{!$Page.index}">Home</a>
+                    <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />                       
+                    <a href="{!$Page.services}">Services</a>
+                    <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />   
+                    <span class="crumbNavTitle">Salesforce Development Service</span>
+                    <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />   
+                </div>
+                <div class="subpageLeftContent">
+                    <h2>Development Service</h2>
+                    <div class="subpageLeftTextBlock">
+                        <p>Meginfo maintains the largest Salesforce development team in the greater China region. Salesforce development is where Meginfo holds its most experience. We have a team of developers and project managers that are among the most talented people in Salesforce’s cloud computing world. Our developers have Salesforce development experience for up to 7 years, and they have witnessed Salesforce’s technical evolution.</p>
+        
+                        <p>Since founded, Meginfo has worked with many partners to deliver more than 100 projects. We have maintained a 100% customer, and partner, satisfaction on every single project we have completed. Our goal is to gradually grow our development capability, work with more partners, and build a first-rate reputation for both our partners and ourselves. To achieve this goal, we take the following measures to control the quality of our work:</p>
+                        
+                        <ul class="ulBlock">
+                            <li>We have consistently focused on nothing but Salesforce. Our developers are constantly working with Salesforce applications, so we have the ideal environment for developers to improve their Salesforce development skills.</li>
+                            <li>We have regular, internal meetings to share our developing knowledge base with the team. Each time a project is finished that involved something innovative, we invite the development lead to introduce the new features or skills to the rest of the team. We also conduct gatherings of all team members to watch Salesforce featured webinars.</li>
+                            <li>We mandate that the high coding quality is the most important mission for each developer. Any code we create has to be recognized by the industry and comply with the coding conventions we have adopted. This allows us to write code that is easy to read and maintain.</li>
+                            <li>We have a testing team to test the work before it is delivered to the customer for user acceptance testing. A tester is involved in a project at the requirement analysis phase to ensure test cases will cover all of the particulars.</li>
+                        </ul>
+        
+                        <p>
+                            Most of our projects have covered almost all possible development work concerning Salesforce. <br />
+                            Meginfo is fully trained in the following areas:
+                        </p>
+                        
+                        <ul class="ulBlock">
+                            <li>Building websites using <a href="http://www.salesforce.com/platform">Force.com</a> sites: Meginfo is among the first few companies to have created websites using <a href="http://www.salesforce.com/platform">Force.com</a> sites. Some of our projects are listed at Salesforce’s <a href="http://www.salesforce.com/platform">Force.com</a> sites  <a href="http://developer.force.com/sitesgallery">gallery</a>.<br />
+                                 The following are three types of websites we have produced:
+                                <ol class="innerOl">
+                                    <li><span class="olNumber">1.</span>E-commerce websites: A fully-fledged e-commerce website usually consists of 6 to 7 major modules: production search or browsing, shopping cart, payment integration, order processing, shipment tracking, inventory management, and sometimes vendor management. Meginfo can either build these modules from scratch or integrate third-party packages into the system. We have created Salesforce award winning e-commerce websites, and your website will fall nothing short of the very best.</li>
+                                    <li><span class="olNumber">2.</span>Company public websites: <a href="http://www.salesforce.com/platform">Force.com</a> sites offer a trouble-free way to build a website and the most economical platform to run a company’s public website.A website that is built with a <a href="http://www.salesforce.com/platform">Force.com</a> site has excellent performance and it is already integrated with the company’s Salesforce org. Meginfo runs its website on the <a href="http://www.salesforce.com/platform">Force.com</a> platform as well.</li>
+                                    <li><span class="olNumber">3.</span>Company portals: A portal allows a company’s customers and its partners to interact with the company in a much more suitable way. A portal in most cases is the combination of <a href="http://www.salesforce.com/platform">Force.com</a> sites and customer or partner portals. <a href="http://www.salesforce.com/platform">Force.com</a> sites work as the public site that allows functions like registration and login. Customer and partner portals provide content that can only be viewed after users log in. Customer and partner portal licenses are required to authenticate customers and partners.</li>
+                                </ol>
+                            </li>
+                            <li>Custom Development: Custom development includes any development work that a customer may want, such as, assisting in manufacturing additional applications for a company’s Salesforce org to manage works other than CRM. These applications include finance apps, project management apps, booking apps, and a human resources system. We have also helped companies create integrated external systems such as ERP, call centers, and S3 storage services.</li>
+                            <li>UI Design: Our in-house UI designers will design a company’s public website and portal. The UI designers convert the graphic design into HTML, which developers can then use to create the Visualforce pages. Just take a look at our website and you will see just what our UI designer is capable of.</li>
+                        </ul>
+                        
+                        <p>Please <a href="{!$Page.contactus}">contact us</a> to learn more about our success stories.</p>
+                    </div>
+                </div>
+            </div>
+            <c:SubpageRight id="subpageRight"/>             
+          </div>         
+        </apex:define>
+    </apex:composition>        
+</apex:page>

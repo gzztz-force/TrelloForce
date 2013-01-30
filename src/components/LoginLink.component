@@ -1,0 +1,33 @@
+<apex:component >
+    <apex:attribute name="login" description="an instance of the login credential object" type="LoginCredential__c" required="true"/>
+    
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'ZeroClipboard.js')}"/>
+    
+    <apex:variable var="loginUrl" value="{!IF(login.RecordType.Name == 'Salesforce', IF(login.Type__c=='Sandbox', 'https://test.salesforce.com', 'https://login.salesforce.com') + '?un=' + login.Username__c + '&pw=' + login.Password__c, login.LoginURL__c)}" />
+    
+    <apex:outputPanel layout="none" rendered="{!login.RecordType.Name == 'Salesforce'}">
+        <img src="/img/icon/documents24.png" alt="Copy" title="Copy Login URL" id="loginCopy{!login.Id}" style="cursor:pointer;width:12px" />
+        <script>
+            $('#loginCopy{!login.Id}').mouseover(function() 
+            {
+                clip.setText("{!loginUrl}");
+                if (clip.div) 
+                {
+                    clip.receiveEvent('mouseout', null);
+                    clip.reposition(this);
+                }
+                else
+                {
+                    clip.glue(this);
+                    if(clip.div)
+                    {
+                        clip.div.title = "Copy Login URL";
+                    }
+                }
+                clip.receiveEvent('mouseover', null);
+                clip.receiveEvent('click', null);
+            });
+        </script>
+    </apex:outputPanel>
+</apex:component>

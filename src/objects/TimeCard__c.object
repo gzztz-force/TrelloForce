@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <fields>
+        <fullName>Billable__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <label>Billable</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Change__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Change</label>
+        <referenceTo>Change__c</referenceTo>
+        <relationshipLabel>Time Cards</relationshipLabel>
+        <relationshipName>Time_Cards</relationshipName>
+        <required>false</required>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Date__c</fullName>
+        <defaultValue>Today()</defaultValue>
+        <externalId>false</externalId>
+        <label>Date</label>
+        <required>true</required>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Description</label>
+        <length>32000</length>
+        <type>LongTextArea</type>
+        <visibleLines>10</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Hours__c</fullName>
+        <externalId>false</externalId>
+        <label>Hours</label>
+        <precision>12</precision>
+        <required>true</required>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Project__c</fullName>
+        <externalId>false</externalId>
+        <label>Project</label>
+        <referenceTo>MProject__c</referenceTo>
+        <relationshipLabel>Time Cards</relationshipLabel>
+        <relationshipName>TimeCards</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>TeamMember__c</fullName>
+        <externalId>false</externalId>
+        <label>Team Member</label>
+        <referenceTo>TeamMember__c</referenceTo>
+        <relationshipLabel>Time Cards</relationshipLabel>
+        <relationshipName>Time_Cards</relationshipName>
+        <relationshipOrder>1</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>true</writeRequiresMasterRead>
+    </fields>
+    <label>Time Card</label>
+    <nameField>
+        <displayFormat>TC-{0000000}</displayFormat>
+        <label>Time Card Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Time Cards</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Time_Cards_On_Wrong_User</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND( TeamMember__r.User__c !=  $User.Id ,
+CONTAINS( $Profile.Name , &quot;Developer&quot;))</errorConditionFormula>
+        <errorMessage>You cannot create time cards for other people.</errorMessage>
+    </validationRules>
+    <webLinks>
+        <fullName>New_Time_Card</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>url</linkType>
+        <masterLabel>New Time Card</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>/{!$ObjectType.TimeCard__c}/e?CF00N80000003iWpD={!TeamMember__c.Name}&amp;CF00N80000003iWpD_lkid={!TeamMember__c.Id}&amp;saveURL=%2F{!TeamMember__c.Id}&amp;retURL=%2F{!TeamMember__c.Id}&amp;CF00N80000003iWoa={!TeamMember__c.Project__c}&amp;CF00N80000003iWoa_lkid={!TeamMember__c.ProjectId__c}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>New_Time_Card_Change</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>url</linkType>
+        <masterLabel>New Time Card</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>/apex/NewTimeCardOnChange?cid={!Change__c.Id}</url>
+    </webLinks>
+</CustomObject>

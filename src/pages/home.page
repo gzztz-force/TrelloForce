@@ -1,0 +1,66 @@
+<apex:page showHeader="false" sidebar="false">
+    <html>
+    <head>
+        <title>Meginfo | Salesforce.com Consulting and Development</title>
+        <meta name="description" content="Meginfo is a Salesforce.com outsourcing company based in China providing Salesforce.com range consulting and development to enterprises across various domains globally" />
+        <meta name="keywords" content="Salesforce, salesforce.com, force.com, software development, oursourcing, offshore" />
+        <link href="{!URLFOR($Resource.SiteResourceNew, '/res/pic/favicon.ico')}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+        <apex:stylesheet value="{!URLFOR($Resource.SiteResourceNew, '/res/css/main.css')}"/>
+        <script type="text/javascript" src="{!URLFOR($Resource.SiteResourceNew, '/res/js/jquery-1.6.1.min.js')}"></script>
+        <script type="text/javascript" src="{!URLFOR($Resource.SiteResourceNew, '/res/js/homeSliderControl.js')}"></script>
+        <meta name="google-site-verification" content="WgY27hKaJoPuxFFumuXog4Yqf3Dkmv6NGuwROs1E0YE" />
+    </head>
+    <body>
+        <div id="wrap"> 
+            <div class="header">
+                <h1><apex:outputLink value="{!$Page.home}">meginfo</apex:outputLink></h1>
+                <ul class="nav">
+                    <li><apex:outputLink value="{!$Page.aboutus}">About Us</apex:outputLink></li>
+                    <li><apex:outputLink value="{!$Page.solutions}">Solutions</apex:outputLink></li>
+                    <li><apex:outputLink value="{!$Page.experience}">Experience</apex:outputLink></li>
+                    <li><apex:outputLink value="{!$Page.contactus}">Contact</apex:outputLink></li>
+                    <div class="clearfix"></div>
+                </ul>
+            </div>
+            <div class="slideArea">
+                <apex:outputLink value="{!$Page.solutions}" styleClass="sliderImg1 spA"></apex:outputLink>
+                <apex:outputLink value="{!$Page.experience}" styleClass="sliderImg2 spA"></apex:outputLink>
+                <apex:outputLink value="{!$Page.contactus}" styleClass="sliderImg3 spA"></apex:outputLink>
+                <ul class="sliderNav">
+                    <li class="sliderBtn1 active"></li>
+                    <li class="sliderBtn2"></li>
+                    <li class="sliderBtn3"></li>
+                    <div class="clearfix"></div>
+                </ul>
+            </div>
+            <div class="content">
+                <div class="contentborderArea">
+                    <div class="customerStory">
+                        <span class="companyInfo">Tony Leung, Business Operations Manager at Kayak.com;</span>
+                        <i>
+                            Meginfo was able to help us understand our specific needs and translate them into usable solutions. 
+                            With their strong Salesforce.com expertise they were able to develop solutions that work on-time and 
+                            in the budget. With Meginfo, our ongoing transition to Salesforce.com has been smooth and successful.
+                        </i>
+                    </div>
+                    <div class="customerStory">
+                        <span class="companyInfo">Joseph Dindinger, Integrated Sales Management Systems;</span>
+                        <i>
+                            Unlike our previous off-shore resource providers Meginfo has provided us with first class work without 
+                            the hassles experienced in the past. We have been consistently impressed with not only their technically 
+                            expertise, but also by their communication and delivery process. This has allowed us to get the help we 
+                            need from an off-shore partner that is both reliable and cost effective. If anyone is considering a China
+                            based off-shore company to augment their bandwidth we highly recommend partnering with MegInfo.
+                        </i>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>              
+            <apex:insert name="footer">
+                <c:SiteFooter />
+            </apex:insert>
+        </div> 
+        <site:googleAnalyticsTracking />
+    </body>
+    </html>
+</apex:page>

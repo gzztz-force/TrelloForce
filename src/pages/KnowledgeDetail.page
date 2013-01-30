@@ -1,0 +1,87 @@
+<apex:page standardController="KnowledgeEntry__c" extensions="KnowledgeDetailExtension" action="{!increment}" id="page" tabStyle="KnowledgeEntry__c">
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery-1.4.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery.beautyOfCode.js')}" />
+    <apex:stylesheet value="/sCSS/18.0/sprites/Theme2/default/Idea.css" />
+    <apex:stylesheet value="/sCSS/18.0/sprites/Theme2/default/IdeaInternal.css" />
+    <style type="text/css">
+        .bPageBlock
+        {
+            background-image: url(/img/ideas/bgPageBlockLeft.gif);
+        }
+        .bPageBlock .pbBody
+        {
+            background-color: white;
+        }
+        .bPageBlock .pbHeader
+        {
+            background-color: #c2e4fe;
+        }
+        .bPageBlock .pbFooter
+        {
+            background-image: url(/img/ideas/bgPageBlockRight.gif);
+        }
+        .ideaContent
+        {
+            margin-left: auto;
+        }
+        .ideaFooter a
+        {
+            color:#015ba7
+        }
+    </style>
+    <apex:sectionHeader title="Knowledge Detail" subtitle="{!KnowledgeEntry__c.Name}"/>
+    <chatter:feedWithFollowers entityId="{!KnowledgeEntry__c.Id}"/>
+    <apex:pageBlock >
+        <apex:pageBlockButtons location="top">
+            <apex:form >
+                <apex:commandButton value="Edit" action="/{!KnowledgeEntry__c.Id}/e?retURL=%2F{!KnowledgeEntry__c.Id}" rendered="{!KnowledgeEntry__c.CreatedById = $User.Id}" />
+                <apex:commandButton value="Delete" action="{!remove}" onclick="if(!confirm('Are you sure?'))return false;" rendered="{!KnowledgeEntry__c.CreatedById = $User.Id}" />
+                <apex:inputhidden value="{!KnowledgeEntry__c.Tags__c}" />
+            </apex:form>
+        </apex:pageBlockButtons>
+        <div class="ideaList ideaDetail clearfix">
+        <div class="ideaContentWidth ideaContent">
+            <div>
+                <!-- <h3 class="ideaContentWidth ideaSubject">
+                    <span>{!KnowledgeEntry__c.Name}</span>
+                </h3> -->
+                <apex:outputPanel styleClass="ideaStatus" rendered="{!KnowledgeEntry__c.IsPublished__c = false}">Draft</apex:outputPanel>
+            </div>
+            <div class="ideaContentWidth ideaBody">
+                <apex:outputField value="{!KnowledgeEntry__c.Content__c}" />
+            </div>
+            <div class="ideaContentWidth ideaFooter">
+                [{!FLOOR(KnowledgeEntry__c.ReadCount__c)}]<span class="ideaNumComments ideaCommentIcon ideaComment"><apex:outputText rendered="{!tags.size > 0}">Tags: </apex:outputText>
+                    <apex:repeat value="{!tags}" var="tag" rows="{!tags.size - 1}" rendered="{!tags.size > 1}">
+                        <a href="/apex/KnowledgeBaseHome?tag={!tag}">{!tag}</a>,&nbsp;
+                    </apex:repeat>
+                    <apex:repeat value="{!tags}" var="tag" first="{!MAX(tags.size - 1, 0)}" rows="{!1}">
+                        <a href="/apex/KnowledgeBaseHome?tag={!tag}">{!tag}</a>
+                    </apex:repeat>
+                </span>
+                &nbsp;»&nbsp;
+                <span>
+                    <span>
+                        <span class="userLink normalUserBadge">Posted by <a href="/apex/KnowledgeBaseHome?author={!KnowledgeEntry__c.CreatedBy.FirstName}">{!KnowledgeEntry__c.CreatedBy.Name}</a></span>&nbsp;on&nbsp;<apex:outputField value="{!KnowledgeEntry__c.CreatedDate}" />
+                    </span>
+                </span>
+            </div>
+        </div>
+        </div>
+    </apex:pageBlock>
+    <apex:relatedList list="NotesAndAttachments" />
+    <script type="text/javascript">
+		$j = jQuery.noConflict();
+        var source = $j(".sfdc_richtext").html();
+        source = source.replace(/\[code\]/gi, "<pre class=\"code language-javascript\"><code>");
+        source = source.replace(/\[\/code\]/gi, "</code></pre>");
+        $j(".sfdc_richtext").html(source);
+        $j.beautyOfCode.init({
+            brushes: ['Xml', 'JScript'],
+            ready: function() {
+                $j.beautyOfCode.beautifyAll();
+                $j(".code").beautifyCode('javascript');
+            }
+        });
+    </script>
+</apex:page>

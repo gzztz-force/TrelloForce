@@ -1,0 +1,22 @@
+<apex:page showHeader="false" sidebar="false">
+    <apex:composition template="SiteTemplate">
+        <apex:define name="title">Meginfo | Solutions</apex:define>
+        <apex:define name="body">
+            <div class="subpageContent">
+                <c:SiteLeftNav active="solutions" />
+                <div class="subpageContentRight">
+                    <h3>Solutions</h3>
+                    <div class="subpageTextArea">
+                        Meginfo provides Salesforce.com solutions, consulting and platform development. Our focus on 
+                        Salesforce platform technology has given us the ability to deliver our customers with successful 
+                        implementations, solving real business problems Meginfo offers end to end integration, development, 
+                        customized solutions for all your Salesforce.com needs.<br/>
+                        <img src="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/pic/ImplementationImg.jpg')}" alt="" class="mt20"/>
+                        <img src="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/pic/leadingImg.jpg')}" alt="" class="mt20"/>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </apex:define>
+    </apex:composition>
+</apex:page>

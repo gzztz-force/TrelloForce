@@ -1,0 +1,38 @@
+<apex:page showHeader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}" />    
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>           
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="title">Meginfo | Consulting Service</apex:define>
+        <apex:define name="body">
+        <div class="subpageMainContent">
+            <div class="subpageLeft">
+                <div class="crumbNav">
+                    <a href="{!$Page.index}">Home</a>
+                    <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />                       
+                    <a href="{!$Page.services}">Services</a>
+                    <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />   
+                    <span class="crumbNavTitle">Salesforce Consulting Service</span>
+                    <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />   
+                </div>
+                <div class="subpageLeftContent">
+                    <h2>Consulting Service</h2>
+                    <div class="subpageLeftTextBlock">
+                        <p>Meginfo’s consulting service gives you a better understanding of what Salesforce’s <a href="http://www.salesforce.com/platform">Force.com</a> platform can and cannot do. We can also help you make better decisions about what you want out of the platform before you make a major investment.</p>
+                        <h3>Meginfo’s Consulting Service can provide you with the following objectives:</h3><br />
+                        <ul class="ulBlock">
+                            <li>Meginfo can help companies that are currently using Salesforce CRM but wish to run other applications on the same platform in hopes of achieving higher results on their investment in Salesforce licenses. Some companies may want to build new applications to replace current applications that are running on their own hardware. In both cases, Meginfo will help them analyze their requirements and let them know if the Force.com platform can meet all their needs.</li>
+                            <li>Meginfo can help companies or individuals who have ideas about possible apps that they believe are capable of running on Salesforce's Force.com platform. Our consulting service can inform them whether or not their ideas can become a reality. During the requirement analysis process, we will convert their ideas into technical requirements and define the scope of work required to build the app. Our development service can then turn their ideas into real, working apps published on the AppExchange.</li>
+                            <li>Meginfo can help companies who want to build, or rebuild, their websites on the Force.com platform. We show them how quick it is to build their websites using Force.com sites, as well as how easy it is to maintain their own websites by themselves.</li>
+                            <li>Meginfo can help companies that have already chosen Salesforce as their CRM application but have yet to start the implementation. Salesforce provides common CRM functions that are universal to all industries. Our consulting service can also customize Salesforce in a way that's suitable to a companies specific industry. Meginfo can tailor Salesforce CRM’s major modules, sales, marketing, and support, to a company’s existing processes.   If the system is not created correctly, it can be hard for the customer to maintain. We will do it right.</li>
+                        </ul>
+                        <p><a href="{!$Page.contactus}">Contact Us</a> if you have any questions about our consulting service.</p>
+                    </div>
+                </div>
+            </div>
+            <c:SubpageRight id="subpageRight"/>             
+          </div>         
+        </apex:define> 
+    </apex:composition>        
+</apex:page>

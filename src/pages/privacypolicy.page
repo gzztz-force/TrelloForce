@@ -1,0 +1,46 @@
+<apex:page showHeader="false" sidebar="false">
+    <apex:composition template="SiteTemplate">
+        <apex:define name="title">Meginfo | Privacy Policy</apex:define>
+        <apex:define name="body">
+            <div class="subpageContent">
+                <c:SiteLeftNav />
+                <div class="subpageContentRight">
+                    <h3>Privacy Policy</h3>
+                    <div class="subpageTextArea">
+                        <p>Meginfo Ltd. has created this privacy policy to demonstrate our firm commitment to your privacy.</p>
+                        <br/>
+                        <h5 class="roles">General Statement of Principles</h5>
+                        <p>
+                            As described in detail below, any information Meginfo gathers is strictly for our use only and is not 
+                            shared with any other entity, public or private, for any reason. We will not sell or give away any lists 
+                            or other data that we may retain. We do not purchase such information from other sources.
+                        </p>
+                        <br/>
+                        <h5 class="roles">Statistical Data</h5>
+                        <p>
+                            Meginfo’s servers, as most, track IP addresses and referring pages to help with site maintenance and 
+                            improvements. This data is viewed only as anonymous statistics to show the busiest times of the day or 
+                            week, pages with errors, and how effective our advertising has been. This information is not used for 
+                            any other purpose.
+                        </p>
+                        <br/>
+                        <h5 class="roles">Personal Information Collected - Forms</h5>
+                        <p>
+                            With the exception of credit card information, we store the information from your order form to track 
+                            consulting issues or refer to a previous order. You may elect to have your information completely removed 
+                            from Meginfo’s system by emailing us your request at <a href="MailTo:contactus@meginfo.com">contactus@meginfo.com</a>
+                        </p>
+                        <br/>
+                        <h5 class="roles">Information Correction or Removal</h5>
+                        <p>
+                            If you wish to correct, update, or remove any information that may be in our system, please send us an 
+                            email at <a href="MailTo:contactus@meginfo.com">contact@meginfo.com</a> with the details of your request. 
+                            If you wish to contact us further, please find complete contact information on our <a href="{!$Page.contactus}">contact page</a>.
+                        </p> 
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>   
+        </apex:define>
+    </apex:composition>
+</apex:page>

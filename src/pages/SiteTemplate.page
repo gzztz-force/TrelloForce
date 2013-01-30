@@ -1,0 +1,25 @@
+<apex:page showHeader="false" sidebar="false" id="SiteTemplate"> 
+    <html>
+    <head>
+        <!--<title>Meginfo | Salesforce.com Consulting and Development</title>-->
+        <title><apex:insert name="title" /></title>
+        <link href="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/pic/favicon.ico')}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+        <apex:stylesheet value="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/css/main.css')}"/>
+        <script type="text/javascript" src="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/js/jquery-1.6.1.min.js')}"></script>
+        <script type="text/javascript" src="{!URLFOR($Resource.MeginfoWebsiteNew, '/res/js/homeSliderControl.js')}"></script>
+        <meta name="google-site-verification" content="WgY27hKaJoPuxFFumuXog4Yqf3Dkmv6NGuwROs1E0YE" />
+    </head>
+    <body>
+        <div id="wrap"> 
+            <apex:insert name="header">
+                <c:SiteHeader />
+            </apex:insert>
+            <apex:insert name="body"/>  
+            <apex:insert name="footer">
+                <c:SiteFooter />
+            </apex:insert>
+        </div>
+        <site:googleAnalyticsTracking />
+    </body>
+    </html>
+</apex:page>

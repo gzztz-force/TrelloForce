@@ -1,0 +1,52 @@
+<apex:component controller="KnowledgeBaseController">
+    <apex:form >
+        <div class="bOverviewSearch">
+            Enter keywords to search among {!totalKnowledge} articles in the base.
+            <div class="pbSearch">
+                <input type="text" class="searchTextBox" maxlength="1000" size="30" id="keywords" value="{!$CurrentPage.Parameters.keyword & $CurrentPage.Parameters.tag & $CurrentPage.Parameters.author}" onkeypress="if(event.keyCode==13){find();return false;}" />
+                <select size="1" id="kb_search_keyword">
+                    <option value="kb">Meginfo</option>
+                    <option value="force.com">Force.com</option>
+                    <option value="google">Google</option>
+                </select>
+                <input type="button" class="btn" value="Search" onclick="find()" />
+            </div>   
+        </div>
+    </apex:form>
+    <script type="text/javascript">
+        function find()
+        {
+            var searchSite = document.getElementById("kb_search_keyword").value;
+            if(searchSite == "kb")
+            {
+                findInBase();
+            }
+            else if(searchSite == "force.com")
+            {
+                findInForceCom();
+            }
+            else
+            {
+                findInGoogle();
+            }
+        }
+        function findInBase()
+        {
+            var keyword = document.getElementById("keywords").value;
+            keyword = encodeURIComponent(keyword);
+            top.location = "KnowledgeBaseHome?keyword=" + keyword;
+        }
+        function findInGoogle()
+        {
+            var keyword = document.getElementById("keywords").value;
+            keyword = encodeURIComponent(keyword);
+            window.open("http://www.google.com/search?q=" + keyword);
+        }
+        function findInForceCom()
+        {
+            var keyword = document.getElementById("keywords").value;
+            keyword = encodeURIComponent(keyword);
+            window.open("http://www.developerforce.com/search/search.php?q=" + keyword);
+        }
+    </script>
+</apex:component>

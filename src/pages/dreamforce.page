@@ -1,0 +1,76 @@
+<apex:page showHeader="false" sidebar="false">
+    <head>
+        <title>Meginfo | Salesforce.com Consulting and Development</title>
+        <link rel="stylesheet" rev="stylesheet" href="{!URLFOR($Resource.Dreamforce, '/res/css/main.css')}" type="text/css" />
+        <script type="text/javascript" src="{!URLFOR($Resource.Dreamforce, 'res/js/jquery-1.6.1.min.js')}"></script>
+        <script type="text/javascript" src="{!URLFOR($Resource.Dreamforce, 'res/js/ipadBkg.js')}"></script>
+    </head>
+    <body>
+        <div id="wrap">
+            <!--<div id="pageHeader">
+                <h1><a href="{!$Page.home}">meginfo</a></h1>
+                <ul class="navTop">
+                    <li><a href="{!$Page.aboutus}">About Us</a></li>
+                    <li><a href="{!$Page.solutions}">Solutions</a></li>
+                    <li><a href="{!$Page.experience}">Experience</a></li>
+                    <li><a href="{!$Page.contactus}">Contact</a></li>
+                    <div class="clearfix"></div>
+                </ul>
+            </div>-->
+            <div class="slideArea" id="developmentPage">
+                    <div class="rightConDiv">
+                        <a class="rightRoundLInk" href="{!URLFOR($Resource.Scrum)}" target="_blank">
+                            <span class="leadTitle">
+                                <span class="largeText">Agile </span>
+                                Approach
+                            </span>
+                            <span class="detailInfo">Scrum Project Management</span>
+                          </a>
+                        <a class="rightRoundLInk rightRoundLInkMid" href="{!$Page.solutions}">
+                            <span class="leadTitle">
+                                Our<span class="largeText greenLink">Solutions</span>
+                            </span>
+                            <span class="detailInfo greenLinkDetail">Successful Implementations</span>
+                        </a>
+                        <a class="rightRoundLInk rightRoundLInkBtm" href="{!$Page.experience}">
+                            <span class="leadTitle">Our <span class="largeText redLink">Experience</span></span>
+                            <span class="detailInfo redLinkDetail">Certified Salesforce Developers</span>
+                        </a>
+                    </div>
+                    <div class="leftConDiv">
+                        <div class="devHeadText"></div>
+                        <div class="detailText">
+                            Certified Salesforce developers delivering fast and high quality offshores projects for you.
+                        </div>
+                        <div class="btmDevInfo"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="slideArea" id="trainingPage">
+                    <div class="trainingHeadText"></div>
+                    <div class="detailText">
+                        Helps you jump start your Salesforce experience, or other Cloud customizations, quickly and cost effectively.
+                    </div>
+                    <div class="btmTrainingInfo"></div>
+                </div>
+                <div class="slideArea" id="consultingPage">
+                   <div class="consultingHeadText"></div>
+                    <div class="detailText">
+                        Get access to professional Salesforce experts with over 8 years of hands-on experience, who can provide best practices for your organization.
+                    </div>
+                    <div class="clearfix"></div>
+               </div>
+               <!--<div id="pageFooter">
+                    <nav>
+                        <ul class="footerText">
+                        <li><a href="{!$Page.contactus}">Contact Us</a></li>
+                        <li><a href="{!$Page.privacypolicy}">Privacy Policy</a></li>
+                        <li>© 2010 Meginfo Ltd. </li>
+                        <div class="clearfix"></div>
+                        </ul>
+                    </nav>
+                </div>  -->
+        </div><!--wrap-->
+        <site:googleAnalyticsTracking />
+    </body>
+</apex:page>

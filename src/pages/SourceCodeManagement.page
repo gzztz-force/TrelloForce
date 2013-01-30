@@ -1,0 +1,109 @@
+<apex:page standardController="MProject__c" extensions="SourceCodeManagementController">
+    <script>
+        function openWarningMessageDialog()
+        {
+            openMessageDialog("Warning", "The process has not started yet, or stopped for a while.", false);
+        }
+        function openErrorMessageDialog(message)
+        {
+            message = "Error occured while syncing this branch. The sync process has stopped. <br/><br/><strong>" + message + "</strong>";
+            message += "<br/><br/>You must clear the error message so that it can start again.";
+            openMessageDialog("Error Message", message, true)
+        }
+        function openMessageDialog(title, message, clearButton)
+        {
+            document.getElementById("ScmErrorMessageDialog").style.display = "block";
+            document.getElementById("overlaybackground").style.display = "block";
+            document.getElementById("ScmErrorMessageDialogTitle").innerHTML = title;
+            document.getElementById("ScmErrorMessageBody").innerHTML = message;
+            document.getElementById("ScmErrorMessageDialogClearButton").style.display = "none"; //(clearButton == true) ? "inline" : "none";
+        }
+        function closeMessageDialog()
+        {
+            document.getElementById("ScmErrorMessageDialog").style.display = "none";
+            document.getElementById("overlaybackground").style.display = "none";
+        }
+    </script>
+    <apex:sectionHeader title="Source Code Management" subtitle="{!MProject__c.Name}"/>
+    <div class="ptBreadcrumb">&nbsp;«&nbsp;<a href="/{!MProject__c.Id}">Back to Project</a></div>
+    <br/>
+    <apex:pageMessages />
+    <apex:form >
+        <apex:pageBlock id="block" mode="edit">
+            <apex:pageBlockButtons location="bottom" rendered="{!UserCanEdit}" >
+                <apex:commandButton value="Save" />
+                <apex:commandButton value="Cancel" />
+            </apex:pageBlockButtons>
+            <apex:pageblockSection columns="1">
+                <apex:outputText >
+                    Source Code Management makes code backup on a daily basis. The apex classes, triggers, visualforce pages, components are pulled from Salesforce and pushed to our GIT repositories every night.
+                    You can use any GIT client tool to view/compare any source code files through the history. For how to do that, click <a href="/servlet/servlet.FileDownload?file=01580000001Cmfd" target="_blank">here</a>.
+                </apex:outputText>
+                <apex:commandButton value="Enable Code Backup for {!MProject__c.Name}" rendered="false" />
+                <apex:outputText rendered="{!ISBLANK(MProject__c.ScmName__c) && NOT(UserCanEdit)}">You are not authorized to turn on SCM.</apex:outputText>
+                <apex:inputField value="{!MProject__c.ScmName__c}" rendered="{!ISBLANK(MProject__c.ScmName__c) && UserCanEdit}" label="Repository Name" />
+                <apex:outputField value="{!MProject__c.ScmName__c}" rendered="{!NOT(ISBLANK(MProject__c.ScmName__c))}" label="Repository Name" />
+                <apex:pageblockSectionItem rendered="{!NOT(ISBLANK(MProject__c.ScmName__c))}">
+                    <apex:outputLabel value="Repository Address" />
+                    <apex:outputText value="git@scm.meginfo.com:{!MProject__c.ScmName__c}.git" />
+                </apex:pageBlockSectionItem>    
+            </apex:pageblockSection>
+            <apex:pageblockSection columns="1" title="Branches">
+                <apex:pageBlockTable value="{!Branches}" var="login" rendered="{!Branches.size > 0}">
+                    <apex:column headerValue="Name">
+                        <a href="/{!login.Id}">{!login.Name}</a>
+                    </apex:column>
+                    <apex:column value="{!login.Type__c}"/>
+                    <apex:column headerValue="Branch Name">
+                        <apex:inputField value="{!login.ScmName__c}" rendered="{!ISBLANK(login.ScmName__c) && UserCanEdit}" />
+                        <apex:outputField value="{!login.ScmName__c}" rendered="{!NOT(ISBLANK(login.ScmName__c)) || NOT(UserCanEdit)}" />
+                    </apex:column>
+                    <apex:column headerValue="Enabled">
+                        <apex:inputField value="{!login.Sync__c}" rendered="{!UserCanEdit}" />
+                        <apex:outputField value="{!login.Sync__c}" rendered="{!NOT(UserCanEdit)}" />
+                    </apex:column>
+                    <apex:column value="{!login.LastSyncDate__c}"/>
+                    <apex:column width="30">
+                        <apex:outputText rendered="{!NOT(ISBLANK(login.SyncError__c)) && login.Sync__c}">
+                            <a href="javascript:openErrorMessageDialog('{!login.SyncError__c}')"><img src="/img/msg_icons/error24.png" alt="{!login.SyncError__c}" /></a>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!(NOW() - login.LastSyncDate__c > 1 || ISBLANK(login.LastSyncDate__c)) && ISBLANK(login.SyncError__c) && login.Sync__c}">
+                            <a href="javascript:openWarningMessageDialog()"><img src="/img/msg_icons/warning24.png" alt="Source may be out of sync" /></a>
+                        </apex:outputText>
+                        <apex:outputLink rendered="{!NOW() - login.LastSyncDate__c <= 1 && ISBLANK(login.SyncError__c) && login.Sync__c}" title="SCM is working"><img src="/img/msg_icons/confirm24.png" alt="SCM is working" /></apex:outputLink>
+                    </apex:column>
+                </apex:pageBlockTable>
+                <apex:outputText rendered="{!Branches.size = 0}">There are no salesforce logins found. SCM cannot be enabled on this project.</apex:outputText>
+            </apex:pageblockSection>
+        </apex:pageBlock>
+        <div id="ScmErrorMessageDialog" role="dialog" aria-live="assetive" aria-describedby="InlineEditDialogTitle" class="overlayDialog inlineEditDialog" style="max-width: 500px; display: none; left: 484px; top: 213.5px; visibility: visible; ">
+            <div class="topRight">
+                <a id="ScmErrorMessageDialogFocusPoint" href="javascript:void(0)" onclick="return false;" style="width:2px;height:2px;position:absolute;border:0;margin:0;padding:0;background:none;outline:none;z-index:-1;cursor:none;" title="Start of Dialog">Start of Dialog</a>
+                <div class="topLeft">
+                    <a id="ScmErrorMessageDialogX" title="Close" tabindex="0" onmouseover="this.className = 'dialogCloseOn'" onmouseout="this.className = 'dialogClose'" onclick="closeMessageDialog();" href="javascript:void(0)" class="dialogClose">Close</a>
+                    <h2 id="ScmErrorMessageDialogTitle">Sync Error</h2>
+                </div>
+            </div>
+            <div class="middle">
+                <div class="innerContent" id="ScmErrorMessageDialogContent">
+                    <div class="activeField">
+                        <div class="inlineEditCompoundDiv" id="ScmErrorMessageBody" style="text-align:left">
+                            <!--<textarea type="text" wrap="soft" maxlength="255" rows="6" cols="52" id="00NS000000138u7">test error</textarea>-->
+                        </div>
+                    </div>
+                    <div></div>
+                    <div style="display: none; "></div>
+                    <div id="ScmErrorMessageDialog_buttons" class="buttons">
+                        <div id="ScmErrorMessageDialogClearButton"><apex:commandButton value="Clear Message" /></div>
+                        <input class="btn" type="button" value="Close" onclick="closeMessageDialog()" />
+                    </div>
+                </div>
+            </div>
+            <div class="bottomRight">
+                <input id="ScmErrorMessageDialogBlurCatch" style="width:2px;height:2px;position:absolute;border:0;margin:0;padding:0;background:none;outline:none;z-index:-1;cursor:none;" type="text"/>
+                <div class="bottomLeft"></div>
+            </div>
+        </div>
+        <div class="overlayBackground" id="overlaybackground" style="width: 1280px; height: 619px; display: none; "></div>
+    </apex:form>
+</apex:page>

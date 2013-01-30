@@ -1,0 +1,127 @@
+<apex:page standardController="Quote__c" extensions="QuotePrintController" showHeader="false" renderas="pdf">
+    <html>
+    <head>
+        <style type="text/css">
+            .centerheader
+            {
+                text-align:center;
+            }
+            body 
+            { 
+                 font-family : Arial Unicode MS; 
+            }
+            .tableheader
+            {
+                 background-color : silver;
+            }
+            .leftheader
+            {
+                text-align : left;
+            }
+            .rightheader
+            {
+                text-align : right;
+            }
+            .addrlabel
+            {
+                 vertical-align : top;
+                 width : 75px;
+            }
+            .addrdata
+            {
+                 width : 260px;
+            }
+            .panellabel
+            {
+                 width : 125px;
+            }
+            .paneldata
+            {
+                 width : 190px;
+            }
+            .datacolumn
+            {
+                 vertical-align : top;
+            }
+            .currencycolumn
+            {
+                 text-align : right;
+                 vertical-align : bottom;
+            }
+            .currencytotal
+            {
+                text-align : right;
+                vertical-align : top;
+                width: 140px;
+            }
+        </style>
+    </head>
+    <body>
+        <table width="100%">
+            <tr>
+                <td width="30%">
+                    <apex:image value="{!URLFOR($Resource.Logo)}"/>
+                </td>
+                <td>
+                    <p style="text-align:right;font-size:26px;">
+                    <b>Project Quotation</b>
+                    </p>
+                    <!--<p style="text-align:center;margin-right:100px;margin-left:50px">
+                        {!$Organization.Name}<br/>
+                        {!$Organization.Street}<br/>
+                        {!$Organization.City}&nbsp;{!$Organization.PostalCode}
+                    </p>-->
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <tr>
+                <td><b>Project: </b></td>
+                <td colspan="3">{!Quote__c.Project__r.Name}</td>
+            </tr>
+            <tr>
+                <td><b>Quote #:</b></td>
+                <td>{!Quote__c.Name}</td>
+                <td><b>Prepared By:</b></td>
+                <td>{!Quote__c.CreatedBy.Name}</td>
+            </tr>
+            <tr>
+                <td><b>Date:</b></td>
+                <td><apex:outputText value="{0, Date, MM/dd/yyyy}"><apex:param value="{!Quote__c.Date__c}"/></apex:outputText></td>
+                <td><b>Prepared For:</b></td>
+                <td>{!Quote__c.Project__r.Customer__r.Name}</td>
+            </tr>
+        </table>
+        <apex:outputField value="{!Quote__c.DisplayAmount__c}" rendered="false" />
+        <apex:outputField value="{!Quote__c.UnitPrice__c}" rendered="false" />
+        <apex:panelGrid columns="1" style="float:left;margin-top:10px;" width="100%" border="1" cellpadding="0" cellspacing="0">
+            <apex:dataTable value="{!StandardLines}" var="line" border="0" cellpadding="0" width="100%" headerClass="tableheader">
+                <apex:column headerClass="centerheader" headerValue="#" width="40" style="text-align:center">
+                    {!FLOOR(line.SortOrder__c)}
+                </apex:column>
+                <apex:column headerClass="leftheader" headerValue="Task" width="550">
+                    {!line.Task__c}
+                </apex:column>
+                <apex:column headerClass="leftheader" headerValue="{!StandardUnit}">
+                    {!line.Amount__c}
+                </apex:column>
+            </apex:dataTable>
+            <apex:dataTable value="{!AdditionalLines}" var="line" border="0" cellpadding="0" width="100%" rendered="{!AdditionalLines.size > 0}">
+                <apex:column width="40" style="text-align:center">
+                    &nbsp;{!FLOOR(line.SortOrder__c)}
+                </apex:column>
+                <apex:column width="550">
+                    {!line.Task__c}
+                </apex:column>
+                <apex:column >
+                    {!line.Amount__c}
+                </apex:column>
+            </apex:dataTable>
+            <apex:panelGrid columns="1" style="text-align:right" width="100%">
+                <apex:outputText rendered="{!Quote__c.DisplayAmount__c}">{!Quote__c.StandardTotal__c} {!StandardUnit}</apex:outputText>
+                <apex:outputText value="Total: {0, Number, ###,###.0#} {1}"><apex:param value="{!Quote__c.Total__c}"/><apex:param value="{!Quote__c.Currency__c}"/></apex:outputText>
+            </apex:panelGrid>
+        </apex:panelGrid>
+    </body>
+    </html>
+</apex:page>

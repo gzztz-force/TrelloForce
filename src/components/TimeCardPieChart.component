@@ -1,0 +1,106 @@
+<apex:component >
+    <apex:attribute name="members" description="A collection of TeamMember__c object" type="TeamMember__c[]"/>
+    <apex:attribute name="totalHours" description="Total hours of the project" type="Decimal" />
+    <apex:attribute name="width" description="width in pixel" type="Integer" />
+    <apex:attribute name="height" description="height in pixel" type="Integer" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'highcharts.js')}" />
+    <script type="text/javascript">
+    initChartFunctions.push(function()
+    {
+        piechart = new Highcharts.Chart(
+        {
+            chart: 
+            {
+                renderTo: 'pieChart',
+                defaultSeriesType: 'pie',
+                width: {!width},
+                height: {!height}
+            },
+            credits:
+            {
+                enabled: false
+            },
+            title:
+            {
+                text: "Resource Percentage"
+            },
+            tooltip: 
+            {
+                formatter: function()
+                {
+                    return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.y, 0, '.', ',') +' hrs';
+                }
+            },
+            plotOptions: 
+            {
+                pie: 
+                {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: 
+                    {
+                        enabled: true,
+                        formatter: function() 
+                        {
+                            return '<b>' + Math.round(this.percentage) + ' %' + '</b>';
+                        },
+                        distance: 0
+                    },
+                    showInLegend: true,
+                    enableMouseTracking: false
+                }
+            },
+            legend:
+            {
+                enabled: false,
+                align: 'right',
+                borderWidth: 0,
+                layout: 'vertical',
+                verticalAlign: 'middle',
+            },
+            series: 
+            [
+                {
+                    data: 
+                    [
+                        <apex:repeat value="{!members}" var="data">
+                            <apex:outputPanel layout="none" rendered="{!data.TotalHours__c != 0 && data.User__r.IsActive = true}">
+                            {name: '{!data.Name}', y: {!data.TotalHours__c}, color: getUserColor("{!data.Name}")},
+                            </apex:outputPanel>
+                        </apex:repeat>
+                    ]
+                }
+            ]
+        });
+        piechart.setVisibleMembers = function(members)
+        {
+            var newData = [];
+            for(var i = 0; i < pieChartData.length; i++)
+            {
+                for(var j = 0; j < members.length; j++)
+                {
+                    if(members[j] == pieChartData[i].name)
+                    {
+                        newData.push(pieChartData[i]);
+                    }
+                }
+            }
+            this.series[0].setData(newData);
+        };
+        if(typeof(allCharts) == "undefined")
+        {
+            allCharts = [];
+        }
+        allCharts.push(piechart);
+        var pieChartData = [];
+        <apex:repeat value="{!members}" var="data">
+            <apex:outputPanel layout="none" rendered="{!data.TotalHours__c != 0}">
+                pieChartData.push({name: '{!data.Name}', y: {!data.TotalHours__c}, color: getUserColor("{!data.Name}")});
+            </apex:outputPanel>
+        </apex:repeat>
+    });   
+    </script>
+    <div id="pieChart">No records to display.</div>  
+</apex:component>

@@ -1,0 +1,42 @@
+<apex:page showHeader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/main.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/css/subPage.css')}" />    
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/jquery-1.4.2.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/js/topNavDisplayAction.js')}"></script>           
+    <apex:composition template="{!$Site.Template}">  
+        <apex:define name="body">
+        <div class="subpageMainContent">
+            <div class="subpageLeft">
+                <div class="crumbNav">
+                    <a href="{!$Page.index}">Home</a>
+                    <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />                           
+                    <a href="{!$Page.services}">Services</a>
+                    <img class="crumbNavSeparator" src="{!URLFOR($Resource.MeginfoResource, '/MeginfoResource/pic/subpageContentBreadSeparator.gif')}" />   
+                </div>
+                <div class="subpageLeftContent"> 
+                    <h2>Services</h2>
+                    <div class="subpageLeftTextBlock">
+                        <a class="serviceLinks round8" href="{!$Page.salesforceconsulting}">
+                            <h3 class="serviceLinksTitle">Salesforce Consulting Service</h3>
+                            <span class="serviceLinksTxt">Our consulting service helps you better understand what Salesforce's force.com platform can do and what it cannot do, it helps you make better decision before you make major investment.</span>
+                        </a>
+                        <a class="serviceLinks round8" href="{!$Page.salesforcedevelopmentService}">
+                            <h3 class="serviceLinksTitle">Salesforce Development Service</h3>
+                            <span class="serviceLinksTxt">Meginfo maintains the biggest development team in the Greater China region. Salesforce development is where Meginfo holds the strongest competence. We have a team of developers and project managers that are among the most talented people in Salesforce's cloud computing world. Our developers have Salesforce development experience for up to 7 years, and they have witnessed Salesforce's technical evolution.</span>
+                        </a>
+                        <a class="serviceLinks round8" href="{!$Page.appdevelopmentcycle}">
+                            <h3 class="serviceLinksTitle">Build AppExchange Apps</h3>
+                            <span class="serviceLinksTxt">We started to build AppExchange applications right after Salesforce released AppExchange, we are familiar with the entire process from development, to publishing, security review, demo org or free trail setup. We have been working with Salesforce's AppExchange team many times to publish apps we built for our partners to AppExchange.</span>
+                        </a>
+                        <a class="serviceLinks round8" href="{!$Page.salesforcetraining}">
+                            <h3 class="serviceLinksTitle">Salesforce Training</h3>
+                            <span class="serviceLinksTxt">Meginfo provides Salesforce training in both English and Mandarin. Our training of Salesforce SFA helps marketing people, sales and customer supports quickly embrace the power of Salesforce Cloud 2 apps to manage their leads and customers. We also provide training of Salesforce Mobile, AppExchange, Chatter and Salesforce Content.</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <c:SubpageRight id="subpageRight"/>             
+          </div>         
+        </apex:define>
+    </apex:composition>        
+</apex:page>

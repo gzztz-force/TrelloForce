@@ -1,0 +1,25 @@
+<apex:component controller="HistoryListController">
+    <apex:attribute name="parentId" assignTo="{!ParentId}" description="id of the object" type="Id" />
+    <apex:pageBlock title="History">
+        <apex:outputText >{!ErrorMessage}</apex:outputText>
+        <apex:pageBlockTable value="{!Histories}" var="history" >
+            <apex:column headerValue="Date">
+                <apex:outputText value="{0, date, MM/dd/yyyy}" rendered="{!NOT(history.OmitUser)}"><apex:param value="{!history.CreatedDate}"/></apex:outputText>
+                <apex:outputText value="{0, time, hh:mm:ss a}" rendered="{!NOT(history.OmitUser)}"><apex:param value="{!history.CreatedDate}"/></apex:outputText>
+            </apex:column>
+            <apex:column headerValue="User">
+                <apex:outputLink value="/{!history.CreatedBy.Id}" rendered="{!NOT(history.OmitUser)}">{!history.CreatedBy.LastName}</apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="Action">
+                <apex:outputText rendered="{!history.Field = 'created'}">Created</apex:outputText>
+                <apex:outputPanel layout="none" rendered="{!history.Field != 'created'}">
+                    <apex:outputText rendered="{!NOT(ISBLANK(history.NewValue)) && NOT(ISBLANK(history.OldValue))}">Changed <strong>{!history.Field}</strong> from&nbsp;{!history.OldValue} to <strong>{!history.NewValue}</strong></apex:outputText>
+                    <apex:outputText rendered="{!ISBLANK(history.NewValue) && NOT(ISBLANK(history.OldValue))}">Deleted <strong>{!history.Field}</strong></apex:outputText>
+                    <apex:outputText rendered="{!ISBLANK(history.OldValue) && NOT(ISBLANK(history.NewValue))}">Changed <strong>{!history.Field}</strong> to <strong>{!history.NewValue}</strong></apex:outputText>
+                    <apex:outputText rendered="{!ISBLANK(history.NewValue) && ISBLANK(history.OldValue)}">Changed <strong>{!history.Field}</strong></apex:outputText>
+                </apex:outputPanel>
+            </apex:column>
+        </apex:pageBlockTable>
+        <a href="/_ui/common/history/ui/EntityHistoryFilterPage?id={!ParentId}" style="line-height:24px">Go to full list »</a>
+    </apex:pageBlock>
+</apex:component>

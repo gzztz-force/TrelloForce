@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Knowledge Entry</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Knowledge Base</value>
+    </caseValues>
+    <fields>
+        <label><!-- Comments Count --></label>
+        <name>CommentsCount__c</name>
+    </fields>
+    <fields>
+        <label><!-- Content --></label>
+        <name>Content__c</name>
+    </fields>
+    <fields>
+        <help><!-- Only the published article can be seen by others --></help>
+        <label><!-- Is Published --></label>
+        <name>IsPublished__c</name>
+    </fields>
+    <fields>
+        <label><!-- Last Comment Date --></label>
+        <name>LastCommentDate__c</name>
+    </fields>
+    <fields>
+        <label><!-- Read Count --></label>
+        <name>ReadCount__c</name>
+    </fields>
+    <fields>
+        <help><!-- Separate your tags with commas, e.g.: apex, DML, permission --></help>
+        <label><!-- Tags --></label>
+        <name>Tags__c</name>
+    </fields>
+    <layouts>
+        <layout>Knowledge Entry Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- New Section --></label>
+            <section>New Section</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>
