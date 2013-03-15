@@ -1,0 +1,138 @@
+<apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+<apex:stylesheet value="{!URLFOR($Resource.bootstrap, 'css/bootstrap-responsive.css')}" />
+<style type="text/css">
+
+.tenHeight{ height: 10%; }
+.twentyHeight{ height: 20%; }
+.thirtyHeight{ height: 30%; }
+.fourtyHeight{ height: 40%; }
+.fiftyHeight{ height: 50%; }
+.sixtyHeight{ height: 60%; }
+.seventyHeight{ height: 70%; }
+.eightyHeight{ height: 80%; }
+.ninetyHeight{ height: 90%; }
+.fullHeight{ height: 100%; }
+
+select, textarea, input
+{
+    margin: 0px;
+    padding: 0px;
+    box-sizing:border-box;
+}
+.divBorderStyle
+{
+    border-width: 1px;
+    border-color: rgb(199, 198, 198);
+    border-style: solid;
+    box-sizing:border-box;
+}
+.selectStyle
+{
+    height: 30px;
+    max-width: 100px;
+}
+.headerStyle
+{
+    margin: 20px 0px 20px;
+}
+#force
+{
+    height:500px;
+    width:95%;
+    margin-left:auto;
+    margin-right:auto;
+}
+#mainContainer #leftMainContainer #titleInput
+{
+    width: 100%;
+    height: 90%;
+    padding: 0px;
+    border-radius: 3px;
+    max-height: 50px;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+#mainContainer #leftMainContainer #contentSection
+{
+    margin-top: 20px;
+}
+#mainContainer #leftMainContainer #contentSection #toolBar
+{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-bottom-width: 0px;
+}
+#mainContainer #leftMainContainer #contentSection #contentInput
+{
+    resize:none;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    padding: 0px;
+}
+#extensionBar
+{
+    margin-top: 20px;
+}
+#mainContainer #leftMainContainer #extensionBar #spaceDiv
+{
+    display: inline-block;
+}
+#mainContainer #leftMainContainer #extensionBar #tagDiv
+{
+    display: inline-block;
+    width: 80%;
+    margin-left: 30px;
+}
+#mainContainer #leftMainContainer #extensionBar #tagInput
+{
+    height: 25px;
+    width: 90%;
+    margin-left: 10px;
+    border-color: rgb(199, 198, 198);
+}
+#mainContainer #leftMainContainer #submitSection
+{
+    text-align: center;
+}
+#mainContainer #leftMainContainer #submitSection button
+{
+    margin: 0px 20px 0px;
+}
+</style>
+<apex:composition template="WikiTemplate">
+    <apex:define name="body">
+    <div id="force">
+        <header class="headerStyle">
+            <h1>New Page</h1>
+        </header>
+
+        <section id="mainContainer" class="row-fluid ninetyHeight">
+            <article id="leftMainContainer" class="span9 fullHeight">
+                <section id="titleSection" class="tenHeight"><input id="titleInput" class="fullHeight" placeholder="Please type the title"/></section>
+                <section id="contentSection" class="eightyHeight">
+                    <header id="toolBar" class="divBorderStyle">ToolBar</header>
+                    <article class="seventyHeight">
+                        <textarea id="contentInput" style="height:100%"></textarea>
+                    </article>
+                    <footer id="extensionBar">
+                        <div id="spaceDiv"><select class="selectStyle"><option>Space</option><option>Space</option></select></div>
+                        <div id="tagDiv"><i><strong>Tags</strong></i><input id="tagInput"/></div>
+                    </footer>
+                </section>
+                <section id="submitSection" class="tenHeight">
+                    <button class="btn btn-primary">Save</button>
+                    <button class="btn">Cancel</button>
+                </section>
+            </article>
+            <aside id="rightMainContainer" class="span3 divBorderStyle fullHeight">
+                Help Area
+            </aside>
+        </section>
+    </div>
+</apex:define>
+</apex:composition>
+</apex:page>
