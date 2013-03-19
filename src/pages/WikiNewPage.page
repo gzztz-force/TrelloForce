@@ -1,5 +1,7 @@
 <apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
-<apex:stylesheet value="{!URLFOR($Resource.bootstrap, 'css/bootstrap-responsive.css')}" />
+<apex:includeScript value="{!$Resource.Markdown}"/>
+<apex:stylesheet value="{!URLFOR($Resource.bootstrap, 'css/bootstrap.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery-1.6.1.min.js')}" />
 <style type="text/css">
 
 .tenHeight{ height: 10%; }
@@ -53,6 +55,7 @@ select, textarea, input
     text-align: center;
     font-weight: bold;
 }
+
 #mainContainer #leftMainContainer #contentSection
 {
     margin-top: 20px;
@@ -65,13 +68,33 @@ select, textarea, input
     text-align: center;
     border-bottom-width: 0px;
 }
-#mainContainer #leftMainContainer #contentSection #contentInput
+#contentInput
 {
     resize:none;
+    height:100%;
+    width:55%;
     max-width: 100%;
     max-height: 100%;
     width: 100%;
     padding: 0px;
+    float: left;
+}
+#previewDiv
+{
+    display: inline-block;
+    border-left: 2px solid rgb(179, 179, 179);
+    float: left;
+    width: 45%;
+}
+.previewTips
+{
+    width:100%;
+    text-align:center;
+    display:inline-block;
+    font-size:25px;
+    font-weight:bold;
+    margin-top:50px;
+    color:rgba(149,149,149,0.5);
 }
 #extensionBar
 {
@@ -102,6 +125,7 @@ select, textarea, input
 {
     margin: 0px 20px 0px;
 }
+
 </style>
 <apex:composition template="WikiTemplate">
     <apex:define name="body">
@@ -116,7 +140,10 @@ select, textarea, input
                 <section id="contentSection" class="eightyHeight">
                     <header id="toolBar" class="divBorderStyle">ToolBar</header>
                     <article class="seventyHeight">
-                        <textarea id="contentInput" style="height:100%"></textarea>
+                        <textarea id="contentInput" style="width:55%;height:100%" oninput="changeContents(this)"></textarea>
+                        <div id="previewDiv" class="fullHeight divBorderStyle">
+                            <span class="previewTips">Preview</span>
+                        </div>
                     </article>
                     <footer id="extensionBar">
                         <div id="spaceDiv"><select class="selectStyle"><option>Space</option><option>Space</option></select></div>
@@ -133,6 +160,22 @@ select, textarea, input
             </aside>
         </section>
     </div>
+
+<script>
+  function changeContents()
+  {
+    var value = $("#contentInput").val();
+    if (value == '' || value == null)
+    {
+        $("<span class='previewTips'>Preview</span>").appendTo($("#previewDiv"));
+    }
+    else
+    {
+        $("#previewDiv").html(markdown.toHTML(value));
+    }
+
+  }
+</script>
 </apex:define>
 </apex:composition>
 </apex:page>

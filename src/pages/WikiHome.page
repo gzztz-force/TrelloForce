@@ -1,0 +1,142 @@
+<apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+    <style>
+        .container-custom {
+            padding: 5px 20px;
+        }
+
+        .nav-wiki {
+            padding: 10px 0px 20px;
+        }
+
+        .new-page {
+            background-color: #EEEEEE;
+        }
+
+        .new-page h2 {
+            border-bottom: 1px solid #bbb;
+            display: block;
+        }
+
+        .spaces-list li>div {
+            margin-left: 30px;
+            position: relative;
+        }
+
+        .spaces-list li {
+            margin-top: 5px;
+            padding-left: 5px;
+            padding-top: 2px;
+            font-size: 15px;
+        }
+
+        .spaces-list .fav {
+            background-position: 0 0;
+            height: 16px;
+            width: 16px;
+            margin: 2px 0 0 3px;
+            float: left;
+        }
+
+        .spaces-list .bookmark {
+            margin: 2px 10px 0 3px;
+            position: absolute;
+            right: 10px;
+            top: 2px;
+        }
+
+        .spaces-list .divider {
+            height: 1px;
+            margin: 9px 1px;
+            overflow: hidden;
+            background-color: #e5e5e5;
+            border-bottom: 1px solid #fff;
+            padding: 0px;
+        }
+
+    </style>
+    <apex:composition template="WikiTemplate">
+        <apex:define name="body" >
+        <div id="force" >
+            <div class="container-fluid container-custom">
+                <div class="row-fluid nav-wiki">
+                    <div class="span8">
+                        <h1>Wiki Home</h1>
+                    </div>
+                    <div class="span4">
+                        <button class="btn btn-primary">Add Space</button>
+                        <button class="btn">Add Page</button>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <div class="well new-page">
+                            <h2>Hello, world!</h2>
+
+                            <p>Wiki Version 1 Function：
+                            Article Version Control
+                            Comment (Chatter)
+                            Search
+                            Markdown
+                            Highlight with Code
+                            Bookmark a page or space</p>
+
+                        </div>
+                        <div class="spaces-pane">
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a href="#">Spaces</a>
+                                </li>
+                                <li><a href="#">My Pages</a></li>
+                            </ul>
+                            <div>
+                                <ul class="unstyled spaces-list">
+                                    <li>
+                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                        <div>
+                                            <a href="#" >Salesforce</a>
+                                            <i class="icon-star bookmark"></i>
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                        <div>
+                                            <a href="">Apex</a>
+                                            <i class="icon-star-empty bookmark"></i>
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                        <div>
+                                            <a href=""> Article Version Control Comment (Chatter) Search Markdown Highlight with Code Bookmark a page or space</a>
+                                            <i class="icon-bookmark bookmark"></i>
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                        <div>
+                                            <a href="">How to start?</a>
+                                            <i class="icon-bookmark bookmark"></i>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span8">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#">Pupular</a>
+                            </li>
+                            <li><a href="#">All Update</a></li>
+                            <li><a href="#">Favorite Spaces</a></li>
+                        </ul>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        </apex:define>
+    </apex:composition>
+</apex:page>
