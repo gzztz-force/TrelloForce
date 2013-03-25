@@ -1,0 +1,288 @@
+<apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+    <style>
+        .container-custom {
+            padding: 5px 20px;
+        }
+
+        .nav-wiki {
+            padding: 10px 0px 20px;
+        }
+
+        .new-page {
+            background-color: #EEEEEE;
+        }
+
+        .new-page h2 {
+            border-bottom: 1px solid #bbb;
+            display: block;
+        }
+
+        .spaces-list a {
+            padding-right: 30px;
+            word-wrap: break-word;
+        }
+
+        .spaces-list li>div {
+            margin-left: 30px;
+            position: relative;
+        }
+
+        .spaces-list li, .popular-list li {
+            margin-top: 5px;
+            padding-left: 5px;
+            padding-top: 2px;
+            font-size: 15px;
+            overflow: hidden;
+        }
+
+        .spaces-list .fav {
+            background-position: 0 0;
+            height: 16px;
+            width: 16px;
+            margin: 2px 0 0 3px;
+            float: left;
+        }
+
+        .spaces-list .bookmark {
+            margin: 2px 10px 0 3px;
+            position: absolute;
+            right: 10px;
+            top: 2px;
+        }
+
+        .spaces-list .divider, .popular-list .divider {
+            height: 1px;
+            margin: 9px 1px;
+            overflow: hidden;
+            background-color: #e5e5e5;
+            border-bottom: 1px solid #fff;
+            padding: 0px;
+        }
+
+        .popular-list {
+
+        }
+
+        .popular-list a {
+            margin-right: 10px;
+        }
+
+        .popular-list .media {
+            width: 75%;
+        }
+
+        .popular-list .media-body {
+            /*width: 70%;*/
+        }
+
+        .popular-list .comment {
+            margin-right: 20px
+        }
+
+        .popular-list .page-author {
+            font-size: 12px;
+            padding-left: 5px;
+            padding-top: 5px;
+        }
+
+        .add-btns {
+            margin-top: 6px;
+        }
+
+        .search-form {
+            /*padding-left: 10px;*/
+        }
+
+    </style>
+    <apex:composition template="WikiTemplate">
+        <apex:define name="body" >
+        <div id="force" >
+            <div class="container-fluid container-custom">
+                <div class="row-fluid nav-wiki">
+                    <div class="span6">
+                        <h1>Wiki Home</h1>P
+                    </div>
+                    <div class="add-btns span3">
+                        <button class="btn btn-primary">Add Space</button>
+                        <button class="btn">Add Page</button>
+                    </div>
+                    <div class="span3 search-form">
+                        <form class="navbar-search pull-left" action="">
+                            <input type="text" class="search-query span2" placeholder="Search in Wiki" />
+                        </form>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <div class="well new-page">
+                            <h2>Hello, world!</h2>
+
+                            <p>Wiki Version 1 Function：
+                            Article Version Control
+                            Comment (Chatter)
+                            Search
+                            Markdown
+                            Highlight with Code
+                            Bookmark a page or space</p>
+
+                        </div>
+                        <div class="spaces-pane">
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a href="#">Spaces</a>
+                                </li>
+                                <li><a href="#">My Pages</a></li>
+                            </ul>
+                            <div>
+                                <ul class="unstyled spaces-list">
+                                    <li>
+                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                        <div>
+                                            <a href="#" >Salesforce</a>
+                                            <i class="icon-star bookmark"></i>
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                        <div>
+                                            <a href="">Apex</a>
+                                            <i class="icon-star-empty bookmark"></i>
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                        <div>
+                                            <a href=""> Article Version Control Comment (Chatter) Search Markdown Highlight with Code Bookmark a page or space</a>
+                                            <i class="icon-bookmark bookmark"></i>
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                        <div>
+                                            <a href="">How to start?</a>
+                                            <i class="icon-bookmark bookmark"></i>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span8">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#">Popular</a>
+                            </li>
+                            <li><a href="#">All Update</a></li>
+                            <li><a href="#">Favorite Spaces</a></li>
+                        </ul>
+                        <div>
+                            <ul class="unstyled popular-list">
+                                <li class="popular-page">
+                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                        <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                            <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                        </span>
+                                    </a>
+                                    <div class="media pull-left">
+                                        <div class="media-body">
+                                            <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                            <div class="page-author">
+                                                <a href="#" >Jair Zheng</a>
+                                                <span>
+                                                    2013 at 3:24 PM
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right comment">
+                                        <span class="badge">1</span>
+                                    </div>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                        <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                            <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                        </span>
+                                    </a>
+                                    <div class="media pull-left">
+                                        <div class="media-body">
+                                            <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                            <div class="page-author">
+                                                <a href="#" >Jair Zheng</a>
+                                                <span>
+                                                    2013 at 3:24 PM
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right comment">
+                                        <span class="badge">1</span>
+                                    </div>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                        <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                            <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                        </span>
+                                    </a>
+                                    <div class="media pull-left">
+                                        <div class="media-body">
+                                            <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                            <div class="page-author">
+                                                <a href="#" >Jair Zheng</a>
+                                                <span>
+                                                    2013 at 3:24 PM
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right comment">
+                                        <span class="badge badge-warning">8</span>
+                                    </div>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                        <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                            <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                        </span>
+                                    </a>
+                                    <div class="media pull-left">
+                                        <div class="media-body">
+                                            <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                            <div class="page-author">
+                                                <a href="#" >Jair Zheng</a>
+                                                <span>
+                                                    2013 at 3:24 PM
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right comment">
+                                        <span class="badge badge-warning">8</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pagination">
+                            <ul>
+                                <li class="disabled"><a href="#">&laquo;</a></li>
+                                <li class="active"><a href="#">1</a></li>
+                                <li class="active"><a href="#">2</a></li>
+                                <li class="active"><a href="#">3</a></li>
+                                <li class="active"><a href="#">4</a></li>
+                                <li class="disabled"><a href="#">&laquo;</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </apex:define>
+    </apex:composition>
+</apex:page>
