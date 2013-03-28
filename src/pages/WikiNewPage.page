@@ -1,181 +1,229 @@
-<apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+<apex:page controller="WikiNewPageController" docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+<apex:includeScript value="{!$Resource.JQuery161}"/>
 <apex:includeScript value="{!$Resource.Markdown}"/>
-<apex:stylesheet value="{!URLFOR($Resource.bootstrap, 'css/bootstrap.css')}"/>
-<apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery-1.6.1.min.js')}" />
+<apex:includeScript value="{!$Resource.JQueryAutoSize}"/>
 <style type="text/css">
-
-.tenHeight{ height: 10%; }
-.twentyHeight{ height: 20%; }
-.thirtyHeight{ height: 30%; }
-.fourtyHeight{ height: 40%; }
-.fiftyHeight{ height: 50%; }
-.sixtyHeight{ height: 60%; }
-.seventyHeight{ height: 70%; }
-.eightyHeight{ height: 80%; }
-.ninetyHeight{ height: 90%; }
-.fullHeight{ height: 100%; }
-
-select, textarea, input
-{
+select, textarea, input, ul {
     margin: 0px;
     padding: 0px;
+    list-style: none;
     box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
 }
-.divBorderStyle
-{
+
+textarea {
+    border:1px solid #ccc;
+}
+
+#animated {
+    vertical-align: top;
+    -webkit-transition: height 0.2s;
+    -moz-transition: height 0.2s;
+    transition: height 0.2s;
+}
+
+.div-border {
     border-width: 1px;
     border-color: rgb(199, 198, 198);
     border-style: solid;
     box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
 }
-.selectStyle
-{
+
+.select-style {
     height: 30px;
     max-width: 100px;
 }
-.headerStyle
-{
-    margin: 20px 0px 20px;
+
+.nav-header {
+    margin: 10px 0px 20px;
 }
-#force
-{
+
+#force {
     height:500px;
     width:95%;
     margin-left:auto;
     margin-right:auto;
 }
-#mainContainer #leftMainContainer #titleInput
-{
+#mainContainer #leftMainContainer input[id$="titleInput"] {
     width: 100%;
-    height: 90%;
+    height: 40px;
     padding: 0px;
+    margin: 0px;
     border-radius: 3px;
     max-height: 50px;
     font-size: 20px;
-    text-align: center;
+    color: rgb(163, 163, 163);
     font-weight: bold;
 }
 
-#mainContainer #leftMainContainer #contentSection
-{
+#mainContainer #leftMainContainer #contentSection {
     margin-top: 20px;
 }
-#mainContainer #leftMainContainer #contentSection #toolBar
-{
+
+#contentSection #toolBar {
     width: 100%;
-    height: 40px;
+    background-color: rgb(147, 200, 216);
     line-height: 40px;
-    text-align: center;
+    text-align: left;
     border-bottom-width: 0px;
 }
-#contentInput
-{
+
+#contentSection textarea[id$="contentInput"] {
     resize:none;
-    height:100%;
-    width:55%;
+    width:100%;
     max-width: 100%;
-    max-height: 100%;
-    width: 100%;
+    height: 300px;
     padding: 0px;
     float: left;
 }
-#previewDiv
-{
-    display: inline-block;
-    border-left: 2px solid rgb(179, 179, 179);
+
+#previewDiv {
+    width: 100%;
+    overflow: auto;
+    margin: 0px 0px 10px;
     float: left;
-    width: 45%;
 }
-.previewTips
-{
+
+.preview-tips {
     width:100%;
+    padding: 5px 0px;
     text-align:center;
     display:inline-block;
-    font-size:25px;
     font-weight:bold;
-    margin-top:50px;
     color:rgba(149,149,149,0.5);
 }
-#extensionBar
-{
-    margin-top: 20px;
-}
-#mainContainer #leftMainContainer #extensionBar #spaceDiv
-{
+
+#mainContainer #leftMainContainer #extensionBar #spaceDiv {
     display: inline-block;
+    clear: both;
 }
-#mainContainer #leftMainContainer #extensionBar #tagDiv
-{
+
+#mainContainer #leftMainContainer #extensionBar #tagDiv {
     display: inline-block;
     width: 80%;
-    margin-left: 30px;
 }
-#mainContainer #leftMainContainer #extensionBar #tagInput
-{
+
+#mainContainer #leftMainContainer #extensionBar input[id$="tagInput"] {
     height: 25px;
     width: 90%;
     margin-left: 10px;
     border-color: rgb(199, 198, 198);
 }
-#mainContainer #leftMainContainer #submitSection
-{
+
+#mainContainer #leftMainContainer #submitSection {
     text-align: center;
 }
-#mainContainer #leftMainContainer #submitSection button
-{
+
+#mainContainer #leftMainContainer #submitSection .btn {
     margin: 0px 20px 0px;
 }
 
+#force ul[id$=errorTip] {
+    margin: 0px 0px 9px;
+}
+
+#rightMainContainer {
+    background-color: rgb(147, 200, 216);
+    height: 440px;
+}
+.tips-title {
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+}
 </style>
+<script type="text/javascript">
+    function checkValueOnclick(obj)
+    {
+        if (obj.value == 'Type your title')
+        {
+            obj.value = '';
+        }
+    }
+    function checkValueOnblur(obj)
+    {
+        if (obj.value == null || obj.value == '')
+        {
+            obj.value = 'Type your title';
+        }
+    }
+</script>
 <apex:composition template="WikiTemplate">
     <apex:define name="body">
-    <div id="force">
-        <header class="headerStyle">
-            <h1>New Page</h1>
-        </header>
+        <apex:form>
+            <div id="force" class="container-fluid">
+                <header class="row-fluid nav-header">
+                    <h1>New Page</h1>
+                    <apex:messages id="errorTip" styleClass="label label-important" /> <!-- layout -->
+                </header>
 
-        <section id="mainContainer" class="row-fluid ninetyHeight">
-            <article id="leftMainContainer" class="span9 fullHeight">
-                <section id="titleSection" class="tenHeight"><input id="titleInput" class="fullHeight" placeholder="Please type the title"/></section>
-                <section id="contentSection" class="eightyHeight">
-                    <header id="toolBar" class="divBorderStyle">ToolBar</header>
-                    <article class="seventyHeight">
-                        <textarea id="contentInput" style="width:55%;height:100%" oninput="changeContents(this)"></textarea>
-                        <div id="previewDiv" class="fullHeight divBorderStyle">
-                            <span class="previewTips">Preview</span>
+                <section id="mainContainer" class="row-fluid">
+                    <div id="leftMainContainer" class="span9">
+                        <div id="titleSection" >
+                            <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" onblur="checkValueOnblur(this)" onclick="checkValueOnclick(this)"/>
                         </div>
-                    </article>
-                    <footer id="extensionBar">
-                        <div id="spaceDiv"><select class="selectStyle"><option>Space</option><option>Space</option></select></div>
-                        <div id="tagDiv"><i><strong>Tags</strong></i><input id="tagInput"/></div>
-                    </footer>
+                        <div id="contentSection" class="row-fluid">
+                            <header id="toolBar" class="div-border">
+                                <i class="icon-bold"></i>
+                                <i class="icon-globe"></i>
+                                <i class="icon-list"></i>
+                            </header>
+                            <div>
+                                <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" onkeyup="changeContents(this)" rows="15" />
+                                <div id="previewDiv" class="div-border">
+                                    <span class="preview-tips">Preview</span>
+                                </div>
+                            </div>
+                            <footer id="extensionBar" class="row-fluid">
+                                <div id="spaceDiv" class="span2">
+                                    <apex:selectList styleclass="select-style" value="{!LatestPage.WikiPage__r.WikiSpace__r.Name}" size="0">
+                                        <apex:selectOptions value="{!SpaceOptions}"/>
+                                    </apex:selectList>
+                                </div>
+                                <div id="tagDiv" class="span9">
+                                    <i><strong>Tags</strong></i>
+                                    <apex:inputText id="tagInput" value="{!LatestPage.Label__c}"/>
+                                </div>
+                            </footer>
+                        </div>
+                        <div id="submitSection" class="row-fluid">
+                            <apex:commandButton action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary"/>
+                            <apex:commandButton action="{!cancel}" value="Cancel" styleclass="btn"/>
+                        </div>
+                    </div>
+                    <aside id="rightMainContainer" class="span3 div-border">
+                        <p><span class="tips-title">How to Format</span></p>
+                        <p><i class="icon-chevron-right"></i>Allen li is working for meginfo</p>
+                        <p><i class="icon-chevron-right"></i>Allen li is working for meginfo</p>
+                        <p><i class="icon-chevron-right"></i>Allen li is working for meginfo</p>
+                    </aside>
                 </section>
-                <section id="submitSection" class="tenHeight">
-                    <button class="btn btn-primary">Save</button>
-                    <button class="btn">Cancel</button>
-                </section>
-            </article>
-            <aside id="rightMainContainer" class="span3 divBorderStyle fullHeight">
-                Help Area
-            </aside>
-        </section>
-    </div>
+            </div>
 
-<script>
-  function changeContents()
-  {
-    var value = $("#contentInput").val();
-    if (value == '' || value == null)
-    {
-        $("<span class='previewTips'>Preview</span>").appendTo($("#previewDiv"));
-    }
-    else
-    {
-        $("#previewDiv").html(markdown.toHTML(value));
-    }
+            <script>
+                $(function(){
+                    $('[id$=contentInput]').autosize();
+                    //$('#animated').autosize({append: "\n"});
+                });
 
-  }
-</script>
-</apex:define>
+                function changeContents()
+                {
+                    var value = $("[id$=contentInput]").val();
+                    if (value == '' || value == null)
+                    {
+                        $("#previewDiv").empty();
+                        $("<span class='preview-tips'>Preview</span>").appendTo($("#previewDiv"));
+                    }
+                    else
+                    {
+                        $("#previewDiv").html(markdown.toHTML(value));
+                    }
+                }
+            </script>
+        </apex:form>
+    </apex:define>
 </apex:composition>
 </apex:page>
