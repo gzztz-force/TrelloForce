@@ -1,3 +1,6 @@
+/*
+ * This controller is Referenced by WikiNewPage and used to create/edit WikiPages.
+ */
 public class WikiNewPageController
 {
     private String pageId;
@@ -8,8 +11,11 @@ public class WikiNewPageController
     public WikiNewPageController()
     {
         IsValid = true;
-        List<WikiPage__c> pages = [select Id from WikiPage__c where Id = :ApexPages.currentPage().getParameters().get('id')];
-        isNew = (pages.size() <= 0 ? true : false);
+        pageId = ApexPages.currentPage().getParameters().get('id');
+        List<WikiPage__c> pages = [select Id, (select Id, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name
+                                    from WikiPageVersions__r where WikiPage__c = :pageId and IsLatestVersion__c = true)
+                                    from WikiPage__c where Id = :pageId];
+        isNew = (pages.size() <= 0) ? true : false;
         if (isNew)
         {
             parentPage = new WikiPage__c();
@@ -19,8 +25,8 @@ public class WikiNewPageController
         else
         {
 
-            List<WikiPageVersion__c> pageVersions = [select Id, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name from WikiPageVersion__c where WikiPage__c = : pageId and IsLatestVersion__c = true];
-            if (pageVersions.size() > 0 && pages.size() > 0)
+            List<WikiPageVersion__c> pageVersions = pages[0].WikiPageVersions__r;
+            if (pageVersions.size() > 0)
             {
                 parentPage = pages[0];
                 LatestPage = pageVersions[0];
@@ -28,8 +34,7 @@ public class WikiNewPageController
             }
             else
             {
-                ApexPages.Message message = new ApexPages.Message(ApexPages.Severity.Error, 'Invalid Id', 'Invalid Id');
-                ApexPages.addMessage(message);
+                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.Error, 'Invalid Id', 'Invalid Id'));
                 IsValid = false;
             }
         }
@@ -37,6 +42,7 @@ public class WikiNewPageController
 
     public Boolean IsValid { get; set; }
     public WikiPageVersion__c LatestPage { get; set; }
+
     public List<SelectOption> SpaceOptions
     {
         get
@@ -53,6 +59,7 @@ public class WikiNewPageController
 
     public PageReference save()
     {
+        Savepoint sp = Database.setSavepoint();
         try
         {
             parentPage.WikiSpace__c = LatestPage.WikiPage__r.WikiSpace__c;
@@ -70,16 +77,17 @@ public class WikiNewPageController
             WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, Label__c = LatestPage.Label__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true);
             insert newVersionPage;
         }
-        catch(DmlException ex)
+        catch(Exception ex)
         {
+            Database.rollback(sp);
             ApexPages.addMessages(ex);
         }
-        return null;
+        return new PageReference('/apex/WikiHome');
     }
 
     public PageReference cancel()
     {
-        return null;
+        return new PageReference('/apex/WikiHome');
     }
 
     @isTest
