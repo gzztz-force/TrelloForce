@@ -48,10 +48,10 @@ public class WikiNewPageController
         get
         {
             List<SelectOption> options = new List<SelectOption>();
-            options.add(new SelectOption('', 'Space'));
-            for(WikiSpace__c s : [select Id, Name from WikiSpace__c])
+            options.add(new SelectOption('', '--None--'));
+            for(WikiSpace__c s : [select Id, Name__c from WikiSpace__c])
             {
-                options.add(new SelectOption(s.Id, s.Name));
+                options.add(new SelectOption(s.Id, s.Name__c));
             }
             return options;
         }

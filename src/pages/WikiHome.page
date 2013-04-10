@@ -1,4 +1,4 @@
-<apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+<apex:page controller="WikiHomeController" docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
     <style>
         .container-custom {
             padding: 5px 20px;
@@ -93,196 +93,267 @@
             /*padding-left: 10px;*/
         }
 
+    /* space pop-up style, created by allen */
+        .new-Space #force textarea {
+            width: 90%;
+            max-width: 90%;
+        }
+
+        .new-Space {
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.3);
+            display: none;
+            position: absolute;
+        }
+        #new-Space ul[id$=errorTip] {
+            white-space: normal;
+            margin: 0px;
+            width: 90%;
+        }
+    /******************************************/
     </style>
+    <script type="text/javascript">
+        function addNewSpace()
+        {
+            $("#new-Space").fadeIn(300);
+        }
+        function closeNewSpace()
+        {
+            $("#new-Space").fadeOut(300);
+        }
+    </script>
+<apex:form>
     <apex:composition template="WikiTemplate">
         <apex:define name="body" >
-        <div id="force" >
-            <div class="container-fluid container-custom">
-                <div class="row-fluid nav-wiki">
-                    <div class="span6">
-                        <h1>Wiki Home</h1>P
-                    </div>
-                    <div class="add-btns span3">
-                        <button class="btn btn-primary">Add Space</button>
-                        <button class="btn">Add Page</button>
-                    </div>
-                    <div class="span3 search-form">
-                        <form class="navbar-search pull-left" action="">
-                            <input type="text" class="search-query span2" placeholder="Search in Wiki" />
-                        </form>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span4">
-                        <div class="well new-page">
-                            <h2>Hello, world!</h2>
-
-                            <p>Wiki Version 1 Function：
-                            Article Version Control
-                            Comment (Chatter)
-                            Search
-                            Markdown
-                            Highlight with Code
-                            Bookmark a page or space</p>
-
+                <div id="force" >
+                    <div class="container-fluid container-custom">
+                        <div class="row-fluid nav-wiki">
+                            <div class="span6">
+                                <h1>Wiki Home</h1>P
+                            </div>
+                            <div class="add-btns span3">
+                                <a class="btn btn-primary" onclick="addNewSpace()">Add Space</a>
+                                <a class="btn">Add Page</a>
+                            </div>
+                            <div class="span3 search-form">
+                                <!--
+                                <form class="navbar-search pull-left" action="">
+                                    <input type="text" class="search-query span2" placeholder="Search in Wiki" />
+                                </form>
+                                 -->
+                            </div>
                         </div>
-                        <div class="spaces-pane">
-                            <ul class="nav nav-tabs">
-                                <li class="active">
-                                    <a href="#">Spaces</a>
-                                </li>
-                                <li><a href="#">My Pages</a></li>
-                            </ul>
-                            <div>
-                                <ul class="unstyled spaces-list">
-                                    <li>
-                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                        <div>
-                                            <a href="#" >Salesforce</a>
-                                            <i class="icon-star bookmark"></i>
-                                        </div>
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <div class="well new-page">
+                                    <h2>Hello, world!</h2>
+
+                                    <p>Wiki Version 1 Function：
+                                    Article Version Control
+                                    Comment (Chatter)
+                                    Search
+                                    Markdown
+                                    Highlight with Code
+                                    Bookmark a page or space</p>
+
+                                </div>
+                                <div class="spaces-pane">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active">
+                                            <a href="#">Spaces</a>
+                                        </li>
+                                        <li><a href="#">My Pages</a></li>
+                                    </ul>
+                                    <div>
+                                        <ul class="unstyled spaces-list">
+                                            <li>
+                                                <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                <div>
+                                                    <a href="#" >Salesforce</a>
+                                                    <i class="icon-star bookmark"></i>
+                                                </div>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                <div>
+                                                    <a href="">Apex</a>
+                                                    <i class="icon-star-empty bookmark"></i>
+                                                </div>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                <div>
+                                                    <a href=""> Article Version Control Comment (Chatter) Search Markdown Highlight with Code Bookmark a page or space</a>
+                                                    <i class="icon-bookmark bookmark"></i>
+                                                </div>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                <div>
+                                                    <a href="">How to start?</a>
+                                                    <i class="icon-bookmark bookmark"></i>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span8">
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#">Popular</a>
                                     </li>
-                                    <li class="divider"></li>
-                                    <li>
-                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                        <div>
-                                            <a href="">Apex</a>
-                                            <i class="icon-star-empty bookmark"></i>
-                                        </div>
-                                    </li>
-                                    <li class="divider"></li>
-                                    <li>
-                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                        <div>
-                                            <a href=""> Article Version Control Comment (Chatter) Search Markdown Highlight with Code Bookmark a page or space</a>
-                                            <i class="icon-bookmark bookmark"></i>
-                                        </div>
-                                    </li>
-                                    <li class="divider"></li>
-                                    <li>
-                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                        <div>
-                                            <a href="">How to start?</a>
-                                            <i class="icon-bookmark bookmark"></i>
-                                        </div>
-                                    </li>
+                                    <li><a href="#">All Update</a></li>
+                                    <li><a href="#">Favorite Spaces</a></li>
                                 </ul>
+                                <div>
+                                    <ul class="unstyled popular-list">
+                                        <li class="popular-page">
+                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                </span>
+                                            </a>
+                                            <div class="media pull-left">
+                                                <div class="media-body">
+                                                    <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                    <div class="page-author">
+                                                        <a href="#" >Jair Zheng</a>
+                                                        <span>
+                                                            2013 at 3:24 PM
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pull-right comment">
+                                                <span class="badge">1</span>
+                                            </div>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                </span>
+                                            </a>
+                                            <div class="media pull-left">
+                                                <div class="media-body">
+                                                    <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                    <div class="page-author">
+                                                        <a href="#" >Jair Zheng</a>
+                                                        <span>
+                                                            2013 at 3:24 PM
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pull-right comment">
+                                                <span class="badge">1</span>
+                                            </div>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                </span>
+                                            </a>
+                                            <div class="media pull-left">
+                                                <div class="media-body">
+                                                    <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                    <div class="page-author">
+                                                        <a href="#" >Jair Zheng</a>
+                                                        <span>
+                                                            2013 at 3:24 PM
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pull-right comment">
+                                                <span class="badge badge-warning">8</span>
+                                            </div>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                </span>
+                                            </a>
+                                            <div class="media pull-left">
+                                                <div class="media-body">
+                                                    <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                    <div class="page-author">
+                                                        <a href="#" >Jair Zheng</a>
+                                                        <span>
+                                                            2013 at 3:24 PM
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pull-right comment">
+                                                <span class="badge badge-warning">8</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="pagination">
+                                    <ul>
+                                        <li class="disabled"><a href="#">&laquo;</a></li>
+                                        <li class="active"><a href="#">1</a></li>
+                                        <li class="active"><a href="#">2</a></li>
+                                        <li class="active"><a href="#">3</a></li>
+                                        <li class="active"><a href="#">4</a></li>
+                                        <li class="disabled"><a href="#">&laquo;</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="span8">
-                        <ul class="nav nav-tabs">
-                            <li class="active">
-                                <a href="#">Popular</a>
-                            </li>
-                            <li><a href="#">All Update</a></li>
-                            <li><a href="#">Favorite Spaces</a></li>
-                        </ul>
-                        <div>
-                            <ul class="unstyled popular-list">
-                                <li class="popular-page">
-                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                        <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                            <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                        </span>
-                                    </a>
-                                    <div class="media pull-left">
-                                        <div class="media-body">
-                                            <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                            <div class="page-author">
-                                                <a href="#" >Jair Zheng</a>
-                                                <span>
-                                                    2013 at 3:24 PM
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pull-right comment">
-                                        <span class="badge">1</span>
-                                    </div>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                        <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                            <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                        </span>
-                                    </a>
-                                    <div class="media pull-left">
-                                        <div class="media-body">
-                                            <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                            <div class="page-author">
-                                                <a href="#" >Jair Zheng</a>
-                                                <span>
-                                                    2013 at 3:24 PM
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pull-right comment">
-                                        <span class="badge">1</span>
-                                    </div>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                        <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                            <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                        </span>
-                                    </a>
-                                    <div class="media pull-left">
-                                        <div class="media-body">
-                                            <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                            <div class="page-author">
-                                                <a href="#" >Jair Zheng</a>
-                                                <span>
-                                                    2013 at 3:24 PM
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pull-right comment">
-                                        <span class="badge badge-warning">8</span>
-                                    </div>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                        <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                            <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                        </span>
-                                    </a>
-                                    <div class="media pull-left">
-                                        <div class="media-body">
-                                            <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                            <div class="page-author">
-                                                <a href="#" >Jair Zheng</a>
-                                                <span>
-                                                    2013 at 3:24 PM
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pull-right comment">
-                                        <span class="badge badge-warning">8</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="pagination">
-                            <ul>
-                                <li class="disabled"><a href="#">&laquo;</a></li>
-                                <li class="active"><a href="#">1</a></li>
-                                <li class="active"><a href="#">2</a></li>
-                                <li class="active"><a href="#">3</a></li>
-                                <li class="active"><a href="#">4</a></li>
-                                <li class="disabled"><a href="#">&laquo;</a></li>
-                            </ul>
-                        </div>
+                </div>
+
+                <div id="new-Space" class="new-Space">
+                    <div id="force" class="modal hide fade" style="width:50%;position:relative;top:100px;margin-left:25%;background-color: white;">
+                      <div class="modal-header">
+                        <button type="button" class="close" onclick="closeNewSpace()">&times;</button>
+                        <h3>New Space</h3>
+                      </div>
+                      <div class="modal-body">
+                         <div class="control-group">
+                            <label class="control-label" for="inputName">Name</label>
+                            <div class="controls">
+                              <apex:inputText value="{!NewSpace.Name__c}" required="true"/>
+                              <span class="muted">Example: apex, html5, etc.</span>
+                            </div>
+                          </div>
+                          <div class="control-group">
+                            <label class="control-label">Description</label>
+                            <div class="controls">
+                              <apex:inputTextarea value="{!NewSpace.Summary__c}"/>
+                            </div>
+                            <apex:outputPanel id="saveStatus">
+                                <apex:messages id="errorTip" styleClass="label label-important" />
+                                <apex:outputPanel rendered="{!NewSpaceSuccess}">
+                                    <script type="text/javascript">
+                                        window.location.reload();
+                                    </script>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                          </div>
+                      </div>
+                      <div class="modal-footer">
+                        <apex:commandLink action="{!createNewSpace}" value="Save" styleClass="btn btn-primary" reRender="saveStatus"/>
+                        <a class="btn" onclick="closeNewSpace()">Cancel</a>
+                      </div>
                     </div>
                 </div>
-            </div>
-        </div>
+
         </apex:define>
     </apex:composition>
+    </apex:form>
 </apex:page>
