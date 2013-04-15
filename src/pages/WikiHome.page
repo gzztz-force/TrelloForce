@@ -135,7 +135,7 @@
                             </div>
                             <div class="add-btns span3">
                                 <a class="btn btn-primary" onclick="addNewSpace()">Add Space</a>
-                                <a class="btn">Add Page</a>
+                                <a href="/apex/WikiNewPage" class="btn">Add Page</a>
                             </div>
                             <div class="span3 search-form">
                                 <!--
@@ -160,58 +160,43 @@
 
                                 </div>
                                 <div class="spaces-pane">
-                                    <ul class="nav nav-tabs">
+                                    <ul id="myTab" class="nav nav-tabs">
                                         <li class="active">
-                                            <a href="#">Spaces</a>
+                                            <a href="#mySpace" data-toggle="tab">Spaces</a>
                                         </li>
-                                        <li><a href="#">My Pages</a></li>
+                                        <li><a href="#myPages" data-toggle="tab">My Pages</a></li>
                                     </ul>
-                                    <div>
-                                        <ul class="unstyled spaces-list">
-                                            <li>
-                                                <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                                <div>
-                                                    <a href="#" >Salesforce</a>
-                                                    <i class="icon-star bookmark"></i>
-                                                </div>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                                <div>
-                                                    <a href="">Apex</a>
-                                                    <i class="icon-star-empty bookmark"></i>
-                                                </div>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                                <div>
-                                                    <a href=""> Article Version Control Comment (Chatter) Search Markdown Highlight with Code Bookmark a page or space</a>
-                                                    <i class="icon-bookmark bookmark"></i>
-                                                </div>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                                <div>
-                                                    <a href="">How to start?</a>
-                                                    <i class="icon-bookmark bookmark"></i>
-                                                </div>
-                                            </li>
-                                        </ul>
+                                    <div class="tab-content">
+                                        <div id="mySpace" class="tab-pane fade active in">
+                                            <ul class="unstyled spaces-list">
+                                                <apex:repeat value="{!MySpaces}" var="space">
+                                                    <li>
+                                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                        <div>
+                                                            <a href="#" >{!space.Name__c}</a>
+                                                            <i class="icon-star bookmark"></i>
+                                                        </div>
+                                                    </li>
+                                                    <li class="divider"></li>
+                                                </apex:repeat>
+                                              </ul>
+                                        </div>
+                                        <div id="myPages" class="tab-pane fade">
+                                            My pages
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="span8">
                                 <ul class="nav nav-tabs">
                                     <li class="active">
-                                        <a href="#">Popular</a>
+                                        <a href="#popularDiv" data-toggle="tab">Popular</a>
                                     </li>
-                                    <li><a href="#">All Update</a></li>
-                                    <li><a href="#">Favorite Spaces</a></li>
+                                    <li><a href="#allUpdateDiv" data-toggle="tab">All Update</a></li>
+                                    <li><a href="#favoriteSpaceDiv" data-toggle="tab">Favorite Spaces</a></li>
                                 </ul>
-                                <div>
+                                <div class="tab-content">
+                                    <div id="popularDiv" class="tab-pane fade active in">
                                     <ul class="unstyled popular-list">
                                         <li class="popular-page">
                                             <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
@@ -300,7 +285,9 @@
                                                 <span class="badge badge-warning">8</span>
                                             </div>
                                         </li>
-                                    </ul>
+                                    </ul></div>
+                                    <div id="allUpdateDiv" class="tab-pane fade">All Update</div>
+                                    <div id="favoriteSpaceDiv" class="tab-pane fade">Favorite Spaces</div>
                                 </div>
                                 <div class="pagination">
                                     <ul>
@@ -352,7 +339,6 @@
                       </div>
                     </div>
                 </div>
-
         </apex:define>
     </apex:composition>
     </apex:form>

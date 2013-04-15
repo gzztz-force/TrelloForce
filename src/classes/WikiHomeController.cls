@@ -13,6 +13,16 @@ public with sharing class WikiHomeController
     public WikiSpace__c NewSpace { get; set; }
     public Boolean NewSpaceSuccess { get; set; }
 
+    public List<WikiSpace__c> getMySpaces()
+    {
+        return [SELECT Name__c, Summary__c FROM WikiSpace__c];
+    }
+
+    public List<WikiPageVersion__c> getMyPages()
+    {
+        return [SELECT Title__c FROM WikiPageVersion__c WHERE IsLatestVersion__c = true AND CreatedById = :UserInfo.getUserId()];
+    }
+
     public String getPopularPages()
     {
         return '';

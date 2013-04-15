@@ -1,6 +1,6 @@
 <apex:page controller="WikiNewPageController" docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
 <apex:includeScript value="{!$Resource.JQuery161}"/>
-<apex:includeScript value="{!$Resource.Markdown}"/>
+<!--<apex:includeScript value="{!$Resource.Markdown}"/>-->
 <apex:includeScript value="{!$Resource.JQueryAutoSize}"/>
 <style type="text/css">
 select, textarea, input, ul {
