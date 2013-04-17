@@ -1,3 +1,4 @@
+
 <apex:page controller="WikiHomeController" docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
     <style>
         .container-custom {
@@ -124,9 +125,9 @@
             $("#new-Space").fadeOut(300);
         }
     </script>
-<apex:form>
     <apex:composition template="WikiTemplate">
         <apex:define name="body" >
+            <apex:form>
                 <div id="force" >
                     <div class="container-fluid container-custom">
                         <div class="row-fluid nav-wiki">
@@ -182,7 +183,18 @@
                                               </ul>
                                         </div>
                                         <div id="myPages" class="tab-pane fade">
-                                            My pages
+                                            <ul class="unstyled spaces-list">
+                                                <apex:repeat value="{!MyPages}" var="page">
+                                                    <li>
+                                                        <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                        <div>
+                                                        <a href="/apex/WikiViewPage?id={!page.WikiPage__c}" >{!page.Title__c}</a>
+                                                            <i class="icon-star bookmark"></i>
+                                                        </div>
+                                                    </li>
+                                                    <li class="divider"></li>
+                                                </apex:repeat>
+                                              </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -197,113 +209,145 @@
                                 </ul>
                                 <div class="tab-content">
                                     <div id="popularDiv" class="tab-pane fade active in">
-                                    <ul class="unstyled popular-list">
-                                        <li class="popular-page">
-                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                                </span>
-                                            </a>
-                                            <div class="media pull-left">
-                                                <div class="media-body">
-                                                    <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                                    <div class="page-author">
-                                                        <a href="#" >Jair Zheng</a>
-                                                        <span>
-                                                            2013 at 3:24 PM
-                                                        </span>
+                                        <ul class="unstyled popular-list">
+                                            <li class="popular-page">
+                                                <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                    <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                                        <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                    </span>
+                                                </a>
+                                                <div class="media pull-left">
+                                                    <div class="media-body">
+                                                        <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                        <div class="page-author">
+                                                            <a href="#" >Jair Zheng</a>
+                                                            <span>
+                                                                2013 at 3:24 PM
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="pull-right comment">
-                                                <span class="badge">1</span>
-                                            </div>
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li>
-                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                                </span>
-                                            </a>
-                                            <div class="media pull-left">
-                                                <div class="media-body">
-                                                    <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                                    <div class="page-author">
-                                                        <a href="#" >Jair Zheng</a>
-                                                        <span>
-                                                            2013 at 3:24 PM
-                                                        </span>
+                                                <div class="pull-right comment">
+                                                    <span class="badge">1</span>
+                                                </div>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                    <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                                        <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                    </span>
+                                                </a>
+                                                <div class="media pull-left">
+                                                    <div class="media-body">
+                                                        <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                        <div class="page-author">
+                                                            <a href="#" >Jair Zheng</a>
+                                                            <span>
+                                                                2013 at 3:24 PM
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="pull-right comment">
-                                                <span class="badge">1</span>
-                                            </div>
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li>
-                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                                </span>
-                                            </a>
-                                            <div class="media pull-left">
-                                                <div class="media-body">
-                                                    <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                                    <div class="page-author">
-                                                        <a href="#" >Jair Zheng</a>
-                                                        <span>
-                                                            2013 at 3:24 PM
-                                                        </span>
+                                                <div class="pull-right comment">
+                                                    <span class="badge">1</span>
+                                                </div>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                    <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                                        <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                    </span>
+                                                </a>
+                                                <div class="media pull-left">
+                                                    <div class="media-body">
+                                                        <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                        <div class="page-author">
+                                                            <a href="#" >Jair Zheng</a>
+                                                            <span>
+                                                                2013 at 3:24 PM
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="pull-right comment">
-                                                <span class="badge badge-warning">8</span>
-                                            </div>
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li>
-                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                                </span>
-                                            </a>
-                                            <div class="media pull-left">
-                                                <div class="media-body">
-                                                    <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                                    <div class="page-author">
-                                                        <a href="#" >Jair Zheng</a>
-                                                        <span>
-                                                            2013 at 3:24 PM
-                                                        </span>
+                                                <div class="pull-right comment">
+                                                    <span class="badge badge-warning">8</span>
+                                                </div>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                    <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
+                                                        <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                    </span>
+                                                </a>
+                                                <div class="media pull-left">
+                                                    <div class="media-body">
+                                                        <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                        <div class="page-author">
+                                                            <a href="#" >Jair Zheng</a>
+                                                            <span>
+                                                                2013 at 3:24 PM
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="pull-right comment">
-                                                <span class="badge badge-warning">8</span>
-                                            </div>
-                                        </li>
-                                    </ul></div>
-                                    <div id="allUpdateDiv" class="tab-pane fade">All Update</div>
+                                                <div class="pull-right comment">
+                                                    <span class="badge badge-warning">8</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div id="allUpdateDiv" class="tab-pane fade">
+                                        <ul class="unstyled popular-list">
+                                            <apex:outputPanel id="popularPagesPanel">
+                                                <apex:repeat value="{!PopularPages}" var="item">
+                                                    <li>
+                                                        <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
+                                                            <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                                <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                            </span>
+                                                        </a>
+                                                        <div class="media pull-left">
+                                                            <div class="media-body">
+                                                                <ul>
+                                                                    <li>
+                                                                        <div class="update-author pull-left">
+                                                                            <a href="#" >{!item.CreatedBy.Name}</a>
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div>
+                                                                            <img width="14" height="14" class="avatar-photo" alt="None" src="https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com"/>
+                                                                            <a href="#" >{!item.Title__c}</a>
+                                                                            <div class="page-author">
+                                                                                <span>
+                                                                                    {!item.LastPublishedDate__c}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="divider"></li>
+                                                </apex:repeat>
+                                            </apex:outputPanel>
+                                            <li>
+                                                <apex:commandButton action="{!loadMorePopularPages}" value="Load More" styleClass="btn" reRender="popularPagesPanel"/>
+                                            </li>
+                                        </ul>
+                                    </div>
                                     <div id="favoriteSpaceDiv" class="tab-pane fade">Favorite Spaces</div>
-                                </div>
-                                <div class="pagination">
-                                    <ul>
-                                        <li class="disabled"><a href="#">&laquo;</a></li>
-                                        <li class="active"><a href="#">1</a></li>
-                                        <li class="active"><a href="#">2</a></li>
-                                        <li class="active"><a href="#">3</a></li>
-                                        <li class="active"><a href="#">4</a></li>
-                                        <li class="disabled"><a href="#">&laquo;</a></li>
-                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
+            </apex:form>
+            <apex:form>
                 <div id="new-Space" class="new-Space">
                     <div id="force" class="modal hide fade" style="width:50%;position:relative;top:100px;margin-left:25%;background-color: white;">
                       <div class="modal-header">
@@ -325,7 +369,7 @@
                             </div>
                             <apex:outputPanel id="saveStatus">
                                 <apex:messages id="errorTip" styleClass="label label-important" />
-                                <apex:outputPanel rendered="{!NewSpaceSuccess}">
+                                <apex:outputPanel rendered="{!NewSpaceIsSuccess}">
                                     <script type="text/javascript">
                                         window.location.reload();
                                     </script>
@@ -339,7 +383,7 @@
                       </div>
                     </div>
                 </div>
+            </apex:form>
         </apex:define>
     </apex:composition>
-    </apex:form>
 </apex:page>
