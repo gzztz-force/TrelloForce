@@ -210,6 +210,7 @@
                                 <div class="tab-content">
                                     <div id="popularDiv" class="tab-pane fade active in">
                                         <ul class="unstyled popular-list">
+                                            <apex:repeat value="{!PopularPages}" var="item">
                                             <li class="popular-page">
                                                 <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
                                                     <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
@@ -218,11 +219,13 @@
                                                 </a>
                                                 <div class="media pull-left">
                                                     <div class="media-body">
-                                                        <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
+                                                        <a href="#" >{!item.Title__c}</a>
                                                         <div class="page-author">
-                                                            <a href="#" >Jair Zheng</a>
+                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>
                                                             <span>
-                                                                2013 at 3:24 PM
+                                                                <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                    <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
+                                                                </apex:outputText>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -232,71 +235,7 @@
                                                 </div>
                                             </li>
                                             <li class="divider"></li>
-                                            <li>
-                                                <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                    <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                                        <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                                    </span>
-                                                </a>
-                                                <div class="media pull-left">
-                                                    <div class="media-body">
-                                                        <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                                        <div class="page-author">
-                                                            <a href="#" >Jair Zheng</a>
-                                                            <span>
-                                                                2013 at 3:24 PM
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="pull-right comment">
-                                                    <span class="badge">1</span>
-                                                </div>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                    <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                                        <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                                    </span>
-                                                </a>
-                                                <div class="media pull-left">
-                                                    <div class="media-body">
-                                                        <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                                        <div class="page-author">
-                                                            <a href="#" >Jair Zheng</a>
-                                                            <span>
-                                                                2013 at 3:24 PM
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="pull-right comment">
-                                                    <span class="badge badge-warning">8</span>
-                                                </div>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                    <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                                        <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
-                                                    </span>
-                                                </a>
-                                                <div class="media pull-left">
-                                                    <div class="media-body">
-                                                        <a href="#" >Article Version Control Comment (Chatter) Search Markdown Article Version Control Comment (Chatter) Search Markdown</a>
-                                                        <div class="page-author">
-                                                            <a href="#" >Jair Zheng</a>
-                                                            <span>
-                                                                2013 at 3:24 PM
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="pull-right comment">
-                                                    <span class="badge badge-warning">8</span>
-                                                </div>
-                                            </li>
+                                            </apex:repeat>
                                         </ul>
                                     </div>
                                     <div id="allUpdateDiv" class="tab-pane fade">
@@ -314,16 +253,18 @@
                                                                 <ul>
                                                                     <li>
                                                                         <div class="update-author pull-left">
-                                                                            <a href="#" >{!item.CreatedBy.Name}</a>
+                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>
                                                                         </div>
                                                                     </li>
                                                                     <li>
                                                                         <div>
                                                                             <img width="14" height="14" class="avatar-photo" alt="None" src="https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com"/>
-                                                                            <a href="#" >{!item.Title__c}</a>
+                                                                            <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
                                                                             <div class="page-author">
                                                                                 <span>
-                                                                                    {!item.LastPublishedDate__c}
+                                                                                    <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                        <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
+                                                                                    </apex:outputText>
                                                                                 </span>
                                                                             </div>
                                                                         </div>

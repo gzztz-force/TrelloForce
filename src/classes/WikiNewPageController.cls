@@ -12,7 +12,7 @@ public class WikiNewPageController
     {
         IsValid = true;
         pageId = ApexPages.currentPage().getParameters().get('id');
-        List<WikiPage__c> pages = [select Id, (select Id, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name
+        List<WikiPage__c> pages = [select Id, LastPublishedDate__c, (select Id, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name
                                     from WikiPageVersions__r where WikiPage__c = :pageId and IsLatestVersion__c = true)
                                     from WikiPage__c where Id = :pageId];
         isNew = (pages.size() <= 0) ? true : false;
@@ -30,7 +30,7 @@ public class WikiNewPageController
             {
                 parentPage = pages[0];
                 LatestPage = pageVersions[0];
-                versionPageClone = LatestPage.clone();
+                versionPageClone = LatestPage.clone(true);
             }
             else
             {
@@ -63,7 +63,7 @@ public class WikiNewPageController
         try
         {
             parentPage.WikiSpace__c = LatestPage.WikiPage__r.WikiSpace__c;
-            parentPage.LastPublishedDate__c = Date.today();
+            parentPage.LastPublishedDate__c = System.now();
             if (isNew)
             {
                 insert parentPage;
@@ -74,13 +74,14 @@ public class WikiNewPageController
                 versionPageClone.IsLatestVersion__c = false;
                 update versionPageClone;
             }
-            WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, Label__c = LatestPage.Label__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true);
+            WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, Label__c = LatestPage.Label__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true, LastPublishedDate__c = System.Now());
             insert newVersionPage;
         }
         catch(Exception ex)
         {
             Database.rollback(sp);
             ApexPages.addMessages(ex);
+            return null;
         }
         return new PageReference('/apex/WikiHome');
     }

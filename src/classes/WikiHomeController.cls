@@ -45,7 +45,6 @@ public with sharing class WikiHomeController
         if(popularPagesSet.getHasNext())
         {
             popularPagesSet.next();
-            system.assertEquals(null, (List<WikiPageVersion__c>)popularPagesSet.getRecords());
             PopularPages.addAll((List<WikiPageVersion__c>)popularPagesSet.getRecords());
         }
     }
@@ -53,7 +52,7 @@ public with sharing class WikiHomeController
     private List<WikiPageVersion__c> initPopularPages()
     {
         List<WikiPageVersion__c> pages= new List<WikiPageVersion__c>();
-        popularPagesSet = new ApexPages.StandardSetController([SELECT Id, Title__c, CreatedBy.Name, LastPublishedDate__c FROM WikiPageVersion__c WHERE IsLatestVersion__c = true]);
+        popularPagesSet = new ApexPages.StandardSetController([SELECT Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, WikiPage__r.LastPublishedDate__c                                                                FROM WikiPageVersion__c WHERE IsLatestVersion__c = true ORDER BY WikiPage__r.LastPublishedDate__c DESC]);
         popularPagesSet.setPageSize(4);
         pages.addAll((List<WikiPageVersion__c>)popularPagesSet.getRecords());
         return pages;
