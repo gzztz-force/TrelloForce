@@ -1,0 +1,3 @@
+[submodule "resource-bundles/bootstrap.resource"]
+	path = resource-bundles/bootstrap.resource
+	url = https://github.com/jairzh/bootstrap-sfdc.git
