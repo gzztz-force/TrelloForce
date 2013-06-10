@@ -8,36 +8,39 @@ public with sharing class WikiHomeController
 
     public WikiHomeController()
     {
-    	NewSpace = new WikiSpace__c();
+        NewSpace = new WikiSpace__c();
         PopularPages = initPopularPages();
-    	NewSpaceIsSuccess = false;
+        HasError = false;
     }
 
     public WikiSpace__c NewSpace { get; set; }
-    public Boolean NewSpaceIsSuccess { get; set; }
+    public Boolean HasError { get; set; }
     public List<WikiPageVersion__c> PopularPages { get; set; }
 
     public List<WikiSpace__c> getMySpaces()
     {
-        return [SELECT Name__c, Summary__c FROM WikiSpace__c];
+        return [select Name, Summary__c from WikiSpace__c order by CreatedDate desc];
     }
 
     public List<WikiPageVersion__c> getMyPages()
     {
-        return [SELECT Title__c, WikiPage__c FROM WikiPageVersion__c WHERE IsLatestVersion__c = true AND CreatedById = :UserInfo.getUserId()];
+        return [select Title__c, WikiPage__c from WikiPageVersion__c WHERE IsLatestVersion__c = true AND CreatedById = :UserInfo.getUserId()];
     }
 
     public void createNewSpace()
     {
-    	try
-    	{
-    	    insert NewSpace;
-    	    NewSpaceIsSuccess = true;
-    	}
-    	catch(Exception ex)
-    	{
-    		ApexPages.addMessages(ex);
-    	}
+        HasError = false;
+
+        try
+        {
+            insert NewSpace;
+            NewSpace = new WikiSpace__c();
+        }
+        catch(Exception ex)
+        {
+            HasError = true;
+            ApexPages.addMessages(ex);
+        }
     }
 
     public void loadMorePopularPages()
@@ -61,10 +64,10 @@ public with sharing class WikiHomeController
     @isTest
     static void testWikiHome()
     {
-    	WikiHomeController controller = new WikiHomeController();
-    	controller.NewSpace.Name__c = 'test';
-    	controller.NewSpace.Summary__c = 'test';
-    	controller.createNewSpace();
-    	system.assertEquals('test', [select Name__c from WikiSpace__c WHERE id = :controller.NewSpace.Id][0].Name__c);
+        WikiHomeController controller = new WikiHomeController();
+        controller.NewSpace.Name__c = 'test';
+        controller.NewSpace.Summary__c = 'test';
+        controller.createNewSpace();
+        system.assertEquals('test', [select Name__c from WikiSpace__c WHERE id = :controller.NewSpace.Id][0].Name__c);
     }
 }
