@@ -1,0 +1,6 @@
+<apex:component id="head" layout="none" >
+    <meta charset="utf-8"/>
+
+    <apex:stylesheet value="{!URLFOR($Resource.PMHtml, 'styles/main.css')}"/>
+
+</apex:component>

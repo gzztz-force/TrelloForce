@@ -1,0 +1,4 @@
+<apex:component layout="none">
+    <!-- Require.js -->
+    <script data-main="{!URLFOR($Resource.PMHtml)}/scripts/main" src="{!URLFOR($Resource.PMHtml, '/bower_components/requirejs/require.js')}"></script>
+</apex:component>
