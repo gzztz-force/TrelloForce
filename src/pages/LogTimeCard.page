@@ -59,10 +59,13 @@
                     </div>
                 </div>
                 <div class="control-group">
+                    <label class="control-label" for="isBillable">&nbsp;</label>
                     <div class="controls">
-                        <label class="checkbox">
-                            <input id="isBillable" type="checkbox" checked="true"/>Billable
-                        </label>
+                        <apex:outputPanel layout="none" rendered="{!$ObjectType.TimeCard__c.Fields.Billable__c.Accessible}">
+                            <label class="checkbox" for="isBillable">
+                                <input id="isBillable" type="checkbox" checked="true"/>Billable
+                            </label>
+                        </apex:outputPanel>
                     </div>
                 </div>
                 <div class="bottom-bar">
