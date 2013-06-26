@@ -6,25 +6,26 @@ private class LogTimeCardControllerTest
 {
     @isTest static void testNewUserNoUsedProject()
     {
-        Test.startTest();
-
         createProjectAndTeamMember();
-        LogTimeCardController controller = new LogTimeCardController();
-        System.assertEquals(10, controller.RecentProjects.size());
 
+        Test.startTest();
+        LogTimeCardController controller = new LogTimeCardController();
         Test.stopTest();
+
+        System.assertEquals(10, controller.RecentProjects.size());
     }
 
     @isTest static void testOldUserHasUsedProject()
     {
-        Test.startTest();
 
         List<TeamMember__c> tms = createProjectAndTeamMember();
         createChangeAndTimecard(tms);
-        LogTimeCardController controller = new LogTimeCardController();
-        System.assertEquals(10, controller.RecentProjects.size());
 
+        Test.startTest();
+        LogTimeCardController controller = new LogTimeCardController();
         Test.stopTest();
+
+        System.assertEquals(10, controller.RecentProjects.size());
     }
 
     private static List<TeamMember__c> createProjectAndTeamMember()
