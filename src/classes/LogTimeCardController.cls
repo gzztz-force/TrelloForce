@@ -70,7 +70,7 @@ public with sharing class LogTimeCardController
         {
             projects = [select Id, Name,
                  (select Id from TeamMembers__r where User__c = :UserInfo.getUserId()),
-                 (select Id, Name from Changes__r order by LastActivityDate desc, CreatedDate desc limit :QUERY_CHANGE_NUMBER)
+                 (select Id, Name from Changes__r where IsClosed__c = 0 order by LastActivityDate desc, CreatedDate desc limit :QUERY_CHANGE_NUMBER)
                  from MProject__c where Id in :recentUsedProjectIds
             ];
         }
@@ -78,7 +78,7 @@ public with sharing class LogTimeCardController
         {
             projects = [select Id, Name,
                 (select Id from TeamMembers__r where User__c = :UserInfo.getUserId()),
-                (select Id, Name from Changes__r order by LastActivityDate desc, CreatedDate desc limit :QUERY_CHANGE_NUMBER)
+                (select Id, Name from Changes__r where IsClosed__c = 0 order by LastActivityDate desc, CreatedDate desc limit :QUERY_CHANGE_NUMBER)
                 from MProject__c order by CreatedDate desc limit :QUERY_PROJECT_NUMBER
             ];
         }
