@@ -1,0 +1,82 @@
+<apex:page docType="html-5.0" language="en_US" standardStylesheets="false" showHeader="false" sidebar="false" controller="LogTimeCardController" >
+
+    <c:PMDocumentHead />
+    <!-- Include the RemoteTK component -->
+    <c:RemoteTK />
+
+    <div id="force" class="time-card" >
+        <form class="form-horizontal">
+            <fieldset>
+                <div class="alert-panel"></div>
+                <div class="control-group">
+                    <label class="control-label" for="selectProject">Project</label>
+                    <div class="controls">
+                        <select class="span5" id="selectProject" required="required">
+                            <apex:repeat value="{!RecentProjects}" var="rp">
+                                <!-- Set option as a default -->
+                                <apex:outputPanel layout="none" rendered="{!rp.IsLatestUsedProject}">
+                                    <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!Not(rp.IsLatestUsedProject)}">
+                                    <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                                </apex:outputPanel>
+                            </apex:repeat>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="selectChange">Change</label>
+                    <div class="controls">
+                        <select class="span5" id="selectChange" >
+                            <option></option>
+                            <apex:repeat value="{!RecentProjects}" var="rp">
+                                <apex:outputPanel rendered="{!rp.IsLatestUsedProject}">
+                                    <apex:repeat value="{!rp.Changes}" var="change">
+                                        <option value="{!change.Id}">{!change.Name}</option>
+                                    </apex:repeat>
+                                </apex:outputPanel>
+                            </apex:repeat>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputDate">Date</label>
+                    <div class="controls controls-row">
+                        <div class="input-append date datepicker" data-date="{!YEAR(TODAY())}-{!MONTH(TODAY())}-{!DAY(TODAY())}" data-date-format="yyyy-mm-dd">
+                            <input id="inputDate" class="span2" size="16" type="text" value="{!YEAR(TODAY())}-{!MONTH(TODAY())}-{!DAY(TODAY())}" required="required"/>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                        <div class="input-prepend hours" >
+                            <span class="add-on"><i class="icon-leaf"></i></span>
+                            <input type="number" class="input-mini" id="inputHours" placeholder="Hours" required="required"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputDescription">Description</label>
+                    <div class="controls">
+                        <textarea id="inputDescription" rows="3" class="span5" required="required"></textarea>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="isBillable">&nbsp;</label>
+                    <div class="controls">
+                        <apex:outputPanel layout="none" rendered="{!$ObjectType.TimeCard__c.Fields.Billable__c.Accessible}">
+                            <label class="checkbox" for="isBillable">
+                                <input id="isBillable" type="checkbox" checked="true"/>Billable
+                            </label>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+                <div class="bottom-bar">
+                    <div class="controls">
+                        <input type="submit" class="btn btn-success pull-right" value="Save" id="saveBtn" data-loading-text="Saving..."/>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <c:PMDocumentFooter />
+
+</apex:page>
