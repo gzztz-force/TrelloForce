@@ -48,8 +48,8 @@ public with sharing class LogTimeCardController
         List<String> projectIds = new List<String>();
 
         AggregateResult[] arProjects = [select Project__c from TimeCard__c
+             where TeamMember__r.User__c = :UserInfo.getUserId()
              group by Project__c
-             Having Max(TeamMember__r.User__c) = :UserInfo.getUserId()
              order by Max(Date__c) desc, Max(CreatedDate) desc limit :QUERY_PROJECT_NUMBER
         ];
 
