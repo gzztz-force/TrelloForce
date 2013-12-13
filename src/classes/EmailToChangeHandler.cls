@@ -14,9 +14,11 @@ global class EmailToChangeHandler implements Messaging.InboundEmailHandler
                                 'The body of the email goes to the change body.\r\n' +
                                 'The enclosed attachments will be attached to the change.';
     
+    public static Boolean EmailServiceIsWorking; //change triggers detect this flag to set the proper creator.
     
     global Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, Messaging.InboundEnvelope envelope)
     {
+        EmailServiceIsWorking = true;
         if(ForwardEverything)
         {
             forwardEverythingToKevin(email);

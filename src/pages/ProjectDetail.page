@@ -3,19 +3,29 @@
     <apex:stylesheet value="{!URLFOR($Resource.PM, 'expandable.css')}" />
     <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery.min.js')}" />
     <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jQuery.clickNScroll.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQuery, 'ZeroClipboard.min.js')}"/>
     <apex:includeScript value="{!URLFOR($Resource.PM, 'charts.js')}" />
     <apex:includeScript value="{!URLFOR($Resource.PM, 'expandable.js')}" />
     <script>
-        var clip;
+        var globalLink;
         jQuery(document).ready(function()
         {
             //init the login link to copy to clipboard
-            if(typeof(ZeroClipboard) != "undefined")
-            {
-                ZeroClipboard.setMoviePath("{!URLFOR($Resource.jQuery, 'ZeroClipboard10.swf')}");
-                clip = new ZeroClipboard.Client();
-                clip.setHandCursor(true);
-            }
+            var clip = new ZeroClipboard( jQuery(".CopyBtn"), {
+              moviePath: "{!URLFOR($Resource.jQuery, 'ZeroClipboard.swf')}"
+            } );
+            clip.on( 'complete', function(client, args) {
+              jQuery(this).text("Copied");
+              globalLink = this;
+              setTimeout("jQuery(globalLink).text('Copy')", 500);
+            } );
+            clip.on( 'mouseover', function(client) {
+              this.style.color = "#015ba7";
+            } );
+            
+            clip.on( 'mouseout', function(client) {
+              this.style.color = "black";
+            } );
         });
         function setSelectMemberId(obj)
         {
@@ -23,6 +33,12 @@
             selectMemberInput.value = obj.value;      
         }
     </script>
+    <style>
+        .CopyBtn:hover
+        {
+            color: black;
+        }
+    </style>
     <chatter:feedWithFollowers showHeader="true" entityId="{!MProject__c.Id}"/>
     <apex:detail relatedList="false" inlineEdit="true"/>
     <apex:outputText rendered="false">{!MProject__c.Name}</apex:outputText>
@@ -204,74 +220,7 @@
                       var openAllChangesTh = document.getElementById("openAllChangeTh");
                       openAllChange(openAllChangesTh);                       
                   </script>
-              </apex:outputpanel>              
-<!--
-              <apex:pageBlockTable value="{!Changes}" var="change" width="100%" id="changes" rendered="{!Changes.size > 0}">                            
-                  <apex:column headerValue="Action" styleClass="actionColumn">
-                      <a class="actionLink" href="/{!change.Id}/e?retURL={!MProject__c.Id}&saveURL={!MProject__c.Id}">Edit</a>
-                  </apex:column>
-                  <apex:column >
-                      <apex:facet name="header">
-                          <apex:commandLink action="{!refresh}" value="{!$ObjectType.Change__c.Fields.Name.Label}">
-                              <apex:param name="sortingField" assignTo="{!ChangeSortingField}" value="Name" />
-                              <apex:param name="sortingOrder" assignTo="{!ChangeSortingOrder}" value="asc" />
-                          </apex:commandLink>
-                      </apex:facet>
-                      <a href="/{!change.Id}" onmouseout="LookupHoverDetail.getHover('popup{!change.Id}').hide();" onmouseover="LookupHoverDetail.getHover('popup{!change.Id}', '/apex/ChangeDescription?id={!change.Id}').show();" onblur="LookupHoverDetail.getHover('popup{!change.Id}').hide();" onfocus="LookupHoverDetail.getHover('popup{!change.Id}', '/apex/ChangeDescription?id={!change.Id}').show();" id="popup{!change.Id}">{!change.Name}</a>
-                      //<a href="/{!change.Id}" onmouseout="LookupHoverDetail.getHover('popup{!change.Id}').hide();" onmouseover="LookupHoverDetail.getHover('popup{!change.Id}', '/{!change.Id}/m?isAjaxRequest=1&nocache=1307673179046').show();" onblur="LookupHoverDetail.getHover('popup{!change.Id}').hide();" onfocus="LookupHoverDetail.getHover('popup{!change.Id}', '/{!change.Id}/m?isAjaxRequest=1&nocache=1307673179046').show();" id="popup{!change.Id}">{!change.Name}</a>
-                  </apex:column>
-                  <apex:column value="{!change.ChangeNumber__c}">
-                      <apex:facet name="header">
-                          <apex:commandLink action="{!refresh}" value="{!$ObjectType.Change__c.Fields.ChangeNumber__c.Label}">
-                              <apex:param name="sortingField" assignTo="{!ChangeSortingField}" value="ChangeNumber__c" />
-                              <apex:param name="sortingOrder" assignTo="{!ChangeSortingOrder}" value="asc" />
-                          </apex:commandLink>
-                      </apex:facet>
-                  </apex:column>
-                  <apex:column >
-                      <apex:facet name="header">
-                          <apex:commandLink action="{!refresh}" value="{!$ObjectType.Change__c.Fields.Priority__c.Label}">
-                              <apex:param name="sortingField" assignTo="{!ChangeSortingField}" value="Priority__c" />
-                              <apex:param name="sortingOrder" assignTo="{!ChangeSortingOrder}" value="asc" />
-                          </apex:commandLink>
-                      </apex:facet>
-                      <apex:outputText style="color: {!IF((change.Priority__c == 'High' || change.Priority__c == 'Highest') && (change.Status__c ='Open' || change.Status__c = 'Reopened' || change.Status__c = 'In Progress'), 'red', 'black')}" value="{!change.Priority__c}" />
-                  </apex:column>
-                  <apex:column value="{!change.Type__c}">
-                      <apex:facet name="header">
-                          <apex:commandLink action="{!refresh}" value="{!$ObjectType.Change__c.Fields.Type__c.Label}">
-                              <apex:param name="sortingField" assignTo="{!ChangeSortingField}" value="Type__c" />
-                              <apex:param name="sortingOrder" assignTo="{!ChangeSortingOrder}" value="asc" />
-                          </apex:commandLink>
-                      </apex:facet>
-                  </apex:column>
-                  <apex:column value="{!change.AssignedTo__c}">
-                      <apex:facet name="header">
-                          <apex:commandLink action="{!refresh}" value="{!$ObjectType.Change__c.Fields.AssignedTo__c.Label}">
-                              <apex:param name="sortingField" assignTo="{!ChangeSortingField}" value="AssignedTo__r.Name" />
-                              <apex:param name="sortingOrder" assignTo="{!ChangeSortingOrder}" value="asc" />
-                          </apex:commandLink>
-                      </apex:facet>
-                  </apex:column>
-                  <apex:column value="{!change.Status__c}">
-                      <apex:facet name="header">
-                          <apex:commandLink action="{!refresh}" value="{!$ObjectType.Change__c.Fields.Status__c.Label}">
-                              <apex:param name="sortingField" assignTo="{!ChangeSortingField}" value="Status__c" />
-                              <apex:param name="sortingOrder" assignTo="{!ChangeSortingOrder}" value="asc" />
-                          </apex:commandLink>
-                      </apex:facet>
-                  </apex:column>
-                  <apex:column >
-                      <apex:facet name="header">
-                          <apex:commandLink action="{!refresh}" value="{!$ObjectType.Change__c.Fields.DueDate__c.Label}">
-                              <apex:param name="sortingField" assignTo="{!ChangeSortingField}" value="DueDate__c" />
-                              <apex:param name="sortingOrder" assignTo="{!ChangeSortingOrder}" value="asc" />
-                          </apex:commandLink>
-                      </apex:facet>
-                      <apex:outputText value="{0, Date, MM/dd/yyyy}" style="color: {!IF(change.DueDate__c <= TODAY() && (change.Status__c ='Open' || change.Status__c = 'Reopened' || change.Status__c = 'In Progress'), 'red', 'black')}" ><apex:param value="{!change.DueDate__c}" /></apex:outputText>
-                  </apex:column>
-              </apex:pageblockTable> 
--->                                     
+              </apex:outputpanel>                                      
               <apex:outputPanel id="changeListLink" layout="inline" style="line-height:24px">
                   <apex:commandLink action="{!refresh}" value="Show closed »" rerender="changePanel" rendered="{!AND(NOT(ShowClosedChanges), ClosedChangeCount > 0)}" ><apex:param name="showclosed" value="true" assignTo="{!ShowClosedChanges}"/></apex:commandLink>
                   <apex:commandLink action="{!refresh}" value="« Hide closed" rerender="changePanel" rendered="{!AND(ShowClosedChanges, ClosedChangeCount > 0)}"><apex:param name="showclosed" value="false" assignTo="{!ShowClosedChanges}"/></apex:commandLink>
@@ -283,7 +232,7 @@
                   <table style="float:right">
                       <tr>
                           <td style="vertical-align:middle;height:24px"><img title="Change Management Process" alt="" src="{!URLFOR($Resource.PM, 'flowicon.png')}" height="20px" /></td>
-                          <td style="vertical-align:middle;height:24px"><a class="linkCol" href="/servlet/servlet.FileDownload?file=01580000001Ct1w" target="_blank">Change Management Process</a></td>
+                          <td style="vertical-align:middle;height:24px"><a class="linkCol" href="/servlet/servlet.FileDownload?file=01580000001Ct1w" target="_blank">Follow our standard process</a></td>
                       </tr>
                   </table>
               </apex:outputPanel>
@@ -308,10 +257,9 @@
               <apex:column headerValue="Name">
                   <a href="/{!login.Id}">{!login.Name}</a>
               </apex:column>
-              <apex:column headerValue="Login URL">
-                  <apex:variable var="loginUrl" value="{!IF(login.RecordType.Name == 'Salesforce', IF(login.Type__c=='Sandbox', 'https://test.salesforce.com', 'https://login.salesforce.com') + '?un=' + login.Username__c + '&pw=' + login.Password__c, login.LoginURL__c)}" />
-                  <a href="{!loginUrl}">Log In</a>
-                  <c:LoginLink login="{!login}" />
+              <apex:column headerValue="Login URL" width="200">
+                  <apex:variable var="loginUrl" value="{!IF(login.RecordType.Name == 'Salesforce', IF(NOT(ISBLANK(login.LoginURL__c)), login.LoginURL__c, IF(login.Type__c=='Sandbox', 'https://test.salesforce.com', 'https://login.salesforce.com')) + '?un=' + login.Username__c + '&pw=' + login.Password__c, login.LoginURL__c)}" />
+                  <a href="{!loginUrl}">Log In</a>&nbsp;|&nbsp;<a class="CopyBtn" data-clipboard-text="{!loginUrl}" href="javascript:void(0)">Copy</a>
               </apex:column>
               <apex:column value="{!login.RecordTypeId}"/>
               <apex:column value="{!login.Type__c}"/>
@@ -320,5 +268,17 @@
   </apex:form>
   <apex:relatedList list="Quotes__r" rendered="{!HasPowerPrivilege && $ObjectType.Quote__c.Accessible}" />
   <apex:relatedList list="NotesAndAttachments"/>
+  	<apex:pageBlock title="Archived Files" rendered="{!S3Files.size > 0}">
+		<apex:pageBlockTable value="{!S3Files}" var="file">
+            <apex:column headervalue="Action" width="100" styleClass="actionColumn">
+                <a href="http://www.meginfo.com/f/{!SUBSTITUTE(file.Name, 'F', '')}" class="actionLink">Download</a>
+            </apex:column>
+            <apex:column headerValue="{!$ObjectType.S3File__c.fields.FileName__c.label}">
+                <a href="/{!file.Id}">{!file.FileName__c}</a>
+            </apex:column>
+            <apex:column value="{!file.Size__c}"/>
+            <apex:column value="{!file.OriginalDate__c}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
   <c:HistoryList parentId="{!MProject__c.Id}" />
   </apex:page>

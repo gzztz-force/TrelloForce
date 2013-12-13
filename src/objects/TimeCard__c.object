@@ -47,7 +47,7 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>false</enableActivities>
-    <enableFeeds>false</enableFeeds>
+    <enableFeeds>true</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>true</enableReports>
     <fields>
@@ -55,6 +55,7 @@
         <defaultValue>true</defaultValue>
         <externalId>false</externalId>
         <label>Billable</label>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
@@ -67,6 +68,7 @@
         <relationshipLabel>Time Cards</relationshipLabel>
         <relationshipName>Time_Cards</relationshipName>
         <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Lookup</type>
     </fields>
@@ -76,6 +78,7 @@
         <externalId>false</externalId>
         <label>Date</label>
         <required>true</required>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Date</type>
     </fields>
@@ -84,6 +87,7 @@
         <externalId>false</externalId>
         <label>Description</label>
         <length>32000</length>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>LongTextArea</type>
         <visibleLines>10</visibleLines>
@@ -95,17 +99,10 @@
         <precision>12</precision>
         <required>true</required>
         <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Number</type>
         <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>IsSync__c</fullName>
-        <defaultValue>false</defaultValue>
-        <externalId>false</externalId>
-        <label>IsSync</label>
-        <trackTrending>false</trackTrending>
-        <type>Checkbox</type>
     </fields>
     <fields>
         <fullName>Project__c</fullName>
@@ -116,6 +113,7 @@
         <relationshipName>TimeCards</relationshipName>
         <relationshipOrder>0</relationshipOrder>
         <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>MasterDetail</type>
         <writeRequiresMasterRead>false</writeRequiresMasterRead>
@@ -129,30 +127,40 @@
         <relationshipName>Time_Cards</relationshipName>
         <relationshipOrder>1</relationshipOrder>
         <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>MasterDetail</type>
         <writeRequiresMasterRead>true</writeRequiresMasterRead>
     </fields>
     <label>Time Card</label>
-    <listViews>
-        <fullName>All</fullName>
-        <filterScope>Everything</filterScope>
-        <label>All</label>
-    </listViews>
     <nameField>
         <displayFormat>TC-{0000000}</displayFormat>
         <label>Time Card Name</label>
+        <trackFeedHistory>false</trackFeedHistory>
         <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Time Cards</pluralLabel>
     <searchLayouts/>
     <sharingModel>ControlledByParent</sharingModel>
     <validationRules>
-        <fullName>Time_Cards_On_Wrong_User</fullName>
+        <fullName>TimeCardCannotBeLoggedForOtherPerson</fullName>
         <active>true</active>
         <errorConditionFormula>AND( TeamMember__r.User__c !=  $User.Id ,
-CONTAINS( $Profile.Name , &quot;Developer&quot;))</errorConditionFormula>
-        <errorMessage>You cannot create time cards for other people.</errorMessage>
+CONTAINS( $Profile.Name , &quot;Developer&quot;), ISNEW()
+)</errorConditionFormula>
+        <errorMessage>You can only create a time card for yourself.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>TimeCardCannotBeLoggedUnderBilledChange</fullName>
+        <active>true</active>
+        <errorConditionFormula>ISNEW() &amp;&amp; Change__r.Billed__c</errorConditionFormula>
+        <errorMessage>You can&apos;t log a time card to a billed change. Please make sure you&apos;re logging time under the right change or contact your project manager for further information.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>TimeCardCannotBeLoggedUnderClosedProject</fullName>
+        <active>true</active>
+        <errorConditionFormula>ISNEW() &amp;&amp; TEXT( Project__r.Status__c ) = &quot;Closed&quot;</errorConditionFormula>
+        <errorMessage>You can&apos;t log a time card to a closed projects.</errorMessage>
     </validationRules>
     <webLinks>
         <fullName>New_Time_Card</fullName>

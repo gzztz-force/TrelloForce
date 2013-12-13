@@ -1,5 +1,4 @@
-<apex:page standardController="Quote__c" extensions="QuotePrintController" showHeader="false" renderas="pdf">
-    <html>
+<apex:page standardController="Quote__c" extensions="QuotePrintController" showHeader="false" renderAs="pdf">
     <head>
         <style type="text/css">
             .centerheader
@@ -123,5 +122,4 @@
             </apex:panelGrid>
         </apex:panelGrid>
     </body>
-    </html>
 </apex:page>

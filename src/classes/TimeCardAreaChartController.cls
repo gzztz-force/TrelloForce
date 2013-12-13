@@ -77,8 +77,8 @@ public class TimeCardAreaChartController
         {
             ChartTable table = new ChartTable();
             table.Cumulative = true;
-            Date startDate = Date.today().addMonths(-10);
-            for(Date d = Date.today().addMonths(-10); d <= Date.today(); d = d.addMonths(1))
+            Date startDate = Date.today().addMonths(-5);
+            for(Date d = Date.today().addMonths(-5); d <= Date.today(); d = d.addMonths(1))
             {
                 table.addColumn(translateMonthName(d.month()));
             }

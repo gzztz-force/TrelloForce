@@ -1,7 +1,7 @@
-/**
- * Removes the subscriptions if the change is closed of cancelled.
+/*
+ * Unsubscribes a change after updated to closed
  */
-trigger SubscribeChange2 on Change__c (after insert, after update) 
+trigger UnsubscribeChange on Change__c (after insert, after update) 
 {
     Set<Id> removingSubscriptions = new Set<Id>();
     for(Change__c change : Trigger.new) 
