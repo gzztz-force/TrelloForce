@@ -9,6 +9,7 @@
         <defaultValue>false</defaultValue>
         <externalId>false</externalId>
         <label>Is Master</label>
+        <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
@@ -17,6 +18,7 @@
         <label>Organization Id</label>
         <length>18</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -25,6 +27,7 @@
         <externalId>false</externalId>
         <label>URL</label>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Url</type>
     </fields>
     <label>Scrum Server</label>
