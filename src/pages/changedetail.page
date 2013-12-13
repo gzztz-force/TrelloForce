@@ -2,5 +2,17 @@
     <apex:form >
         <apex:detail inlineEdit="true" relatedList="true" showChatter="true"/>
         <apex:outputField value="{!Change__c.Project__c}" rendered="false" />
+        <apex:pageBlock title="Archived Files" rendered="{!S3Files.size > 0}">
+		<apex:pageBlockTable value="{!S3Files}" var="file">
+            <apex:column headervalue="Action" width="100" styleClass="actionColumn">
+                <a href="http://www.meginfo.com/f/{!SUBSTITUTE(file.Name, 'F', '')}" class="actionLink">Download</a>
+            </apex:column>
+            <apex:column headerValue="{!$ObjectType.S3File__c.fields.FileName__c.label}">
+                <a href="/{!file.Id}">{!file.FileName__c}</a>
+            </apex:column>
+            <apex:column value="{!file.Size__c}"/>
+            <apex:column value="{!file.OriginalDate__c}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
     </apex:form>
 </apex:page>
