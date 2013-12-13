@@ -9,6 +9,7 @@
         <externalId>false</externalId>
         <label>Content</label>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
     <fields>
@@ -17,6 +18,7 @@
         <label>ParentId</label>
         <length>15</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -26,6 +28,7 @@
         <label>UserId</label>
         <length>15</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>

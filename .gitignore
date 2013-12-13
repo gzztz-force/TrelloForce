@@ -1,2 +1,4 @@
 config/
 src/staticresources/
+*.sublime-project
+*.log
