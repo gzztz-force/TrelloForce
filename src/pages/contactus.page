@@ -44,12 +44,26 @@
                                 </tbody>
                             </table>
                             <apex:commandLink value="Submit" action="{!submit}" styleClass="submitBtn spA"/>
-                            <a href="http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=%E4%B9%90%E6%88%90%E4%B8%AD%E5%BF%83%20&sll=39.904667,116.408198&sspn=1.148244,2.469177&g=beijing&ie=UTF8&ll=39.894%20065,116.462224&spn=0.008561,0.01929&z=16&cid=5207689510573647717&iwloc=A" class="findUsOnGoogleMap spA">Find us on Google Maps</a><br />
-                            <span class="contactInfo">
-                                Tel (US): +1 (619) 618-0317<br />
-                                Tel (China): +86 10 67713956<br />
-                                Fax (China): +86 10 67713106
-                           </span>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="http://goo.gl/maps/iFHww" class="findUsOnGoogleMap chinaMap spA">Find us on Google Maps</a><br />
+                                        <span class="address" style="">北京市东城区小牌坊胡同甲七号银河SOHO, C31502室, 100027</span><br/>
+                                        <span class="contactInfo">
+                                            Tel: +86 10 67713956<br />
+                                            Fax: +86 10 67713106
+                                       </span>
+                                   </td>
+                                   <td valign="top">
+                                       <a href="https://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=+&q=55+New+Montgomery+St,+Suite+525+San+Francisco,+CA+94105&ie=UTF8&hq=&hnear=55+New+Montgomery+St+%23525,+San+Francisco,+California+94105&ll=37.789709,-122.400742&spn=0.017737,0.038195&t=m&z=15&vpsrc=6&iwloc=A" class="findUsOnGoogleMap usMap spA">Find us on Google Maps</a><br />
+                                       <span class="address" style="">55 New Montgomery St, Suite 525<br/>
+                                                San Francisco, CA 94105</span><br/>
+                                        <span class="contactInfo">
+                                            Tel: +1 (619) 618-0317<br />
+                                       </span>
+                                   </td>
+                               </tr>
+                           </table>
                        </apex:form>
                     </div>
                 </div>

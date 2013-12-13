@@ -3,7 +3,7 @@
  */
 trigger SetDefaultOpener on Change__c (before insert) 
 {
-    for(Change__c chg : Trigger.new )
+    for(Change__c chg : Trigger.new)
     {
         if(chg.OpenedBy__c == null)
         {

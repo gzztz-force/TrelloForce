@@ -42,11 +42,6 @@
     </actionOverrides>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <enableFeeds>false</enableFeeds>
-    <fieldSets>
-        <fullName>test</fullName>
-        <description>test</description>
-        <label>test</label>
-    </fieldSets>
     <fields>
         <fullName>Family</fullName>
         <picklist>

@@ -67,7 +67,7 @@ trigger SendEmailAfterChangeUpdate on Change__c (after update)
     
     private void send(Set<Id> usersId, Change__c ch)
     {
-        List<User> users = [select Id, Email from User where Id in :usersId];
+        List<User> users = [select Id, Email from User where Id in :usersId and IsActive=true];
         Change__c old = trigger.oldMap.get(ch.Id);
         
         String body = templateBody;
@@ -125,7 +125,7 @@ trigger SendEmailAfterChangeUpdate on Change__c (after update)
         for(User receiver: users)
         {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            mail.setToAddresses(new String[] { receiver.Email });
+            mail.setTargetObjectId(receiver.Id);
             mail.setSubject(subject);
             mail.setHtmlBody(body);
             mail.setPlainTextBody(textBody);

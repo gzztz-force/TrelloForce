@@ -8,7 +8,7 @@
         <fields>Id</fields>
         <fields>Status</fields>
         <includeSessionId>false</includeSessionId>
-        <integrationUser>aaron.lau@pm.meginfo.com.dev</integrationUser>
+        <integrationUser>aaron.lau@pm.meginfo.com</integrationUser>
         <name>Test Outbound Msg</name>
         <protected>false</protected>
         <useDeadLetterQueue>false</useDeadLetterQueue>
