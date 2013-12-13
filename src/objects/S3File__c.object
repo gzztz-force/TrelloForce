@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Follow</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>false</enableReports>
+    <fields>
+        <fullName>ContentType__c</fullName>
+        <externalId>false</externalId>
+        <label>Content Type</label>
+        <length>80</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>DownloadLink__c</fullName>
+        <externalId>false</externalId>
+        <formula>HYPERLINK(&quot;http://www.meginfo.com/f/&quot; + SUBSTITUTE( Name , &quot;F&quot;, &quot;&quot;), &quot;http://www.meginfo.com/f/&quot; + SUBSTITUTE( Name , &quot;F&quot;, &quot;&quot;), &quot;_blank&quot;)</formula>
+        <inlineHelpText>Generates download link, valid for 2 hours</inlineHelpText>
+        <label>Download Link</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FileName__c</fullName>
+        <externalId>false</externalId>
+        <label>File Name</label>
+        <length>250</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>IsPublic__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Is Public</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>NumberOfDownloads__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <label>Number of Downloads</label>
+        <precision>10</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>OriginalDate__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The CreatedDate of the archived file</inlineHelpText>
+        <label>Original Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>ParentId__c</fullName>
+        <externalId>false</externalId>
+        <label>Parent Id</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>S3Bucket__c</fullName>
+        <externalId>false</externalId>
+        <label>S3 Bucket</label>
+        <length>80</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>S3Key__c</fullName>
+        <externalId>false</externalId>
+        <label>S3 Key</label>
+        <length>250</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SizeInBytes__c</fullName>
+        <externalId>false</externalId>
+        <label>Size In Bytes</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Size__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF( SizeInBytes__c &gt; 1024 * 1024 * 1024, 
+    TEXT(ROUND(SizeInBytes__c / 1024 / 1024 / 1024, 2)) + &apos;GB&apos;,
+    IF(SizeInBytes__c &gt; 1024 * 1024,
+       TEXT(ROUND(SizeInBytes__c / 1024 / 1024, 2)) + &apos;MB&apos;,
+       IF(SizeInBytes__c &gt; 1024,
+          TEXT(ROUND(SizeInBytes__c / 1024, 2)) + &apos;KB&apos;,
+          TEXT(SizeInBytes__c) + &apos;B&apos;)
+    )
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Size</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>S3 File</label>
+    <listViews>
+        <fullName>All_Files</fullName>
+        <columns>NAME</columns>
+        <columns>FileName__c</columns>
+        <columns>Size__c</columns>
+        <columns>ParentId__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Files</label>
+    </listViews>
+    <nameField>
+        <displayFormat>F{000000}</displayFormat>
+        <label>File Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>S3 Files</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>FileName__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>ContentType__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Size__c</customTabListAdditionalFields>
+    </searchLayouts>
+    <sharingModel>Read</sharingModel>
+</CustomObject>

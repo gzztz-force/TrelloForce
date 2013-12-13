@@ -194,7 +194,15 @@ public with sharing class ProjectDetailController
             return displayingMembers;
         }
     }
-
+	
+    public List<S3File__c> S3Files
+    {
+        get
+        {
+            return [select Id, Name, DownloadLink__c, FileName__c, Size__c, OriginalDate__c from S3File__c where ParentId__c=:prj.Id];
+        }
+    }
+    
     public Integer AllMemberCount { get { return [select count() from TeamMember__c where Project__c=:prj.Id]; } }
     public Boolean ShowAllMembers { get; set; }
     public Boolean ShowClosedChanges { get; set; }    
