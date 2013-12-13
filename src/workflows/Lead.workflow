@@ -5,11 +5,7 @@
         <description>New Site Lead Created Email</description>
         <protected>false</protected>
         <recipients>
-            <recipient>aaron.lau@pm.meginfo.com.dev</recipient>
-            <type>user</type>
-        </recipients>
-        <recipients>
-            <recipient>noam.haberfeld@pm.meginfo.com.dev</recipient>
+            <recipient>aaron.lau@pm.meginfo.com</recipient>
             <type>user</type>
         </recipients>
         <senderType>CurrentUser</senderType>

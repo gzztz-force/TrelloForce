@@ -5,7 +5,7 @@
         <description>Send Email On SCM Error</description>
         <protected>false</protected>
         <recipients>
-            <recipient>kevin.chong@pm.meginfo.com.dev</recipient>
+            <recipient>jair.zheng@pm.meginfo.com</recipient>
             <type>user</type>
         </recipients>
         <senderAddress>pm@meginfo.com</senderAddress>
