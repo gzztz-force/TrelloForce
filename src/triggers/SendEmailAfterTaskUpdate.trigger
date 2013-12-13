@@ -127,7 +127,7 @@ trigger SendEmailAfterTaskUpdate on ChangeTask__c (after update)
         for(User receiver: users)
         {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            mail.setToAddresses(new String[] { receiver.Email });
+            mail.setTargetObjectId(receiver.Id);
             mail.setSubject(subject);
             mail.setHtmlBody(body);
             mail.setPlainTextBody(textBody);

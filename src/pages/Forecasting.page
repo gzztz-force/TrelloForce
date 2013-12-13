@@ -1,4 +1,4 @@
-<apex:page tabStyle="Forecasting__tab" controller="ForecastingController" readonly="true">
+<apex:page controller="ForecastingController" readonly="true">
     <apex:stylesheet value="{!URLFOR($Resource.Forecasting, 'FiscalQuarter.css')}"/>
     <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery-1.4.3.min.js')}" />
     <apex:includeScript value="{!URLFOR($Resource.jQuery, 'highcharts.js')}" />

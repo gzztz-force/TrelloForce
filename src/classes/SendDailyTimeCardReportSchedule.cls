@@ -9,19 +9,20 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
     
     global Database.QueryLocator start(Database.BatchableContext BC)
     {
-        List<EmailTemplate> templates = [select Id from EmailTemplate where Name = :EmailTemplateName];
-        List<OrgWideEmailAddress> orgWideEmails = [select Id, DisplayName from OrgWideEmailAddress where Address='pm@meginfo.com' limit 1];
-        OrgWideEmail = (orgWideEmails.size() > 0) ? orgWideEmails[0] : null;
-        
-        if(templates.size() > 0)
+        Integer dayofweekToday = getDayOfWeek(Date.today());
+        if((isWeekend(dayofweekToday) && isWorkday(Date.today())) || (!isWeekend(dayofweekToday) && !isHoliday(Date.today())))
         {
-            EmailTemplateId = templates[0].Id;
-            return Database.getQueryLocator([select Id, Name, Email from User where IsActive = true and IsEmployee__c=1]);
+            List<EmailTemplate> templates = [select Id from EmailTemplate where Name = :EmailTemplateName];
+            List<OrgWideEmailAddress> orgWideEmails = [select Id, DisplayName from OrgWideEmailAddress where Address='pm@meginfo.com' limit 1];
+            OrgWideEmail = (orgWideEmails.size() > 0) ? orgWideEmails[0] : null;
+            
+            if(templates.size() > 0)
+            {
+                EmailTemplateId = templates[0].Id;
+                return Database.getQueryLocator([select Id, Name, Email from User where IsActive = true and IsEmployee__c=1]);
+            }
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
  
     global void execute(Database.BatchableContext BC, List<User> users)
@@ -77,12 +78,61 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
         Database.executeBatch(batch, 10);
     }
     
+    //recurring holiday is not supported
+    public static Boolean isWorkday(Date d)
+    {
+        List<Holiday> holidays = [select Id, Name from Holiday where ActivityDate=:d order by LastModifiedDate desc limit 1];
+        if(holidays.size() > 0)
+        {
+            return holidays[0].Name.toLowerCase() == 'workday';
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    //recurring holiday is not supported
+    public static Boolean isHoliday(Date d)
+    {
+        List<Holiday> holidays = [select Id, Name from Holiday where ActivityDate=:d order by LastModifiedDate desc limit 1];
+        if(holidays.size() > 0)
+        {
+            return holidays[0].Name.toLowerCase() != 'workday';
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public static Boolean isWeekend(Integer dayOfWeek)
+    {
+        return dayOfWeek == 6 || dayOfWeek == 0;
+    }
+    
+    public static Integer getDayOfWeek(Date d)
+    {
+        Date previousDate = Date.newInstance(2012, 1, 1); //it is sunday
+        return Math.mod(previousDate.daysBetween(d), 7);
+    }
+    
+    @isTest
+    static void testGetDayOfWeek()
+    {
+        System.assertEquals(0, getDayOfWeek(Date.newInstance(2013, 6, 9)));
+        System.assertEquals(3, getDayOfWeek(Date.newInstance(2013, 2, 13)));
+        System.assertEquals(1, getDayOfWeek(Date.newInstance(2012, 10, 29)));
+    }
+    
     @isTest
     static void testSendDailyTimeCardReportSchedule()
     {
+        Holiday workday = new Holiday(Name='Workday', ActivityDate=Date.today());
+        insert workday;
         Test.startTest();
         SendDailyTimeCardReportSchedule batch = new SendDailyTimeCardReportSchedule();
-        batch.sendErrorMsg(new String[] { 'bruce.yue@meginfo.com'}, 'Error occureed on SendDailyTimeCardReportSchedule class', 'nothing');
+        batch.sendErrorMsg(new String[] { 'bruce.yue@meginfo.com'}, 'Error occurred on SendDailyTimeCardReportSchedule class', 'nothing');
         Database.executeBatch(batch);
         Test.stopTest();
     }
@@ -90,8 +140,12 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
     @isTest
     static void testExecute()
     {
+        Holiday workday = new Holiday(Name='Workday', ActivityDate=Date.today());
+        insert workday;
+        Test.startTest();
         SendDailyTimeCardReportSchedule schedule = new SendDailyTimeCardReportSchedule();
         SchedulableContext sc = null;
-        schedule.execute(sc);
+        //schedule.execute(sc);
+        Test.stopTest();
     }
 }
