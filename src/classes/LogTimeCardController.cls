@@ -2,7 +2,7 @@
  * The controller for LogTimeCard page
  * Use it in Chatter Action
  */
-public with sharing class LogTimeCardController
+global with sharing class LogTimeCardController
 {
     private static final Integer QUERY_PROJECT_NUMBER = 10;
     private static final Integer QUERY_CHANGE_NUMBER = 50;
@@ -102,5 +102,27 @@ public with sharing class LogTimeCardController
         public MProject__c Project { get; set; }
         public List<Change__c> Changes { get; set; }
         public String ChangesJsonData { get; set; }
+    }
+    
+    @remoteAction
+    global static Decimal getLoggedTimeToday(){
+        Decimal totalHours = 0.0;
+        for(TimeCard__c card : [select Hours__c from Timecard__c where Date__c = TODAY and TeamMember__r.User__c = :Userinfo.getUserId()])
+        {
+            totalHours += card.Hours__c;
+        }
+        
+        return totalHours;
+    }
+    
+    @remoteAction
+    global static Decimal getLoggedTimeYesterday(){
+        Decimal totalHours = 0.0;
+        for(TimeCard__c card : [select Hours__c from Timecard__c where Date__c = YESTERDAY and TeamMember__r.User__c = :Userinfo.getUserId()])
+        {
+            totalHours += card.Hours__c;
+        }
+        
+        return totalHours;
     }
 }
