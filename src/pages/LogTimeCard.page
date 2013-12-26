@@ -95,14 +95,14 @@
                                 <div class="input-prepend total-hours">
                                     <span class="add-on"><i class="icon-stopwatch"></i></span>
                                 </div>
-                                <span id="todayHours" class="num-area">8</span>
+                                <span id="todayHours" class="num-area">{!TodayHours}</span>
                             </div>
                             <div class="date-form">
                                 <span class="date-name">Yesterday:</span>
                                 <div class="input-prepend total-hours">
                                     <span class="add-on"><i class="icon-stopwatch"></i></span>
                                 </div>
-                                <span id="yesterdayHours" class="num-area">8</span>
+                                <span id="yesterdayHours" class="num-area">{!YesterdayHours}</span>
                             </div>
                             <div class="clearfix"></div>
                         </div>
