@@ -61,7 +61,6 @@ global with sharing class LogTimeCardController
                 result.add(pc);
             }
         }
-
         return result;
     }
 
@@ -127,39 +126,17 @@ global with sharing class LogTimeCardController
     }
 
     @remoteAction
-    global static Decimal getLoggedTimeToday(){
-        Decimal totalHours = 0.0;
-        for(TimeCard__c card : [select Hours__c from Timecard__c where Date__c = TODAY and TeamMember__r.User__c = :Userinfo.getUserId()])
-        {
-            totalHours += card.Hours__c;
-        }
-
-        return totalHours;
-    }
-
-    @remoteAction
-    global static Decimal getLoggedTimeYesterday(){
-        Decimal totalHours = 0.0;
-        for(TimeCard__c card : [select Hours__c from Timecard__c where Date__c = YESTERDAY and TeamMember__r.User__c = :Userinfo.getUserId()])
-        {
-            totalHours += card.Hours__c;
-        }
-
-        return totalHours;
-    }
-
-    @remoteAction
     global static String create(String objtype, String fields)
     {
         Map<String, Object> handleResult = new Map<String, Object>();
         Boolean isSuccess = true;
         Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objtype);
         if (targetType == null) {
-            return makeError('The requested resource does not exist', 'NOT_FOUND');
+            return RemoteTKController.makeError('The requested resource does not exist', 'NOT_FOUND');
         }
 
         SObject obj = targetType.newSObject();
-        String error = writeFields(objType, obj, fields);
+        String error = RemoteTKController.writeFields(objType, obj, fields);
         if (error != null) {
             return error;
         }
@@ -177,74 +154,11 @@ global with sharing class LogTimeCardController
             isSuccess = false;
             handleResult.put('error', '{"fields":['+fieldNames+'],"message":"'+dmle.getDmlMessage(0)+'","errorCode":"'+dmle.getDmlType(0).name()+'"}');
         }
-
         handleResult.put('id', obj.id);
         handleResult.put('success', isSuccess);
         handleResult.put('data', getTodayAndYesterdayHours());
 
         return JSON.serialize(handleResult);
-    }
-
-    private static String makeError(String message, String errorCode)
-    {
-        JSONGenerator gen = JSON.createGenerator(false);
-        gen.writeStartArray();
-        gen.writeStartObject();
-        gen.writeStringField('message', message);
-        gen.writeStringField('errorCode', errorCode);
-        gen.writeEndObject();
-        gen.writeEndArray();
-
-        return gen.getAsString();
-    }
-
-    private static String writeFields(String objtype, SObject obj, String fields) {
-        Map<String, Object> fieldMap = null;
-        try {
-            fieldMap = (Map<String, Object>)JSON.deserializeUntyped(fields);
-        } catch (JSONException je) {
-            return makeError(je.getMessage(), 'JSON_PARSER_ERROR');
-        }
-
-        Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objtype);
-
-        Map<String, Schema.sObjectField> targetFields = targetType.getDescribe().fields.getMap();
-
-        try {
-            for (String key : fieldMap.keySet()) {
-                if (targetFields.get(key) == null) {
-                    return '[{"message":"Field '+key+' does not exist on object type '+objtype+'","errorCode":"INVALID_FIELD"}]';
-                }
-
-                Object value = fieldMap.get(key);
-                Schema.DisplayType valueType = targetFields.get(key).getDescribe().getType();
-
-                if (value instanceof String && valueType != Schema.DisplayType.String) {
-                    // Coerce an incoming String to the correct type
-                    String svalue = (String)value;
-
-                    if (valueType == Schema.DisplayType.Date) {
-                        obj.put(key, Date.valueOf(svalue));
-                    } else if (valueType == Schema.DisplayType.Percent ||
-                           valueType == Schema.DisplayType.Currency) {
-                        obj.put(key, svalue == '' ? null : Decimal.valueOf(svalue));
-                    } else if (valueType == Schema.DisplayType.Double) {
-                        obj.put(key, svalue == '' ? null : Double.valueOf(svalue));
-                    } else if (valueType == Schema.DisplayType.Integer) {
-                        obj.put(key, Integer.valueOf(svalue));
-                    } else {
-                        obj.put(key, svalue);
-                    }
-                } else {
-                    // Just try Ø the incoming value on the object
-                    obj.put(key, value);
-                }
-            }
-        } catch (SObjectException soe) {
-            return makeError(soe.getMessage(), 'INVALID_FIELD');
-        }
-
-        return null;
     }
 
     //Map Key: today, yesterday
