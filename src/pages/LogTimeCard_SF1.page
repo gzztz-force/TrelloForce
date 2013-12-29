@@ -1,13 +1,15 @@
-<apex:page docType="html-5.0" language="en_US" standardStylesheets="false" showHeader="false" sidebar="false" controller="LogTimeCardController" >
+<apex:page docType="html-5.0" language="en_US" standardStylesheets="false" showHeader="false" sidebar="false" controller="LogTimeCardController">
   <head>
     <title>Log Time Card at Salesforce1</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="http://0.0.0.0:9000/styles/sf1-timecard.css"/>
-    <!-- <link rel="stylesheet" href="styles/main.css"> -->
+    <!--<link rel="stylesheet" href="http://0.0.0.0:9000/styles/sf1-timecard.css"/>-->
+    <apex:stylesheet value="{!URLFOR($Resource.PMHtml_SF1, 'styles/sf1-timecard.css')}"/>
   </head>
   <body>
     <form class="form-horizontal" role="form">
+      <div class="alert-panel">
+      </div>
       <div class="form-group">
         <label for="selectProject" class="col-sm-2 control-label">Project</label>
         <div class="col-sm-10">
@@ -28,7 +30,6 @@
         <label for="selectChange" class="col-sm-2 control-label">Change</label>
         <div class="col-sm-10">
           <select class="form-control" id="selectChange">
-              <option></option>
               <apex:repeat value="{!RecentProjects}" var="rp">
                   <apex:outputPanel rendered="{!rp.IsLatestUsedProject}">
                       <apex:repeat value="{!rp.Changes}" var="change">
@@ -63,25 +64,40 @@
             </apex:outputPanel>
         </div>
       </div>
-    <div class="bs-callout bs-callout-info bs-docs-example">
-        <div class="date-form">
-            <span class="date-name">Today:</span>
-            <div class="input-prepend total-hours">
-                <span class="add-on"><i class="icon-stopwatch"></i></span>
-            </div>
-            <span id="todayHours" class="num-area">{!TodayHours}</span>
+      <div class="form-group" style="display:none">
+        <div class="col-sm-offset-2 col-sm-10 pull-right">
+          <button id="saveBtn" type="submit" class="btn btn-success">Save</button>
         </div>
-        <div class="date-form">
-            <span class="date-name">Yesterday:</span>
-            <div class="input-prepend total-hours">
+      </div>
+    <div class="bs-callout bs-callout-info bs-docs-example" style="padding:39px 10px 14px">
+        <div class="date-form" style="margin-right:10px;">
+            <span class="date-name" style="float:left">Today:</span>
+            <div class="input-prepend total-hours" style="float:left">
                 <span class="add-on"><i class="icon-stopwatch"></i></span>
             </div>
-            <span id="yesterdayHours" class="num-area">{!YesterdayHours}</span>
+            <span id="todayHours" class="num-area" style="float:left;position:relative;top:-6px;padding:0 5px 0;">{!TodayHours}</span>
+            <div class="clearfix"></div>
+        </div>
+        <div class="date-form" style="margin-right:10px;">
+            <span class="date-name" style="float:left">Yesterday:</span>
+            <div class="input-prepend total-hours" style="float:left">
+                <span class="add-on"><i class="icon-stopwatch"></i></span>
+            </div>
+            <span id="yesterdayHours" class="num-area" style="float:left;position:relative;top:-6px;padding:0 5px 0;">{!YesterdayHours}</span>
+            <div class="clearfix"></div>
         </div>
         <div class="clearfix"></div>
     </div>
     </form>
-      
-    <script data-main='http://0.0.0.0:9000/scripts/sf1-main' src='http://0.0.0.0:9000/bower_components/requirejs/require.js'></script>
+
+    <!--<script data-main='http://0.0.0.0:9000/scripts/main' src='http://0.0.0.0:9000/bower_components/requirejs/require.js'></script>-->
+    <script data-main="{!URLFOR($Resource.PMHtml_SF1)}/scripts/main" src="{!URLFOR($Resource.PMHtml_SF1, '/bower_components/requirejs/require.js')}"></script>
+    <script type='text/javascript' src='/canvas/sdk/js/29.0/publisher.js'></script>
+    <script>
+        Sfdc.canvas.publisher.publish({name: "publisher.setValidForSubmit", payload:"true"});
+        Sfdc.canvas.publisher.subscribe({name: "publisher.post", onData:function(e){
+            $('#saveBtn').click();
+        }});
+    </script>
   </body>
 </apex:page>
