@@ -2,3 +2,4 @@ config/
 src/staticresources/
 *.sublime-project
 *.log
+*.sublime-workspace
