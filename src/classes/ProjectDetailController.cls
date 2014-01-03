@@ -186,10 +186,6 @@ public with sharing class ProjectDetailController
                     TeamMember__c memberWithNoRole = members[i];
                      displayingMembers.add(memberWithNoRole);
                 }
-                for(TeamMember__c inactiveMember : [select Id, Name, Role__c, TotalHours__c, LastActivityDate__c, User__r.IsActive from TeamMember__c where Project__c=:prj.Id and User__c!=:UserInfo.getUserId() and User__r.IsActive=false order by Name])
-                {
-                     displayingMembers.add(inactiveMember);
-                }
             }
             return displayingMembers;
         }
