@@ -165,11 +165,11 @@ public with sharing class ProjectDetailController
             if(displayingMembers == null)
             {
                 displayingMembers = new List<TeamMember__c>();
-                for(TeamMember__c myself : [select Id, Name, Role__c, TotalHours__c, LastActivityDate__c, User__r.IsActive from TeamMember__c where Project__c=:prj.Id and User__c=:UserInfo.getUserId()])
+                for(TeamMember__c myself : [select Id, Name, Role__c, TotalHours__c, LastActivityDate__c, IsActiveUser__c, User__r.isActive from TeamMember__c where Project__c=:prj.Id and User__c=:UserInfo.getUserId()])
                 {
                     displayingMembers.add(myself);
                 }
-                List<TeamMember__c> members = [select Id, Name, Role__c, TotalHours__c, LastActivityDate__c, User__r.IsActive from TeamMember__c where Project__c=:prj.Id and User__c!=:UserInfo.getUserId() and User__r.IsActive=true order by Name desc];
+                List<TeamMember__c> members = [select Id, Name, Role__c, TotalHours__c, LastActivityDate__c, IsActiveUser__c, User__r.isActive from TeamMember__c where Project__c=:prj.Id and User__c!=:UserInfo.getUserId() and IsActiveUser__c = true order by Name desc];
                 for(Schema.PicklistEntry roleEntry : TeamMember__c.Role__c.getDescribe().getPicklistValues())
                 {
                     for(Integer i = members.size() - 1; i >= 0; i--)
