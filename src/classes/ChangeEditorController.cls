@@ -1,12 +1,12 @@
 /**
  * Controller class of the Change Editor page.
  */
-public class ChangeEditorController 
+public class ChangeEditorController
 {
     private Map<String, String> parameters = ApexPages.currentPage().getParameters();
     private List<Follower> changeFollowers;
 
-    public ChangeEditorController(ApexPages.StandardController controller) 
+    public ChangeEditorController(ApexPages.StandardController controller)
     {
         Change = (Change__c)controller.getRecord();
         HasProject = true;
@@ -15,7 +15,7 @@ public class ChangeEditorController
         {
             String projectId = ApexPages.currentPage().getParameters().get('CF00N80000003kHRB_lkid');
             if(projectId instanceOf Id)
-            {   
+            {
                 //Change.Project__c = projectId;
             }
             else
@@ -28,12 +28,12 @@ public class ChangeEditorController
             Change = [Select Type__c, Status__c, Project__c, Priority__c, OpenedBy__c, Name, Id, Estimate__c, DueDate__c, Description__c, CustomerName__c, ChangeNumber__c, Billed__c, Billable__c, AssignedTo__c, Age__c From Change__c where Id = :Change.Id];
         }
     }
-    
+
     public PageReference redirect()
     {
         return null;
     }
-    
+
     public Boolean IsEditable
     {
       get
@@ -55,7 +55,7 @@ public class ChangeEditorController
         }
       }
     }
-    
+
     public Change__c Change { get; set; }
     public Boolean HasProject { get; private set; }
     public List<Follower> Followers
@@ -73,7 +73,7 @@ public class ChangeEditorController
                     existedFollowers.add(subscriber.SubscriberId);
                 }
             }
-            for(TeamMember__c member : [select Id, Name, User__c, Role__c from TeamMember__c where Project__c = :Change.Project__c order by User__r.FirstName])
+            for(TeamMember__c member : [select Id, Name, User__c, Role__c, isActiveUser__c from TeamMember__c where Project__c = :Change.Project__c and isActiveUser__c = true order by User__r.FirstName])
             {
                 Boolean checked = existedFollowers.contains(member.User__c);
                 changeFollowers.add(new Follower(member.User__c, member.Name, checked));
@@ -87,7 +87,7 @@ public class ChangeEditorController
         get
         {
                 List<SelectOption> result = new List<SelectOption>();
-                result.add(new SelectOption('', '-- Select a user --')); 
+                result.add(new SelectOption('', '-- Select a user --'));
                 for(Follower f : Followers)
                 {
                     result.add(new SelectOption(f.FollowerId, f.Name));
@@ -110,7 +110,7 @@ public class ChangeEditorController
         }
       }
     }
-    
+
     /**
      * invoked by the an action in the page to refresh the followers
      */
@@ -119,7 +119,7 @@ public class ChangeEditorController
         changeFollowers = null;
         return null;
     }
-    
+
     /**
      * Saves the change and adds followers to the change.
      */
@@ -147,7 +147,7 @@ public class ChangeEditorController
             return null;
         }
     }
-    
+
     /**
      * Saves current change and followers, goes to the new page to create a change.
      */
@@ -165,7 +165,7 @@ public class ChangeEditorController
         newChange.setRedirect(true);
         return newChange;
     }
-    
+
     private void saveFollowers()
     {
         Set<Id> subscribers = new Set<Id>();
@@ -180,7 +180,7 @@ public class ChangeEditorController
         }
         addFollowers(Change.Id, subscribers);
     }
-    
+
     /**
      * Automatically follows the change for the selected team members.
      */
@@ -213,7 +213,7 @@ public class ChangeEditorController
             Database.delete(existedSubscribers.values(), false);
         }
     }
-    
+
     /**
      * Inner class, presents the chatter follower. 
      */
@@ -229,7 +229,7 @@ public class ChangeEditorController
         public String Name { get; set; }
         public Boolean Selected { get; set; }
     }
-    
+
     /**
      * Tests create a new change from the changes tab(no project assigned).
      *
@@ -251,19 +251,19 @@ public class ChangeEditorController
             insert member;
             MProject__c projectWithoutMember = new MProject__c();
             insert projectWithoutMember;
-            
+
             PageReference newChangePage = Page.ChangeEditor;
             Test.setCurrentPage(newChangePage);
             ChangeEditorController controller = new ChangeEditorController(new ApexPages.Standardcontroller(new Change__c()));
-            
+
             controller.Change.Project__c = projectWithoutMember.Id;
             controller.refreshFollowers();
             system.assertEquals(0, controller.Followers.size());
-            
+
             controller.Change.Project__c = project.Id;
             controller.refreshFollowers();
             system.assertEquals(1, controller.Followers.size());
-            
+
             controller.Change.AssignedTo__c = UserInfo.getUserId();
             controller.Change.OpenedBy__c = UserInfo.getUserId();
             controller.Change.Description__c = 'this is a test';
@@ -271,7 +271,7 @@ public class ChangeEditorController
             system.assert([select Id, SubscriberId from EntitySubscription where ParentId = :controller.Change.Id].size() == 1);
         }
     }
-    
+
     /**
      * Tests create a new change from the project details page.
      *
@@ -293,13 +293,13 @@ public class ChangeEditorController
                 TeamMember__c member = new TeamMember__c(Project__c = project.Id, User__c = user.Id);
                 insert member;
             }
-            
+
             PageReference newChangePage = Page.ChangeEditor;
             Test.setCurrentPage(newChangePage);
             ChangeEditorController controller = new ChangeEditorController(new ApexPages.Standardcontroller(new Change__c(Project__c=project.Id)));
-            
+
             system.assertEquals(3, controller.Followers.size());
-            
+
             controller.Change.AssignedTo__c = UserInfo.getUserId();
             controller.Change.OpenedBy__c = UserInfo.getUserId();
             controller.Change.Description__c = 'this is a test';
@@ -309,7 +309,7 @@ public class ChangeEditorController
             //system.assertEquals(3, [select count() from EntitySubscription where ParentId = :controller.Change.Id]);
         }
     }
-    
+
     /**
      * Tests edit an existing change.
      *
@@ -333,11 +333,11 @@ public class ChangeEditorController
             }
             Change__c change = new Change__c(Project__c = project.Id, AssignedTo__c = UserInfo.getUserId(), OpenedBy__c = UserInfo.getUserId(), Description__c = 'this is a test');
             insert change;
-            
+
             PageReference newChangePage = Page.ChangeEditor;
             Test.setCurrentPage(newChangePage);
             ChangeEditorController controller = new ChangeEditorController(new ApexPages.Standardcontroller(change));
-            
+
             system.assertEquals(2, controller.Followers.size());
             List<SelectOption> assignsTo = controller.AssignToUsers;
             controller.Change.AssignedTo__c = UserInfo.getUserId();
