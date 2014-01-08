@@ -6,7 +6,10 @@ trigger AutoCreateSelfLearningTeamMember on User (after insert)
     List<Id> userIds = new List<Id>();
     for(User newUser : trigger.new)
     {
-        userIds.add(newUser.Id);
+        if(newUser.IsEmployee__c == 1)
+        {
+            userIds.add(newUser.Id);
+        }
     }
     try
     {
