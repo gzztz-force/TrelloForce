@@ -114,14 +114,14 @@ private class TriggerTests
     @isTest
     static void testCreateSelfLearningProjectTeamMember()
     {
-        List<User> users = new List<User>();
         Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
         UserRole r = [select Id from UserRole where Name = 'Developer'];
-        for(Integer i=0; i<10; i++)
-        {
-            User user = new User(LastName = 'acme' + i, Alias = 'acme' + i, Email = 'acme'+ i+'@acme.com', UserName = 'acme' + i + '@acme.com', CommunityNickname = 'acme' + i, ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles', ReceiveTimeCardsReminder__c = '');
-            users.add(user);
-        }
-        insert users;
+
+        User user = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+
+        insert user;
+
+        List<TeamMember__c> teamMember = [select Id, Name from TeamMember__c where Project__r.Name = 'Project for self-learning and non-work related hours' and Name = 'acme'];
+        System.assert(teamMember.size() > 0);
     }
 }
