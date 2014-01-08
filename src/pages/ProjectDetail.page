@@ -43,35 +43,36 @@
     <apex:outputText rendered="false">{!MProject__c.Name}</apex:outputText>
     <apex:outputText rendered="false">{!MProject__c.OwnerId}</apex:outputText>
     <apex:outputText rendered="false">{!MProject__c.Status__c}</apex:outputText>
-  <apex:form >
-      <apex:pageBlock title="Team Members" id="members">
-          <apex:pageBlockButtons location="top">
-              <apex:commandButton value="New Team Member" rendered="{!HasPowerPrivilege}" action="{!URLFOR($Action.TeamMember__c.New, null, [Name='[New]', CF00N80000003iWor=MProject__c.Name, CF00N80000003iWor_lkid=MProject__c.Id, retURL='/' + MProject__c.Id, saveURL='/' + MProject__c.Id])}"/>
-          </apex:pageBlockButtons>
-          <apex:pageBlockSection columns="1">
-              <apex:outputText rendered="{!TeamMembers.size == 0}">No records to display<br/></apex:outputText>
-              <apex:outputPanel >
-                  <apex:variable var="memberIndex" value="{!0}"/>
-                  <apex:pageBlockTable value="{!TeamMembers}" var="member" rendered="{!TeamMembers.size > 0}">
-                      <apex:column headerValue="Action" styleClass="actionColumn">
-                          <apex:outputLink value="{!URLFOR($Action.TeamMember__c.Edit, member.Id, [retURL='/' + MProject__c.Id])}" rendered="{!HasPowerPrivilege}" styleClass="actionLink">Edit</apex:outputLink>
-                          <apex:outputText rendered="{!AND(HasPowerPrivilege, member.TotalHours__c = 0)}">&nbsp;|&nbsp;</apex:outputText>
-                          <apex:outputLink value="{!URLFOR($Action.TeamMember__c.Delete, member.Id, [retURL='/' + MProject__c.Id])}" onclick="return confirm('Are you sure?')" rendered="{!AND(HasPowerPrivilege, member.TotalHours__c = 0)}" styleClass="actionLink">Del</apex:outputLink>
-                      </apex:column>
-                      <apex:column headerValue="Name">
-                          <a href="/{!member.Id}">{!member.Name}</a><div class="memberLegend" index="{!FLOOR(memberIndex)}" username="{!member.Name}" colored="{!IF(member.User__r.IsActive, 'true', 'false')}" onclick="toggleTeamMemberChart(this, {!FLOOR(memberIndex)})" title="Show/Hide user in the charts" style="display:none">&nbsp;</div>
-                          <apex:variable var="memberIndex" value="{!memberIndex + 1}"/>
-                      </apex:column>
-                      <apex:column value="{!member.Role__c}" />
-                      <apex:column headerValue="Total Hours" >
-                          <apex:outputText value="{0, number, ##,##0.0#}"><apex:param value="{!member.TotalHours__c}" /></apex:outputText>
-                      </apex:column>
-                      <apex:column value="{!member.LastActivityDate__c}" />
-                  </apex:pageBlockTable>
-                  <apex:outputPanel rendered="{!ChartType != ''}" layout="none">
-                      <a href="javascript:void(0)" onclick="openReport()" class="reportBtn">Open Time Card Report</a>
-                  </apex:outputPanel>
-              </apex:outputPanel> 
+    <apex:form >
+        <apex:pageBlock title="Team Members" id="members">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="New Team Member" rendered="{!HasPowerPrivilege}" action="{!URLFOR($Action.TeamMember__c.New, null, [Name='[New]', CF00N80000003iWor=MProject__c.Name, CF00N80000003iWor_lkid=MProject__c.Id, retURL='/' + MProject__c.Id, saveURL='/' + MProject__c.Id])}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1">
+                <apex:outputText rendered="{!TeamMembers.size == 0}">No records to display<br/></apex:outputText>
+                <apex:outputPanel >
+                    <apex:variable var="memberIndex" value="{!0}"/>
+                    <apex:pageBlockTable value="{!TeamMembers}" var="member" rendered="{!TeamMembers.size > 0}">
+                        <apex:column headerValue="Action" styleClass="actionColumn">
+                            <apex:outputLink value="{!URLFOR($Action.TeamMember__c.Edit, member.Id, [retURL='/' + MProject__c.Id])}" rendered="{!HasPowerPrivilege}" styleClass="actionLink">Edit</apex:outputLink>
+                            <apex:outputText rendered="{!AND(HasPowerPrivilege, member.TotalHours__c = 0)}">&nbsp;|&nbsp;</apex:outputText>
+                            <apex:outputLink value="{!URLFOR($Action.TeamMember__c.Delete, member.Id, [retURL='/' + MProject__c.Id])}" onclick="return confirm('Are you sure?')" rendered="{!AND(HasPowerPrivilege, member.TotalHours__c = 0)}" styleClass="actionLink">Del</apex:outputLink>
+                        </apex:column>
+                        <apex:column headerValue="Name">
+                            <a href="/{!member.Id}">{!member.Name}</a><div class="memberLegend" index="{!FLOOR(memberIndex)}" username="{!member.Name}" colored="{!IF(member.User__r.IsActive, 'true', 'false')}" onclick="toggleTeamMemberChart(this, {!FLOOR(memberIndex)})" title="Show/Hide user in the charts" style="display:none">&nbsp;</div>
+                            <apex:variable var="memberIndex" value="{!memberIndex + 1}"/>
+                        </apex:column>
+                        <apex:column value="{!member.Role__c}" />
+                        <apex:column headerValue="Total Hours" >
+                            <apex:outputText value="{0, number, ##,##0.0#}"><apex:param value="{!member.TotalHours__c}" /></apex:outputText>
+                        </apex:column>
+                        <apex:column value="{!member.LastActivityDate__c}" />
+                    </apex:pageBlockTable>
+                    <apex:outputPanel rendered="{!ChartType != ''}" layout="none">
+                        <a href="javascript:void(0)" onclick="openReport()" class="reportBtn">Open Time Card Report</a>
+                    </apex:outputPanel><br/>
+                    <apex:outputLink value = "/a0K?rlid=00N80000003iWor&id={!MProject__c.Id}">Go to list({!TotalTeamMembersCount}) »</apex:outputLink>
+              </apex:outputPanel>
               <apex:outputPanel >
               <div class="chartContainer" style="display:none">
                   <ul class="chartScroller">
@@ -264,8 +265,8 @@
   </apex:form>
   <apex:relatedList list="Quotes__r" rendered="{!HasPowerPrivilege && $ObjectType.Quote__c.Accessible}" />
   <apex:relatedList list="NotesAndAttachments"/>
-  	<apex:pageBlock title="Archived Files" rendered="{!S3Files.size > 0}">
-		<apex:pageBlockTable value="{!S3Files}" var="file">
+    <apex:pageBlock title="Archived Files" rendered="{!S3Files.size > 0}">
+    <apex:pageBlockTable value="{!S3Files}" var="file">
             <apex:column headervalue="Action" width="100" styleClass="actionColumn">
                 <a href="http://www.meginfo.com/f/{!SUBSTITUTE(file.Name, 'F', '')}" class="actionLink">Download</a>
             </apex:column>

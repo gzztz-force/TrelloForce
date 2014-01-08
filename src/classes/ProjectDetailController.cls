@@ -86,10 +86,10 @@ public with sharing class ProjectDetailController
                 Id prjId = prj.Id;
                 String keyword = ChangeKeyword;
                 String likeKeyword = '%' + ChangeKeyword + '%';
-                String soql = 'select Id, Name, Priority__c, ChangeNumber__c, AssignedTo__c, AssignedTo__r.Name, Type__c, Status__c, DueDate__c, (select Name, Change__c, Estimation__c, Status__c, AssignedTo__c, AssignedTo__r.Name, DueDate__c from ChangeTasks__r where Name like :likeKeyword or Change__r.ChangeNumber__c like :likeKeyword or Status__c like :likeKeyword or AssignedTo__r.Name like :likeKeyword) from Change__c where Project__c=:prjId';                
+                String soql = 'select Id, Name, Priority__c, ChangeNumber__c, AssignedTo__c, AssignedTo__r.Name, Type__c, Status__c, DueDate__c, (select Name, Change__c, Estimation__c, Status__c, AssignedTo__c, AssignedTo__r.Name DueDate__c from ChangeTasks__r where (Name like :likeKeyword or Change__r.ChangeNumber__c like :likeKeyword or Status__c like :likeKeyword or AssignedTo__r.Name like :likeKeyword) from Change__c where Project__c=:prjId';
                 if(ChangeKeyword == null || ChangeKeyword.length() < 2)
                 {
-                   soql = 'select Id, Name, Priority__c, ChangeNumber__c, AssignedTo__c, AssignedTo__r.Name, Type__c, Status__c, DueDate__c, (select Name, Change__c, Estimation__c, Status__c, AssignedTo__c, AssignedTo__r.Name, DueDate__c from ChangeTasks__r) from Change__c where Project__c=:prjId';                
+                   soql = 'select Id, Name, Priority__c, ChangeNumber__c, AssignedTo__c, AssignedTo__r.Name, Type__c, Status__c, DueDate__c, (select Name, Change__c, Estimation__c, Status__c, AssignedTo__c, AssignedTo__r.Name, DueDate__c from ChangeTasks__r) from Change__c where Project__c=:prjId';
                 }
 
                 if(selectMemberId != null && selectMemberId != 'All' && selectMemberId != '')
@@ -99,7 +99,7 @@ public with sharing class ProjectDetailController
                     {
                         changeIds.add(c.Change__c);
                     }
-                    soql = 'select Id, Name, Priority__c, ChangeNumber__c, AssignedTo__c, AssignedTo__r.Name, Type__c, Status__c, DueDate__c, (select Name, Change__c, Estimation__c, Status__c, AssignedTo__c, AssignedTo__r.Name, DueDate__c from ChangeTasks__r where AssignedTo__c=:selectMemberId) from Change__c where Project__c=:prjId and (AssignedTo__c=:selectMemberId or Id in:changeIds)';                
+                    soql = 'select Id, Name, Priority__c, ChangeNumber__c, AssignedTo__c, AssignedTo__r.Name, Type__c, Status__c, DueDate__c, (select Name, Change__c, Estimation__c, Status__c, AssignedTo__c, AssignedTo__r.Name, DueDate__c from ChangeTasks__r where AssignedTo__c=:selectMemberId) from Change__c where Project__c=:prjId and (AssignedTo__c=:selectMemberId or Id in:changeIds)';
                 }
 
                 if(ChangeKeyword != null && ChangeKeyword.length() >= 2)
@@ -188,6 +188,14 @@ public with sharing class ProjectDetailController
                 }
             }
             return displayingMembers;
+        }
+    }
+
+    public Integer TotalTeamMembersCount
+    {
+        get
+        {
+            return [select count() from TeamMember__c where project__c = :prj.Id];
         }
     }
 
