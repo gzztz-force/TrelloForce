@@ -44,7 +44,7 @@
                     </apex:outputPanel>
                 </apex:pageBlockSectionItem>
             </apex:pageBlockSection>
-            <apex:pageBlockSection columns="2">            
+            <apex:pageBlockSection columns="2">
                 <apex:inputField value="{!Change.Type__c}" />
                 <apex:inputField value="{!Change.Priority__c}" />
                 <apex:inputField value="{!Change.Estimate__c}" />
