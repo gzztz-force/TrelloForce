@@ -17,7 +17,7 @@ public class UserHandler
             {
                 newMembers.add(new TeamMember__c(Name = newUser.Name, Project__c = selfLearnProjects[0].Id, User__c = newUser.Id, Role__c = DEFAULT_ROLE));
             }
+            Database.insert(newMembers, false);
         }
-        Database.insert(newMembers, false);
     }
 }

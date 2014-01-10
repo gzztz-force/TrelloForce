@@ -69,7 +69,7 @@
                 </apex:pageBlockTable>
                 <apex:outputLink style="line-height:24px" value = "/a0K?rlid=00N80000003iWor&id={!MProject__c.Id}">Go to list ({!TotalTeamMembersCount}) »</apex:outputLink>
                 <apex:outputPanel rendered="{!ChartType != ''}" layout="none">
-                    <a href="javascript:void(0)" style="padding-left:10px" onclick="openReport()" class="reportBtn">Open Time Card Report</a>
+                    &nbsp;|&nbsp;<a href="javascript:void(0)" onclick="openReport()" class="reportBtn">Open Time Card Report</a>
                 </apex:outputPanel>
             </apex:outputPanel>
             <apex:outputPanel rendered="{!ChartType != ''}" layout="none">

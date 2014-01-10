@@ -20,19 +20,19 @@ private class TriggerTests
         insert prj;
         User u = [select Id, Name from User where IsActive = true limit 1];
         Change__c newChange = new Change__c(Project__c=prj.Id, Name = 'acme', AssignedTo__c = u.Id, Type__c='Change', Priority__c='Medium', Status__c='Open');
-        insert newChange; 
+        insert newChange;
     }
 
     @isTest
     static void testSendEmailAfterChangeUpdate()
     {
         MProject__c prj = new MProject__c(Name='acme');
-        insert prj; 
+        insert prj;
         User u = [select Id, Name from User where IsActive = true limit 1];
         Change__c change = new Change__c(Project__c=prj.Id, Name='acme', AssignedTo__c=u.Id, Type__c='Change', Priority__c='Medium', Status__c='Open');
         insert change;
         change.Name = 'acme2';
-        update change; 
+        update change;
     }
     @isTest
     static void testSendEmailAfterChangeCommentInsert()
@@ -100,7 +100,7 @@ private class TriggerTests
     static void testSendEmailAfterTaskUpdate()
     {
         MProject__c prj = new MProject__c(Name='acme');
-        insert prj; 
+        insert prj;
         User u = [select Id from User where IsActive = true limit 1];
         Change__c change = new Change__c(Project__c=prj.Id, Name='acme', AssignedTo__c=u.Id, Type__c='Change', Priority__c='Medium', Status__c='Open');
         insert change;
@@ -117,11 +117,18 @@ private class TriggerTests
         Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
         UserRole r = [select Id from UserRole where Name = 'Developer'];
 
-        User user = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+        User user = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme1.com', UserName = 'acme1@acmemeginfo.com',
+                        CommunityNickname = 'acme1@meginfo', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8',
+                        LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
 
+        MProject__c prj = new MProject__c(Name='Project for self-learning and non-work related hours');
+        insert prj;
+
+        Test.startTest();
         insert user;
+        Test.stopTest();
 
-        List<TeamMember__c> teamMember = [select Id, Name from TeamMember__c where Project__r.Name = 'Project for self-learning and non-work related hours' and Name = 'acme'];
-        System.assert(teamMember.size() > 0);
+        List<TeamMember__c> teamMember = [select Id, Name from TeamMember__c where Project__r.Name = 'Project for self-learning and non-work related hours'];
+        System.assert(teamMember.size() == 1);
     }
 }
