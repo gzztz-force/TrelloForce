@@ -17,7 +17,7 @@ global with sharing class LogTimeCardController
     {
         get
         {
-            return (loggedHoursMap != null) ? loggedHoursMap.get('today') : '0.0';
+            return (loggedHoursMap.get('today') != null) ? loggedHoursMap.get('today') : '0.0';
         }
     }
 
@@ -25,7 +25,7 @@ global with sharing class LogTimeCardController
     {
         get
         {
-            return (loggedHoursMap != null) ? loggedHoursMap.get('yesterday') : '0.0';
+            return (loggedHoursMap.get('yesterday') != null) ? loggedHoursMap.get('yesterday') : '0.0';
         }
     }
 

@@ -1,0 +1,103 @@
+<apex:page docType="html-5.0" language="en_US" standardStylesheets="false" showHeader="false" sidebar="false" controller="LogTimeCardController">
+  <head>
+    <title>Log Time Card at Salesforce1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <!-- Bootstrap -->
+    <!--<link rel="stylesheet" href="http://0.0.0.0:9000/styles/sf1-timecard.css"/>-->
+    <apex:stylesheet value="{!URLFOR($Resource.PMHtml_SF1, 'styles/sf1-timecard.css')}"/>
+  </head>
+  <body>
+    <form class="form-horizontal" role="form">
+      <div class="alert-panel">
+      </div>
+      <div class="form-group">
+        <label for="selectProject" class="col-sm-2 control-label">Project</label>
+        <div class="col-sm-10">
+          <select class="form-control" id="selectProject">
+            <apex:repeat value="{!RecentProjects}" var="rp">
+                <!-- Set option as a default -->
+                <apex:outputPanel layout="none" rendered="{!rp.IsLatestUsedProject}">
+                    <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!Not(rp.IsLatestUsedProject)}">
+                    <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                </apex:outputPanel>
+            </apex:repeat>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="selectChange" class="col-sm-2 control-label">Change</label>
+        <div class="col-sm-10">
+          <select class="form-control" id="selectChange">
+              <apex:repeat value="{!RecentProjects}" var="rp">
+                  <apex:outputPanel rendered="{!rp.IsLatestUsedProject}">
+                      <apex:repeat value="{!rp.Changes}" var="change">
+                          <option value="{!change.Id}">{!change.Name}</option>
+                      </apex:repeat>
+                  </apex:outputPanel>
+              </apex:repeat>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <input id="inputDate" type="date" class="form-control" value="{!YEAR(TODAY())}-{!MONTH(TODAY())}-{!DAY(TODAY())}" placeholder="Date" />
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <input id="inputHours" type="number" class="form-control" placeholder="Hours" />
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <textarea id="inputDescription" class="form-control" placeholder="Description" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <apex:outputPanel layout="none" rendered="{!$ObjectType.TimeCard__c.Fields.Billable__c.Accessible}">
+                <label class="checkbox" for="isBillable">
+                    <input id="isBillable" type="checkbox" checked="true"/>Billable
+                </label>
+            </apex:outputPanel>
+        </div>
+      </div>
+      <div class="form-group" style="display:none">
+        <div class="col-sm-offset-2 col-sm-10 pull-right">
+          <button id="saveBtn" type="submit" class="btn btn-success">Save</button>
+        </div>
+      </div>
+    <div class="bs-callout bs-callout-info bs-docs-example" style="padding:39px 10px 14px">
+        <div class="date-form" style="margin-right:10px;">
+            <span class="date-name" style="float:left">Today:</span>
+            <div class="input-prepend total-hours" style="float:left">
+                <span class="add-on"><i class="icon-stopwatch"></i></span>
+            </div>
+            <span id="todayHours" class="num-area" style="float:left;position:relative;top:-6px;padding:0 5px 0;">{!TodayHours}</span>
+            <div class="clearfix"></div>
+        </div>
+        <div class="date-form" style="margin-right:10px;">
+            <span class="date-name" style="float:left">Yesterday:</span>
+            <div class="input-prepend total-hours" style="float:left">
+                <span class="add-on"><i class="icon-stopwatch"></i></span>
+            </div>
+            <span id="yesterdayHours" class="num-area" style="float:left;position:relative;top:-6px;padding:0 5px 0;">{!YesterdayHours}</span>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    </form>
+
+    <!--<script data-main='http://0.0.0.0:9000/scripts/main' src='http://0.0.0.0:9000/bower_components/requirejs/require.js'></script>-->
+    <script data-main="{!URLFOR($Resource.PMHtml_SF1)}/scripts/main" src="{!URLFOR($Resource.PMHtml_SF1, '/bower_components/requirejs/require.js')}"></script>
+    <script type='text/javascript' src='/canvas/sdk/js/29.0/publisher.js'></script>
+    <script>
+        Sfdc.canvas.publisher.publish({name: "publisher.setValidForSubmit", payload:"true"});
+        Sfdc.canvas.publisher.subscribe({name: "publisher.post", onData:function(e){
+            $('#saveBtn').click();
+        }});
+    </script>
+  </body>
+</apex:page>
