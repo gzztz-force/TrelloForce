@@ -30,7 +30,11 @@
                         </div>
                         <ul class="list-plain man pan test_ul">
                             <li class="f5 text-color-2"><apex:outputText value="{!item.Hours}"/></li>
-                            <li class="f5 text-color-2"><apex:outputText value="{!item.DateValue}"/></li>
+                            <li class="f5 text-color-2">
+                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                    <apex:param value="{!item.DateValue}" />
+                                </apex:outputText>
+                            </li>
                         </ul>
                         <ul class="list-plain man pan">
                             <li class="f5 text-color-2"><apex:outputText value="{!item.Description}"/></li>
