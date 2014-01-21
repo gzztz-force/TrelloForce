@@ -4,39 +4,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
         <apex:stylesheet value="{!URLFOR($Resource.PMHtml_SF1, 'styles/sf1-icons.css')}"/>
         <apex:stylesheet value="{!URLFOR($Resource.PMHtml_SF1, 'styles/sf1-app.css')}"/>
-        <apex:includeScript value="{!URLFOR($Resource.jQuery, 'jquery.min.js')}" />
         <style>
-            .test_ul li{
-            display:inline-block;
-            zoom:1;
-            padding:0 20px 0px 0;
-            } 
+            .test_ul li {
+                display:inline-block;
+                zoom:1;
+                padding:0 20px 0px 0;
+            }
         </style>
-        <Script type="text/javascript">
-            function gotoDetailPage(itemIn)
-            {
-                var cardId = itemIn;
-                if((typeof sforce != 'undefined') && (sforce != null))
-                {
-                    sforce.one.navigateToSObject(cardId);
-                }
-                else
-                {  
-                    window.location.href = '/' + cardId;  
-                }
-          }
-        </Script>
     </head>
     <body>
         <article class="mam bg-1 border border--3 brm">
             <header class="clear pam border-bottom border--8">
                 <h1 class="fl man fw-normal f1 text-color-1">My Time Cards</h1>
-                <!--
-                <a href="javascript:void(0)" title="More" class="fr">
-                    <span class="fl f5">More</span>
-                    <span class="lh-16 fl mls f6 text-color-2 icon-utility-right"></span>
-                </a>
-                -->
             </header>
             <ul class="man pan list-plain">
                 <apex:repeat value="{!TimeCards}" var="item" rendered="{!TimeCards.size > 0}">
@@ -60,5 +39,20 @@
                 </apex:repeat>
             </ul>
         </article>
+
+        <script type="text/javascript">
+            function gotoDetailPage(itemIn)
+            {
+                var cardId = itemIn;
+                if((typeof sforce != 'undefined') && (sforce != null))
+                {
+                    sforce.one.navigateToSObject(cardId);
+                }
+                else
+                {
+                    window.location.href = '/' + cardId;
+                }
+            }
+        </script>
     </body>
 </apex:page>
