@@ -1,0 +1,39 @@
+<apex:page showHeader="false" sidebar="false" controller="TimeCardDashboardController" standardStylesheets="false">
+    <head>
+        <style>
+          @font-face {
+            font-family: ProximaNovaSoft-Regular;
+            src: url({!$Resource.ProximaNovaSoft});
+          }
+        </style>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+          google.load("visualization", "1", { packages:["corechart"] });
+          google.setOnLoadCallback(drawChart);
+          function drawChart() {
+            var data = google.visualization.arrayToDataTable({!TeamMemberHours});
+            
+            var options = {
+              chartArea: { top: 45, left: 85 },
+              backgroundColor: '#f0f1f2',
+              bar: { groupWidth: '81.8%' },
+              fontSize: 13,
+              fontName: 'ProximaNovaSoft-Regular',
+              height: data.getNumberOfRows() * 70,
+              legend: { position: 'top', textStyle: { color: '#696e71' } },
+              hAxis: { textStyle: { color: '#696e71' }, gridlines: { count: 6} },
+              vAxis: { textStyle: { color: '#696e71' } },
+              tooltip: { textStyle: { color: '#696e71', fontSize: 13, fontName: 'ProximaNovaSoft-Regular' } } //#0e7abd
+            };
+
+            var chart = new google.visualization.BarChart(document.getElementById('tmChart'));
+            chart.draw(data, options);
+          }
+        </script>
+    </head>
+
+    <body>
+        <div id="tmChart"></div>
+    </body>
+
+</apex:page>
