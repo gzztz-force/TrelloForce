@@ -114,11 +114,11 @@
         }
     /******************************************/
     </style>
-
     <script type="text/javascript">
 
         /* Add new space
          * ====================== */
+        var AllUpdateFlag = false;
 
         $(function () {
 
@@ -126,13 +126,33 @@
                 $('#addSpaceModal .control-group input').prop('required', true)
                                                         .prop('placeholder', 'Apex, html5, etc.');
                 $('#addSpaceAlert').hide();
-            })
-
+            });
+            $('.tabmark').click(function(){
+                if(this.rel=="a2")
+                    AllUpdateFlag = true;
+                else
+                    AllUpdateFlag = false;
+            });
+            $(window).bind('scroll',function(){show()});
+ 
+            function show()
+            {
+                if(AllUpdateFlag){
+                    if($('#hasNextMark').val()=='true'){                    
+                        if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){                             
+                            loadMore2();
+                        }
+                    }
+                    else{
+                        eval("$(window).bind('scroll',function(){}})");
+                    }
+                }
+            }
         });
 
-        function addNewSpace() {
+        function addNewSpace() {        
+        
             $('#addSpaceModal button').button('loading');
-
             newSpace();
         }
 
@@ -143,13 +163,12 @@
                 $('#addSpaceModal button').button('reset');
             }
         }
-
     </script>
     <apex:composition template="WikiTemplate">
         <apex:define name="body" >
         <div id="force">
 
-            <apex:form>
+            <apex:form >
                 <div class="container-fluid container-custom">
                     <div class="row-fluid nav-wiki">
                         <div class="span6">
@@ -196,7 +215,7 @@
                                                 <li>
                                                     <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
                                                     <div>
-                                                        <a href="#" >{!space.Name}</a>
+                                                        <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a>
                                                         <i class="icon-star bookmark"></i>
                                                     </div>
                                                 </li>
@@ -223,12 +242,12 @@
                             </div>
                         </div>
                         <div class="span8">
-                            <ul class="nav nav-tabs">
+                            <ul class="nav nav-tabs" id="popularul">
                                 <li class="active">
-                                    <a href="#popularDiv" data-toggle="tab">Popular</a>
+                                    <a href="#popularDiv" data-toggle="tab" class="tabmark" rel='a1'>Popular</a>
                                 </li>
-                                <li><a href="#allUpdateDiv" data-toggle="tab">All Update</a></li>
-                                <li><a href="#favoriteSpaceDiv" data-toggle="tab">Favorite Spaces</a></li>
+                                <li><a href="#allUpdateDiv" data-toggle="tab" class="tabmark" rel="a2">All Update</a></li>
+                                <li><a href="#favoriteSpaceDiv" data-toggle="tab" class="tabmark" rel="a3">Favorite Spaces</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div id="popularDiv" class="tab-pane fade active in">
@@ -298,10 +317,20 @@
                                                 </li>
                                                 <li class="divider"></li>
                                             </apex:repeat>
-                                        </apex:outputPanel>
-                                        <li>
-                                            <apex:commandButton action="{!loadMorePopularPages}" value="Load More" styleClass="btn" reRender="popularPagesPanel"/>
-                                        </li>
+                                            <li>
+                                                <apex:actionStatus id="load" stopText="" >
+                                                    <apex:facet name="start">
+                                                        <div >Loading more pages ...</div>
+                                                    </apex:facet>
+                                                </apex:actionStatus>
+                                                <apex:outputPanel rendered="{!Not(HasNext)}"> There is no more pages</apex:outputPanel>
+                                            </li>
+                                            
+                                            <span id="scrollid"></span>
+                                            <input type="hidden" value="{!HasNext}" id="hasNextMark"/>
+                                            <apex:actionFunction name="loadMore2"  status="load" action="{!loadMorePopularPages}" reRender="popularPagesPanel" rendered="{!HasNext}"/>
+                                            
+                                        </apex:outputPanel>                                       
                                     </ul>
                                 </div>
                                 <div id="favoriteSpaceDiv" class="tab-pane fade">Favorite Spaces</div>
@@ -330,7 +359,6 @@
                             </button>
                             <apex:messages layout="table" />
                         </div>
-
                         <div class="control-group">
                             <label class="control-label" for="inputName">Name</label>
                             <div class="controls">
@@ -352,7 +380,6 @@
                     </div>
                 </apex:form>
             </div>
-
         </div>
         </apex:define>
     </apex:composition>
