@@ -86,11 +86,6 @@
             <isRequired>true</isRequired>
         </displayedFields>
         <displayedFields>
-            <field>Billable__c</field>
-            <isFieldManaged>false</isFieldManaged>
-            <isRequired>false</isRequired>
-        </displayedFields>
-        <displayedFields>
             <field>Billed__c</field>
             <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
@@ -115,7 +110,7 @@
         <fullName>AssignedTo__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
         <externalId>false</externalId>
-        <label>Assigned To</label>
+        <label>Owner</label>
         <referenceTo>User</referenceTo>
         <relationshipName>Change_Management</relationshipName>
         <required>false</required>
@@ -127,24 +122,21 @@
     <fields>
         <fullName>Billable__c</fullName>
         <defaultValue>false</defaultValue>
-        <description>This field should be checked if the client will be charged for doing this change</description>
         <externalId>false</externalId>
-        <inlineHelpText>This field should be checked if the client will be charged for doing this change</inlineHelpText>
         <label>Billable</label>
         <trackFeedHistory>false</trackFeedHistory>
-        <trackHistory>true</trackHistory>
+        <trackHistory>false</trackHistory>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
         <fullName>Billed__c</fullName>
         <defaultValue>false</defaultValue>
-        <description>Indicates if this change was already billed to the client</description>
+        <description>Indicates if this change was already billed to the customer.</description>
         <externalId>false</externalId>
-        <inlineHelpText>Indicates if this change was already billed to the client</inlineHelpText>
         <label>Billed</label>
         <trackFeedHistory>false</trackFeedHistory>
-        <trackHistory>true</trackHistory>
+        <trackHistory>false</trackHistory>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
@@ -212,6 +204,20 @@
         <trackHistory>true</trackHistory>
         <trackTrending>false</trackTrending>
         <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ExternalID__c</fullName>
+        <description>This field is used to integrate with our client&apos;s org to sync our time entries, please leave it blank if it&apos;s not the case.</description>
+        <externalId>true</externalId>
+        <inlineHelpText>This field is used to integrate with our client&apos;s org to sync our time entries, please leave it blank if it&apos;s not the case.</inlineHelpText>
+        <label>External ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
         <unique>false</unique>
     </fields>
     <fields>
@@ -311,6 +317,10 @@
                 <default>false</default>
             </picklistValues>
             <picklistValues>
+                <fullName>Waiting for Information</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
                 <fullName>Ready for Testing</fullName>
                 <default>false</default>
             </picklistValues>
@@ -390,48 +400,44 @@
         </sharedTo>
     </listViews>
     <listViews>
-        <fullName>CM_Dev_Project</fullName>
+        <fullName>AllOpen</fullName>
         <columns>ChangeNumber__c</columns>
         <columns>NAME</columns>
-        <columns>CREATED_DATE</columns>
-        <columns>DueDate__c</columns>
-        <columns>Estimate__c</columns>
+        <columns>Project__c</columns>
+        <columns>AssignedTo__c</columns>
+        <columns>Priority__c</columns>
         <columns>Status__c</columns>
-        <columns>CREATEDBY_USER</columns>
         <filterScope>Everything</filterScope>
-        <filters>
-            <field>Project__c</field>
-            <operation>equals</operation>
-            <value>Costume Manager Dev Tasks</value>
-        </filters>
         <filters>
             <field>Status__c</field>
             <operation>notEqual</operation>
             <value>Closed,Cancelled</value>
         </filters>
-        <label>CM Dev Project</label>
+        <label>All Open</label>
+        <sharedTo>
+            <roleAndSubordinates>CEO</roleAndSubordinates>
+        </sharedTo>
     </listViews>
     <listViews>
         <fullName>Costume_manager</fullName>
-        <columns>ChangeNumber__c</columns>
         <columns>NAME</columns>
-        <columns>CREATED_DATE</columns>
         <columns>Status__c</columns>
         <columns>DueDate__c</columns>
         <columns>Estimate__c</columns>
         <columns>AssignedTo__c</columns>
         <columns>Priority__c</columns>
         <columns>OpenedBy__c</columns>
+        <columns>CREATED_DATE</columns>
         <filterScope>Everything</filterScope>
         <filters>
             <field>Project__c</field>
-            <operation>contains</operation>
-            <value>Costume Manager</value>
+            <operation>equals</operation>
+            <value>Costume Manager &amp; Studio Director integration</value>
         </filters>
         <filters>
             <field>Status__c</field>
             <operation>notEqual</operation>
-            <value>Cancelled</value>
+            <value>Closed,Cancelled</value>
         </filters>
         <label>Costume manager</label>
     </listViews>
@@ -455,6 +461,19 @@
         <name>Time Card_Change</name>
         <sourceObject>TimeCard__c</sourceObject>
     </namedFilters>
+    <namedFilters>
+        <fullName>nf_01IS000000059XbMAI_00NS00000016GkMMAU</fullName>
+        <active>true</active>
+        <field>TimeCardAction__c.Change__c</field>
+        <filterItems>
+            <field>Change__c.Project__c</field>
+            <operation>equals</operation>
+            <valueField>$Source.Project__c</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+        <name>Timecard Action_Change</name>
+        <sourceObject>TimeCardAction__c</sourceObject>
+    </namedFilters>
     <pluralLabel>Changes</pluralLabel>
     <searchLayouts>
         <customTabListAdditionalFields>AssignedTo__c</customTabListAdditionalFields>
@@ -471,14 +490,6 @@
         <description>Billed change cannot be re-estimated</description>
         <errorConditionFormula>AND(ISCHANGED(Estimate__c), Billed__c)</errorConditionFormula>
         <errorMessage>Billed change cannot be re-estimated</errorMessage>
-    </validationRules>
-    <validationRules>
-        <fullName>DueDateMustInFuture</fullName>
-        <active>true</active>
-        <description>Due date must be in the future</description>
-        <errorConditionFormula>DueDate__c &lt; TODAY() &amp;&amp; TEXT(Status__c) &lt;&gt; &apos;Closed&apos; &amp;&amp; TEXT(Status__c) &lt;&gt; &apos;Cancelled&apos;</errorConditionFormula>
-        <errorDisplayField>DueDate__c</errorDisplayField>
-        <errorMessage>Due Date must be in the future.</errorMessage>
     </validationRules>
     <validationRules>
         <fullName>OnlyOpenerOrAdminCanCloseChange</fullName>
