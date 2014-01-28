@@ -158,7 +158,7 @@
             
             $("[class='icon-star bookmark']").click(function(){
 
-               alert($(this).attr('rel')+$(this).find('input').val());
+               //alert($(this).attr('rel')+$(this).find('input').val());
                 
                 if($(this).attr('rel')=='space'){
                     favorSpace($(this).find('input').val());
@@ -176,8 +176,8 @@
         });
         
         function favorSpace2(srcNode){
-            alert(srcNode);
-            alert($(srcNode).find('input').val());
+            //alert(srcNode);
+            //alert($(srcNode).find('input').val());
             unFavorSpace($(srcNode).find('input').val());
 
         }

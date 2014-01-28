@@ -54,10 +54,14 @@
                     <div class="navbar ">
                         <ul class="breadcrumb">
                             <li>
-                                <a href="{!$Page.WikiHome}">Wiki Home</a><span class="divider">/</span>
+                                <a href="{!$Page.WikiHome}">Wiki Home</a><!--<span class="divider">/</span>-->
+                            </li>
+                            <li class="active">/                                
                             </li>
                             <li>
-                                <a href="#">{!PubPage.WikiPage.WikiSpace__r.Name}</a> <span class="divider">/</span>
+                                <a href="#">{!PubPage.WikiPage.WikiSpace__r.Name}</a> 
+                            </li>
+                             <li class="active">/                                
                             </li>
                             <li class="active">{!PubPage.WikiPageVersion.Title__c}</li>
                         </ul>
@@ -92,6 +96,6 @@
 
     <!-- The data of markdown for js to parse -->
     <textarea id="text-input" rows="6" cols="60" style="display:none">
-        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false"/>
+        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false"/>ray's test
     </textarea>
 </apex:page>

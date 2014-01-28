@@ -1,0 +1,83 @@
+<apex:page controller="WikiSpaceController" doctype="html-5.0" sidebar="false" showheader="true" >
+ 	<apex:stylesheet value="{!URLFOR($Resource.bootstrap, 'css/bootstrap.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQueryLatest, 'jquery.min.js')}"/>
+    <script src="{!URLFOR($Resource.MarkdownJS, 'lib/markdown.js')}"></script>
+    <script src="{!URLFOR($Resource.bootstrap, 'js/bootstrap.min.js')}"></script>
+    <script src="{!URLFOR($Resource.jQueryValidation, 'jquery.validate.min.js')}"></script>
+
+    <style type="text/css">
+    	#tab1 > tbody > tr:nth-child(3n+1){
+			background-color: #999999;
+		}
+
+
+    </style>
+
+	<div id="force">
+		<apex:form >
+			<!--<div class="container-fluid">
+				<div class="row-fluid">
+					<div class="span2"> -->
+						<table id="tab1" class="table table-bordered">
+							<apex:repeat value="{!WikiPages}" var="page">
+							
+							    <tr>
+							    	<th>Name</th>
+							    	<th>TotalPageVersion</th>
+							    	<th>FirstPublishedDate</th>
+							    	<th>LastPublishedDate</th>
+							    </tr>
+								<tr>	
+									<td><apex:outputfield value="{!page.Name}"/></td>		
+									<td><apex:outputfield value="{!page.TotalPageVersion__c}"/></td>
+									<td><apex:outputfield value="{!page.FirstPublishedDate__c}"/></td>
+									<td><apex:outputfield value="{!page.LastPublishedDate__c}"/></td>
+								</tr>
+						<tr>
+								<td colspan="4" style="vertical-align:bottom;">
+
+									<table class="table table-bordered">
+										<tr>
+									    	<th>Name</th>
+									    	<th>Title</th>
+									    	<th>VersionNumber</th>
+									    	<th>PublishStatus</th>
+										 </tr>
+										<apex:repeat value="{!page.WikiPageVersions__r}" var="version">
+											<tr>
+												<td><apex:outputfield value="{!version.Name}"/></td>
+												<td><apex:outputfield value="{!version.Title__c}"/></td>
+												<td><apex:outputfield value="{!version.VersionNumber__c}"/></td>
+												<td><apex:outputfield value="{!version.PublishStatus__c}"/></td>
+											</tr>
+										</apex:repeat>
+									</table>
+								</td>
+							</tr>
+							
+							</apex:repeat>
+						</table>
+					<!--</div> -->
+					<!-- <div class="span10">
+						<table class="table table-bordered">
+							<tr>
+						    	<th>Name</th>
+						    	<th>Title</th>
+						    	<th>VersionNumber</th>
+						    	<th>PublishStatus</th>
+							 </tr>
+							<apex:repeat value="{!WikiPageVersions__r}" var="version">
+								<tr>
+									<td><apex:outputfield value="{!version.Name}"/></td>
+									<td><apex:outputfield value="{!version.Title__c}"/></td>
+									<td><apex:outputfield value="{!version.VersionNumber__c}"/></td>
+									<td><apex:outputfield value="{!version.PublishStatus__c}"/></td>
+								</tr>
+							</apex:repeat>
+						</table>
+					</div> --> 
+			<!--	</div>
+			</div> -->
+		</apex:form>
+	</div>
+</apex:page>

@@ -7,13 +7,16 @@ public class WikiNewPageController
     private Boolean isNew;
     private WikiPage__c parentPage;
     private WikiPageVersion__c versionPageClone;
+
     public Id WikiSpaceId { get; set; }
+    public Boolean IsValid { get; set; }
+    public WikiPageVersion__c LatestPage { get; set; }
 
     public WikiNewPageController()
     {
         IsValid = true;
         pageId = ApexPages.currentPage().getParameters().get('id');
-        List<WikiPage__c> pages = [select Id, LastPublishedDate__c, (select Id, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name
+        List<WikiPage__c> pages = [select Id, LastPublishedDate__c, (select Id, VersionNumber__c, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name
                                     from WikiPageVersions__r where WikiPage__c = :pageId and IsLatestVersion__c = true)
                                     from WikiPage__c where Id = :pageId];
         isNew = (pages.size() <= 0) ? true : false;
@@ -25,7 +28,6 @@ public class WikiNewPageController
         }
         else
         {
-
             List<WikiPageVersion__c> pageVersions = pages[0].WikiPageVersions__r;
             if (pageVersions.size() > 0)
             {
@@ -39,10 +41,7 @@ public class WikiNewPageController
                 IsValid = false;
             }
         }
-    }
-
-    public Boolean IsValid { get; set; }
-    public WikiPageVersion__c LatestPage { get; set; }
+    }    
 
     public List<SelectOption> SpaceOptions
     {
@@ -64,7 +63,6 @@ public class WikiNewPageController
         try
         {
             parentPage.WikiSpace__c = WikiSpaceId;// LatestPage.WikiPage__r.WikiSpace__c;
-            system.debug(WikiSpaceId);
             parentPage.LastPublishedDate__c = System.now();
             if (isNew)
             {
@@ -76,7 +74,7 @@ public class WikiNewPageController
                 versionPageClone.IsLatestVersion__c = false;
                 update versionPageClone;
             }
-            WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, Label__c = LatestPage.Label__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true, LastPublishedDate__c = System.Now());
+            WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, Label__c = LatestPage.Label__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true,VersionNumber__c = LatestPage.VersionNumber__c + 1, LastPublishedDate__c = System.Now());
             insert newVersionPage;
         }
         catch(Exception ex)
