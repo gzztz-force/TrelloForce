@@ -10,6 +10,9 @@ public with sharing class WikiHomeController
     public Boolean HasError { get; set; }
     public Boolean HasNext { get; set; }
     public List<WikiPageVersion__c> PopularPages { get; set; }
+
+    
+    public Id FavorSpaceId { get; set; }
     
     public WikiHomeController()
     {
@@ -20,7 +23,8 @@ public with sharing class WikiHomeController
 
     public List<WikiSpace__c> getMySpaces()
     {
-        return [select Name, Summary__c from WikiSpace__c order by CreatedDate desc];
+        return [select Name, Summary__c,(select id from BookMarks__r where CreatedById = :UserInfo.getUserId()) from WikiSpace__c order by CreatedDate desc];
+
     }
 
     public List<WikiPageVersion__c> getMyPages()
@@ -59,10 +63,44 @@ public with sharing class WikiHomeController
         List<WikiPageVersion__c> pages= new List<WikiPageVersion__c>();
         popularPagesSet = new ApexPages.StandardSetController([SELECT Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, WikiPage__r.LastPublishedDate__c   
                                                                FROM WikiPageVersion__c WHERE IsLatestVersion__c = true ORDER BY WikiPage__r.LastPublishedDate__c DESC]);
+
         popularPagesSet.setPageSize(4);
         HasNext = popularPagesSet.getHasNext();
         pages.addAll((List<WikiPageVersion__c>)popularPagesSet.getRecords());
         return pages;
+    }
+    
+    public void favorSpace()
+    {
+        for(WikiSpace__c space : getMySpaces())
+        {
+            if(FavorSpaceId == space.Id)
+            {
+                if(space.BookMarks__r.size() == 0)
+                {
+                    insert new BookMark__c(Space__c = space.Id,WhatId__c = 'whatid',ParentSobjectType__c='ParentSobjectType_');
+                }
+                break;
+            }
+        }
+    }
+    public void unFavorSpace()
+    {
+        for(WikiSpace__c space : getMySpaces())
+        {
+            if(FavorSpaceId == space.Id)
+            {
+                if(space.BookMarks__r.size() > 0)
+                {
+                    delete space.BookMarks__r[0];
+                }
+                break;
+            }
+        }
+    }
+    public List<BookMark__c> getFavoriteSpaces()
+    {
+        return [select id,Space__c, space__r.Name,space__r.Summary__c from BookMark__c where CreatedBy.Id = :UserInfo.getUserId() order by CreatedDate desc];
     }
 
     @isTest

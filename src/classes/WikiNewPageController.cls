@@ -7,6 +7,7 @@ public class WikiNewPageController
     private Boolean isNew;
     private WikiPage__c parentPage;
     private WikiPageVersion__c versionPageClone;
+    public Id WikiSpaceId { get; set; }
 
     public WikiNewPageController()
     {
@@ -49,9 +50,9 @@ public class WikiNewPageController
         {
             List<SelectOption> options = new List<SelectOption>();
             options.add(new SelectOption('', '--None--'));
-            for(WikiSpace__c s : [select Id, Name__c from WikiSpace__c])
+            for(WikiSpace__c s : [select Id, Name from WikiSpace__c])
             {
-                options.add(new SelectOption(s.Id, s.Name__c));
+                options.add(new SelectOption(s.Id, s.Name));
             }
             return options;
         }
@@ -62,7 +63,8 @@ public class WikiNewPageController
         Savepoint sp = Database.setSavepoint();
         try
         {
-            parentPage.WikiSpace__c = LatestPage.WikiPage__r.WikiSpace__c;
+            parentPage.WikiSpace__c = WikiSpaceId;// LatestPage.WikiPage__r.WikiSpace__c;
+            system.debug(WikiSpaceId);
             parentPage.LastPublishedDate__c = System.now();
             if (isNew)
             {

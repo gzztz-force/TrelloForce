@@ -167,7 +167,8 @@ textarea {
                             <div id="extensionBar" class="row-fluid">
                                 <div id="spaceDiv" class="span2">
                                     <span>Space</span>
-                                    <apex:selectList id="selectList" styleclass="select-style" value="{!LatestPage.WikiPage__r.WikiSpace__r.Name}" size="0">
+                                    <!--<apex:selectList id="selectList" styleclass="select-style" value="{!LatestPage.WikiPage__r.WikiSpace__r.Name}" size="0">-->
+                                    <apex:selectList id="selectList" styleclass="select-style" value="{!WikiSpaceId}" size="1">
                                         <apex:selectOptions value="{!SpaceOptions}"/>
                                     </apex:selectList>
                                 </div>

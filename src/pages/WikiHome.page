@@ -112,13 +112,15 @@
             margin: 0px;
             width: 90%;
         }
+       
     /******************************************/
     </style>
     <script type="text/javascript">
 
         /* Add new space
          * ====================== */
-        var AllUpdateFlag = false;
+        var AllUpdateFlag = false; //true means that the AllUpdatePanel is the current panel 
+        var isLoading = false; // true means that it is loading
 
         $(function () {
 
@@ -138,17 +140,47 @@
             function show()
             {
                 if(AllUpdateFlag){
-                    if($('#hasNextMark').val()=='true'){                    
-                        if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){                             
-                            loadMore2();
-                        }
+                    if($('#hasNextMark').val()=='true'){  
+                       if(!isLoading){
+                            isLoading = true;
+                           // if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){  
+                           if (($(window).height() + $(window).scrollTop()) >= $('body').height()) {                                                  
+                                loadMore2();
+                            }
+                            isLoading = false;
+                       }   
                     }
                     else{
                         eval("$(window).bind('scroll',function(){}})");
                     }
                 }
             }
+            
+            $("[class='icon-star bookmark']").click(function(){
+
+               alert($(this).attr('rel')+$(this).find('input').val());
+                
+                if($(this).attr('rel')=='space'){
+                    favorSpace($(this).find('input').val());
+                    }
+                else if($(this).attr('rel')=='page'){
+                    
+                    }
+                
+                
+            });
+
+            
+            
+            
         });
+        
+        function favorSpace2(srcNode){
+            alert(srcNode);
+            alert($(srcNode).find('input').val());
+            unFavorSpace($(srcNode).find('input').val());
+
+        }
 
         function addNewSpace() {        
         
@@ -216,7 +248,9 @@
                                                     <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
                                                     <div>
                                                         <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a>
-                                                        <i class="icon-star bookmark"></i>
+                                                        <i class="icon-star bookmark" rel="space" title="Click to favor">
+                                                            <input type="hidden" value="{!space.Id}"/>
+                                                        </i>
                                                     </div>
                                                 </li>
                                                 <li class="divider"></li>
@@ -231,7 +265,7 @@
                                                     <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
                                                     <div>
                                                     <a href="/apex/WikiViewPage?id={!page.WikiPage__c}" >{!page.Title__c}</a>
-                                                        <i class="icon-star bookmark"></i>
+                                                        <i class="icon-star bookmark" rel="page" title="Click to favor"></i>
                                                     </div>
                                                 </li>
                                                 <li class="divider"></li>
@@ -261,7 +295,7 @@
                                             </a>
                                             <div class="media pull-left">
                                                 <div class="media-body">
-                                                    <a href="#" >{!item.Title__c}</a>
+                                                    <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
                                                     <div class="page-author">
                                                         <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>
                                                         <span>
@@ -283,7 +317,7 @@
                                 <div id="allUpdateDiv" class="tab-pane fade">
                                     <ul class="unstyled popular-list">
                                         <apex:outputPanel id="popularPagesPanel">
-                                            <apex:repeat value="{!PopularPages}" var="item">
+                                           <apex:repeat value="{!PopularPages}" var="item">
                                                 <li>
                                                     <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
                                                         <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
@@ -318,26 +352,52 @@
                                                 <li class="divider"></li>
                                             </apex:repeat>
                                             <li>
-                                                <apex:actionStatus id="load" stopText="" >
+                                                <apex:actionStatus id="load" >
                                                     <apex:facet name="start">
                                                         <div >Loading more pages ...</div>
                                                     </apex:facet>
+                                                    <apex:facet name="stop">
+                                                        <apex:outputPanel rendered="{!Not(HasNext)}"> There is no more pages</apex:outputPanel>
+                                                    </apex:facet>
                                                 </apex:actionStatus>
-                                                <apex:outputPanel rendered="{!Not(HasNext)}"> There is no more pages</apex:outputPanel>
+                                                
                                             </li>
-                                            
-                                            <span id="scrollid"></span>
                                             <input type="hidden" value="{!HasNext}" id="hasNextMark"/>
                                             <apex:actionFunction name="loadMore2"  status="load" action="{!loadMorePopularPages}" reRender="popularPagesPanel" rendered="{!HasNext}"/>
                                             
                                         </apex:outputPanel>                                       
                                     </ul>
                                 </div>
-                                <div id="favoriteSpaceDiv" class="tab-pane fade">Favorite Spaces</div>
+
+                                <div id="favoriteSpaceDiv" class="tab-pane fade">
+                                    <apex:outputPanel id="popularFavoriteSpacesPanel"> <!-- For action function -->
+                                        <ul class="unstyled spaces-list">
+                                            <apex:repeat value="{!FavoriteSpaces}" var="space">
+                                                <li>
+                                                    <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                    <div>
+                                                        <a href="#" onclick="window.open('/apex/wikispace?id={!space.Space__c}')" >{!space.space__r.Name}</a>
+                                                        <i class="icon-star bookmark" rel="unFavorSpace" title="Click to unfavor" onclick="favorSpace2(this)">
+                                                            <input type="hidden" value="{!space.space__c}"/>
+                                                        </i>
+                                                    </div>
+                                                </li>
+                                                <li class="divider"></li>
+                                            </apex:repeat>
+                                        </ul>
+                                        </apex:outputPanel>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
+                <apex:actionFunction name="favorSpace" action="{!favorSpace}" reRender="popularFavoriteSpacesPanel">
+                    <apex:param assignTo="{!FavorSpaceId}" value="" name="favorspace"/>
+                </apex:actionFunction>
+                <apex:actionFunction name="unFavorSpace" action="{!unFavorSpace}" reRender="popularFavoriteSpacesPanel">
+                    <apex:param assignTo="{!FavorSpaceId}" value="" name="favorspace2"/>
+                </apex:actionFunction>
             </apex:form>
 
             <!-- Add space modal
@@ -383,4 +443,5 @@
         </div>
         </apex:define>
     </apex:composition>
+    
 </apex:page>
