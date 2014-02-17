@@ -3,11 +3,23 @@
  */
 public class LunarToSolarConversion
 {
+    /*
+     * Lunar : days of month only can be 29 or 30
+     */
     private final static List<Integer> MONTH_DAYS = new List<Integer> { 29, 30 };
+    /*
+     * Solar : days of January,March,May,July,August,October,December are 31. days of April, June, September,November are 30.
+     * In leap years, days of February is 28. In common years, days of February is 29.
+     */
     private final static List<List<Integer>> DAYS_MONTH = new List<List<Integer>>{
                                                   new List<Integer>{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
                                                   new List<Integer>{ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
                                               };
+    /*
+     * Lunar Data : lunar information of year between 1936 and 2028.
+     * The first two values are differ days between year of solar and lunar,leap month of this year, the last thirteen param indicate big or small month of month 1-13.
+     * As lunar have leap month, one year may have 13 months.
+     */
     private final static List<List<Integer>> DATAS = new List<List<Integer>>{
                                              new List<Integer>{ 23, 3, 2, 17, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0 },
                                              new List<Integer>{ 41, 0, 4, 23, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1 },
@@ -107,66 +119,66 @@ public class LunarToSolarConversion
                                              new List<Integer>{ 22, 3, 2, 36, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0 }
                                          };
     /*
-     * get the solar date according the lunar date （the date must years between 1936 and 2028）
+     * Get the solar date according the lunar date （the date must years between 1936 and 2028）
      */
     public static Date getSolarDate(Integer year, Integer month, Integer day)
     {
-        Integer index = year - 1936;
-        Integer endIndex = month;
+        Integer yearIndex = year - 1936;
+        Integer monthIndex = month;
 
-        /*DATA[index][1]某年闰几月  0表示没有润月*/
-        if ((DATAS[index][1] != 0) && (month > DATAS[index][1]))
+        /*
+         * DATA[index][1] indicates the leap month of one year
+         */
+        if ((DATAS[yearIndex][1] != 0) && (month > DATAS[yearIndex][1]))
         {
-            endIndex++;
+            monthIndex++;
         }
 
-        Integer dayNum = 0;
+        Integer dayNumber = 0;
 
-        for (Integer i = 0; i < (endIndex - 1); i++)
+        for (Integer i = 0; i < (monthIndex - 1); i++)
         {
-            dayNum += MONTH_DAYS[DATAS[index][4 + i]];
+            dayNumber += MONTH_DAYS[DATAS[yearIndex][4 + i]];
         }
 
-        dayNum += day;
-        dayNum += DATAS[index][0];
+        dayNumber += day;
+        dayNumber += DATAS[yearIndex][0];
 
-        Integer year_days = 365;
+        Integer daysOfYear = 365;
 
         if (Date.isLeapYear(year))
         {
-            year_days = 366;
+            daysOfYear = 366;
         }
 
-        if (dayNum > year_days)
+        if (dayNumber > daysOfYear)
         {
             year++;
-            dayNum -= year_days;
+            dayNumber -= daysOfYear;
         }
 
         month = 1;
 
-        List<Integer> dayOfMonth = DAYS_MONTH[0];
+        List<Integer> daysOfMonth = DAYS_MONTH[0];
 
         if (Date.isLeapYear(year))
         {
-            dayOfMonth = DAYS_MONTH[1];
+            daysOfMonth = DAYS_MONTH[1];
         }
 
         Integer i = 0;
-
         for (; i < 12; i++)
         {
-            dayNum -= dayOfMonth[i];
+            dayNumber -= daysOfMonth[i];
 
-            if (dayNum <= 0)
+            if (dayNumber <= 0)
             {
                 break;
             }
 
             month++;
         }
-
-        day = dayOfMonth[i] + dayNum;
+        day = daysOfMonth[i] + dayNumber;
 
         return Date.parse(month + '/' + day + '/' + year);
     }
@@ -180,14 +192,18 @@ public class LunarToSolarConversion
         Date nextMonth = getSolarDate(year, month + 1, 1);
         Integer diffDays = thisMonth.daysBetween(nextMonth);
         if(diffDays == 30)
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
 
     /*
      * Get birthday this year solar date
-    */
+     */
     public static Date getBirthdayThisYear(Integer month, Integer day, String type)
     {
         Date solarBirthday;
