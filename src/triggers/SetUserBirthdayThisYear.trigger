@@ -1,7 +1,7 @@
 /*
  * A trigger for reset the user's birthday of next year after spend birthday this year.
 */
-trigger ResetBirthdayThisYear on User (before insert, before update)
+trigger SetUserBirthdayThisYear on User (before insert, before update)
 {
     for(User user : trigger.new)
     {
