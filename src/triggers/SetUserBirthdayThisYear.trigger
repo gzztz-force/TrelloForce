@@ -7,7 +7,9 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
     {
         if(user.BirthdayThisYear__c == null)
         {
-            if(user.Birthday__c != null && String.isNotBlank(user.BirthdayType__c))
+            user.BirthdayType__c = String.isBlank(user.BirthdayType__c)?'Solar':user.BirthdayType__c;
+
+            if(user.Birthday__c != null)
             {
                 Date birthdayThisYear = ConvertLunarToSolar.getBirthdayThisYear(user.Birthday__c.month(), user.Birthday__c.day(), user.BirthdayType__c);
                 Date birthdayNextYear = ConvertLunarToSolar.getBirthdayNextYear(user.Birthday__c.month(), user.Birthday__c.day(), user.BirthdayType__c);
