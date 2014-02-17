@@ -10,14 +10,14 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
             user.BirthdayType__c = String.isBlank(user.BirthdayType__c)?'Solar':user.BirthdayType__c;
 
             Date birthdayThisYear = ConvertLunarToSolar.getBirthdayThisYear(user.Birthday__c.month(), user.Birthday__c.day(), user.BirthdayType__c);
-            Date birthdayNextYear = ConvertLunarToSolar.getBirthdayNextYear(user.Birthday__c.month(), user.Birthday__c.day(), user.BirthdayType__c);
+
             if(birthdayThisYear > Date.today())
             {
                 user.BirthdayThisYear__c = birthdayThisYear;
             }
             else
             {
-                user.BirthdayThisYear__c = birthdayNextYear;
+                user.BirthdayThisYear__c = ConvertLunarToSolar.getBirthdayNextYear(user.Birthday__c.month(), user.Birthday__c.day(), user.BirthdayType__c);
             }
         }
     }
