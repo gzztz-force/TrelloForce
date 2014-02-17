@@ -1,7 +1,7 @@
 /*
  * Convert a lunar date to a solar date.
  */
-public class ConvertLunarToSolar
+public class LunarToSolarConversion
 {
     private final static List<Integer> MONTH_DAYS = new List<Integer> { 29, 30 };
     private final static List<List<Integer>> DAYS_MONTH = new List<List<Integer>>{
