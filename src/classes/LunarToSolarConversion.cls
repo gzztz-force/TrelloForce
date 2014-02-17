@@ -191,13 +191,13 @@ public class LunarToSolarConversion
     public static Date getBirthdayThisYear(Integer month, Integer day, String type)
     {
         Date solarBirthday;
-        if(type == 'Lunar Calendar' && isBigMonth(Date.today().year(), month) == false && day == 30)
+        if(type == 'Lunar' && isBigMonth(Date.today().year(), month) == false && day == 30)
         {
             solarBirthday = getSolarDate(Date.today().year(), month, day - 1);
         }
         else
         {
-            if(type == 'Solar Calendar')
+            if(type == 'Solar')
             {
                 solarBirthday = Date.valueOf(Date.today().year() + '-' + month + '-' + day);
             }
@@ -215,13 +215,13 @@ public class LunarToSolarConversion
     public static Date getBirthdayNextYear(Integer month, Integer day, String type)
     {
         Date solarBirthday;
-        if(type == 'Lunar Calendar' && isBigMonth(Date.today().addYears(1).year(), month) == false && day == 30)
+        if(type == 'Lunar' && isBigMonth(Date.today().addYears(1).year(), month) == false && day == 30)
         {
             solarBirthday = getSolarDate(Date.today().addYears(1).year(), month, day - 1);
         }
         else
         {
-            if(type == 'Solar Calendar')
+            if(type == 'Solar')
             {
                 solarBirthday = Date.valueOf(Date.today().addYears(1).year() + '-' + month + '-' + day);
             }
