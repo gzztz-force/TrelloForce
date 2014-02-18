@@ -1,5 +1,6 @@
 /*
  * Convert a lunar date to a solar date.
+ * This algorithmic picks up from http://blog.csdn.net/walsece/article/details/486995
  */
 public class LunarToSolarConversion
 {
@@ -17,8 +18,6 @@ public class LunarToSolarConversion
                                               };
     /*
      * Lunar Data : lunar information of year between 1936 and 2028.
-     * The first two values are differ days between year of solar and lunar,leap month of this year, the last thirteen param indicate big or small month of month 1-13.
-     * As lunar have leap month, one year may have 13 months.
      */
     private final static List<List<Integer>> DATAS = new List<List<Integer>>{
                                              new List<Integer>{ 23, 3, 2, 17, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0 },
