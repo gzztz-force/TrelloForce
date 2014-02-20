@@ -153,7 +153,7 @@ private class TriggerTests
         Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
         UserRole r = [select Id from UserRole where Name = 'Developer'];
 
-        User u = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1991-5-30'), BirthdayType__c = 'Lunar', UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+        User u = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1991-1-21'), BirthdayType__c = 'Lunar', UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
 
         insert u;
 
