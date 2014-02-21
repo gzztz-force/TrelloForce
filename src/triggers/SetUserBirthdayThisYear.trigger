@@ -11,23 +11,20 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
         if(user.BirthdayThisYear__c == null && user.Birthday__c != null)
         {
             String birthdayType = String.isBlank(user.BirthdayType__c) ? 'Solar' : user.BirthdayType__c;
-            Integer birthdayMonth = user.Birthday__c.month();
-            Integer brithdayDay = user.Birthday__c.day();
 
-            Date birthdayThisYear = LunarToSolarConversion.getBirthdayThisYear(birthdayMonth, brithdayDay, birthdayType);
+            Date birthdayThisYear = getBirthday(Date.today().year(), user.Birthday__c, birthdayType);
 
             // When birthday this year hasn't passed, set birthday this year.
             if(birthdayThisYear >= Date.today())
             {
                 user.BirthdayThisYear__c = birthdayThisYear;
             }
-            // When birthday this year passed, set birthday next year.
-            else
+            else // When birthday this year passed, set birthday next year.
             {
-                user.BirthdayThisYear__c = LunarToSolarConversion.getBirthdayNextYear(birthdayMonth, brithdayDay, birthdayType);
+                user.BirthdayThisYear__c = getBirthday((Date.today().year() + 1), user.Birthday__c, birthdayType);
             }
 
-            Date oldBirthdayThisYear = null;
+            Date oldBirthdayThisYear;
             if(Trigger.isUpdate)
             {
                 oldBirthdayThisYear = Trigger.oldMap.get(user.Id).BirthdayThisYear__c;
@@ -38,7 +35,6 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
                 || (birthdayThisYear == Date.today())) // A new user is brithday when is created to send email.
             {
                 birthdayUsers.add(user);
-                user.BirthdayThisYear__c = LunarToSolarConversion.getBirthdayNextYear(birthdayMonth, brithdayDay, birthdayType);
             }
         }
     }
@@ -46,6 +42,22 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
     if(birthdayUsers.size() > 0)
     {
         sendBirthdayAlertEmailToHR();
+    }
+
+    // Get birthday this year solar date
+    public static Date getBirthday(Integer year, Date userBirthday, String type)
+    {
+        Integer month = userBirthday.month();
+        Integer day = userBirthday.day();
+
+        Date solarBirthday = Date.valueOf(Date.today().year() + '-' + month + '-' + day);
+
+        if(type == 'Lunar')
+        {
+            solarBirthday = ChineseCalendar.convertLunarToSolar(String.valueOf(solarBirthday));
+        }
+
+        return solarBirthday;
     }
 
     private static void sendBirthdayAlertEmailToHR()
