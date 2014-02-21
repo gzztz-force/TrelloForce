@@ -71,30 +71,52 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
 
     private static List<String> getEmailToAddresses()
     {
-        Group birthdayEmailAlertGroup = [select Id from Group where Name = 'BirthdayEmailAlert' limit 1];
+        String birthdayGroup = 'BirthdayEmailAlert';
+        List<String> emailAddresses = new List<String>();
 
-        List<Id> groupMemberIds = new List<Id>();
-        List<Id> roleIds = new List<Id>();
-        List<String> emailToAddresses = new List<String>();
+        List<Group> birthdayEmailAlertGroups = [select Id from Group where Name = :birthdayGroup limit 1];
 
-        for(GroupMember groupMember : [select UserOrGroupId from GroupMember where GroupId =:birthdayEmailAlertGroup.Id])
+        if(birthdayEmailAlertGroups.size() > 0)
         {
-            groupMemberIds.add(groupMember.UserOrGroupId);
-        }
+            Set<Id> groupMemberIds = GetUserIdsFromGroup(new Set<Id>{ birthdayEmailAlertGroups[0].Id });
 
-        for(Group roleGroup : [select RelatedId from Group where Id in:groupMemberIds])
-        {
-            roleIds.add(roleGroup.RelatedId);
-        }
-
-        for(UserRole userRole :  [select Id, (select Email from Users) from UserRole where Id in :roleIds])
-        {
-            for(User user : userRole.Users)
+            for(User user : [select Email from User where Id in :groupMemberIds])
             {
-                emailToAddresses.add(user.Email);
+                emailAddresses.add(user.Email);
             }
         }
 
-        return emailToAddresses;
+        return emailAddresses;
+    }
+
+    public static Set<id> GetUserIdsFromGroup(Set<Id> groupIds)
+    {
+        // store the results in a set so we don't get duplicates
+        Set<Id> result=new Set<Id>();
+        String userType = Schema.SObjectType.User.getKeyPrefix(); //005
+        String groupType = Schema.SObjectType.Group.getKeyPrefix();
+        Set<Id> groupIdProxys = new Set<Id>();
+
+        // Loop through all group members in a group
+        for(GroupMember m : [Select Id, UserOrGroupId From GroupMember Where GroupId in :groupIds])
+        {
+            // If the user or group id is a user
+            if(((String)m.UserOrGroupId).startsWith(userType))
+            {
+                result.add(m.UserOrGroupId);
+            }
+            // If the user or group id is a group
+            // Note: there may be a problem with governor limits if this is called too many times
+            else if (((String)m.UserOrGroupId).startsWith(groupType))
+            {
+                // Call this function again but pass in the group found within this group
+                groupIdProxys.add(m.UserOrGroupId);
+            }
+        }
+        if(groupIdProxys.size() > 0)
+        {
+            result.addAll(GetUSerIdsFromGroup(groupIdProxys));
+        }
+        return result;
     }
 }
