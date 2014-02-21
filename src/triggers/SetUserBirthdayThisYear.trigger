@@ -62,12 +62,17 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
 
     private static void sendBirthdayAlertEmailToHR()
     {
-        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-        mail.setToAddresses(getEmailToAddresses());
-        mail.setSubject('Meginfo | Employees Birthday Alert');
-        mail.setPlainTextBody(getEmailBody(birthdayUsers));
-        mail.setSaveAsActivity(false);
-        Messaging.sendEmail(new Messaging.SingleEmailMessage[]{ mail });
+        List<String> emailAddresses = getEmailToAddresses();
+
+        if(emailAddresses.size() > 0)
+        {
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.setToAddresses(getEmailToAddresses());
+            mail.setSubject('Meginfo | Employees Birthday Alert');
+            mail.setPlainTextBody(getEmailBody(birthdayUsers));
+            mail.setSaveAsActivity(false);
+            Messaging.sendEmail(new Messaging.SingleEmailMessage[]{ mail });
+        }
     }
 
     private static String getEmailBody(List<User> users)
