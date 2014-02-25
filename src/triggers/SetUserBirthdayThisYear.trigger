@@ -50,7 +50,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
         Integer month = userBirthday.month();
         Integer day = userBirthday.day();
 
-        Date solarBirthday = Date.valueOf(Date.today().year() + '-' + month + '-' + day);
+        Date solarBirthday = Date.valueOf(year + '-' + month + '-' + day);
 
         if(type == 'Lunar')
         {
