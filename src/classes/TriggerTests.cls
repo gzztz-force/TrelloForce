@@ -114,15 +114,27 @@ private class TriggerTests
     @isTest
     static void testCreateSelfLearningProjectTeamMember()
     {
-        Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
-        UserRole r = [select Id from UserRole where Name = 'Developer'];
+        User thisUser = [select Id from User where Id = :UserInfo.getUserId()];
+        System.runAs(thisUser)
+        {
+            Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
+            UserRole r = [select Id from UserRole where Name = 'Developer'];
 
-        User user = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1991-11-25'), BirthdayType__c = 'Solar Calendar', UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+            MProject__c pro = new MProject__c(Name = 'Project for self-learning and non-work related hours');
+            insert pro;
 
-        insert user;
+            User user = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1991-11-25'), BirthdayType__c = 'Solar',
+                    UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
 
-        List<TeamMember__c> teamMember = [select Id, Name from TeamMember__c where Project__r.Name = 'Project for self-learning and non-work related hours' and Name = 'acme'];
-        System.assert(teamMember.size() > 0);
+            Test.startTest();
+
+            insert user;
+
+            Test.stopTest();
+
+            List<TeamMember__c> teamMember = [select Id, Name from TeamMember__c where Project__c = :pro.Id and User__c = :user.Id];
+            System.assertEquals(1, teamMember.size());
+        }
     }
 
     @isTest
@@ -131,7 +143,8 @@ private class TriggerTests
         Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
         UserRole r = [select Id from UserRole where Name = 'Developer'];
 
-        User u = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1994-12-30'), BirthdayType__c = 'Lunar', UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+        User u = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1994-12-30'), BirthdayType__c = 'Lunar',
+            UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
 
         insert u;
     }
@@ -142,7 +155,8 @@ private class TriggerTests
         Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
         UserRole r = [select Id from UserRole where Name = 'Developer'];
 
-        User u = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1991-2-14'), UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+        User u = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1991-2-14'), UserName = 'acme1@acme.com',
+            CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
 
         insert u;
     }
@@ -153,10 +167,29 @@ private class TriggerTests
         Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
         UserRole r = [select Id from UserRole where Name = 'Developer'];
 
-        User u = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', Birthday__c = Date.valueOf('1991-1-21'), BirthdayType__c = 'Lunar', UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+        User u = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com',
+            UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
 
         insert u;
 
+        Group g = new Group(Name = 'BirthdayEmailAlert', Type = 'Regular');
+
+        insert g;
+
+        Group g1 = new Group(Name = 'acmeGroup', Type = 'Regular');
+
+        insert g1;
+
+        GroupMember member = new GroupMember(UserOrGroupId = u.Id, GroupId = g.Id);
+
+        insert member;
+
+        GroupMember member1 = new GroupMember(UserOrGroupId = g1.Id, GroupId = g.Id);
+
+        insert member1;
+
+        u.Birthday__c = Date.today();
+        u.BirthdayType__c = 'Solar';
         u.BirthdayThisYear__c = null;
 
         update u;
