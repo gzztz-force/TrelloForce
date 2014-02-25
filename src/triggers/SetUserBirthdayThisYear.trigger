@@ -77,13 +77,13 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
 
     private static String getEmailBody(List<User> users)
     {
-        String emailBody = 'Hi,\r\n\tToday is birthday of ';
+        String emailBody = 'Hi,\r\n \r\nToday is birthday of ';
         for(User user : users)
         {
-             emailBody += user.FirstName + ', ';
+             emailBody += user.FirstName + '( Birthday: ' + String.valueOf(user.Birthday__c) + ', Type: ' + user.BirthdayType__c + ')' + ', ';
         }
 
-        return emailBody += 'Happpy birthday to him/her!';
+        return emailBody += 'happpy birthday to him/her!';
     }
 
     private static List<String> getEmailToAddresses()
