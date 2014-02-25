@@ -8,7 +8,8 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
 
     for(User user : trigger.new)
     {
-        if(user.BirthdayThisYear__c == null && user.Birthday__c != null)
+        if(user.Birthday__c != null && ((user.BirthdayThisYear__c == null) ||
+            (Trigger.isUpdate && (user.Birthday__c != Trigger.oldMap.get(user.Id).Birthday__c))))
         {
             String birthdayType = String.isBlank(user.BirthdayType__c) ? 'Solar' : user.BirthdayType__c;
 
