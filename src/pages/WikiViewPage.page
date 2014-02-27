@@ -85,6 +85,9 @@
                            </apex:outputText>
                         </div>
                     </div>
+
+                    <button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='/apex/WikiNewPage?id={!PubPage.WikiPage.Id}'">Edit Page</button><br/><br/>
+                    
                     <div id="page-body" class="page-body"> </div>
                 </div>
 
@@ -96,6 +99,6 @@
 
     <!-- The data of markdown for js to parse -->
     <textarea id="text-input" rows="6" cols="60" style="display:none">
-        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false"/>ray's test
+        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false"/>
     </textarea>
 </apex:page>

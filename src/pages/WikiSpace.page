@@ -13,6 +13,8 @@
 
     </style>
 
+    <apex:outputPanel rendered="{!WikiPages.size > 0}">
+
 	<div id="force">
 		<apex:form >
 			<!--<div class="container-fluid">
@@ -80,4 +82,25 @@
 			</div> -->
 		</apex:form>
 	</div>
+	</apex:outputPanel>
+    <apex:outputPanel rendered="{!WikiPages.size == 0}">
+    	<div>
+    	<apex:form>
+    	<table id="tab2" class="table table-bordered">
+    		<tr>
+		    	<th>Name</th>
+		    	<th>TotalPageVersion</th>
+		    	<th>FirstPublishedDate</th>
+		    	<th>LastPublishedDate</th>
+		    </tr>
+		    <tr><td colspan="4" style="vertical-align:bottom;"> 
+		    Opps. There is no Pages related to the space!<br/>
+		    
+		    	<a href="/apex/WikiNewPage">Add A Page</a>
+		    
+		    </td></tr>
+    	</table>
+</apex:form>
+    	</div>
+    </apex:outputPanel>
 </apex:page>
