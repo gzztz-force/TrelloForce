@@ -1,14 +1,10 @@
-/*
- * A trigger for set the user's birthday this year works when create or update user, or user's birthday passed.
- * The time dependent workflow will clear the BirthdayThisYear when the user brithday is today
- */
-trigger SetUserBirthdayThisYear on User (before insert, before update)
+trigger SetUserNextBirthday on User (before insert, before update)
 {
     List<User> birthdayUsers = new List<User>();
 
     for(User user : trigger.new)
     {
-        if(user.Birthday__c != null && ((user.BirthdayThisYear__c == null) ||
+        if(user.Birthday__c != null && ((user.NextBirthday__c == null) ||
             (Trigger.isUpdate && (user.Birthday__c != Trigger.oldMap.get(user.Id).Birthday__c))))
         {
             String birthdayType = String.isBlank(user.BirthdayType__c) ? 'Solar' : user.BirthdayType__c;
@@ -16,19 +12,19 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
             Date birthdayThisYear = getBirthday(Date.today().year(), user.Birthday__c, birthdayType);
 
             // When birthday this year hasn't passed, set birthday this year.
-            if(birthdayThisYear >= Date.today())
+            if(birthdayThisYear > Date.today())
             {
-                user.BirthdayThisYear__c = birthdayThisYear;
+                user.NextBirthday__c = birthdayThisYear;
             }
             else // When birthday this year passed, set birthday next year.
             {
-                user.BirthdayThisYear__c = getBirthday((Date.today().year() + 1), user.Birthday__c, birthdayType);
+                user.NextBirthday__c = getBirthday((Date.today().year() + 1), user.Birthday__c, birthdayType);
             }
 
             Date oldBirthdayThisYear;
             if(Trigger.isUpdate)
             {
-                oldBirthdayThisYear = Trigger.oldMap.get(user.Id).BirthdayThisYear__c;
+                oldBirthdayThisYear = Trigger.oldMap.get(user.Id).NextBirthday__c;
             }
 
             // Send email to HR
@@ -67,7 +63,19 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
 
         if(emailAddresses.size() > 0)
         {
+            List<OrgWideEmailAddress> orgWideEmails = [select Id, DisplayName from OrgWideEmailAddress where Address='pm@meginfo.com' limit 1];
+
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+
+            if(orgWideEmails.size() > 0)
+            {
+                mail.setOrgWideEmailAddressId(orgWideEmails[0].Id);
+            }
+            else
+            {
+                mail.setSenderDisplayName('Meginfo System Administrator');
+            }
+
             mail.setToAddresses(getEmailToAddresses());
             mail.setSubject('Meginfo | Employees Birthday Alert');
             mail.setPlainTextBody(getEmailBody(birthdayUsers));
@@ -84,7 +92,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
              emailBody += user.FirstName + '( Birthday: ' + String.valueOf(user.Birthday__c) + ', Type: ' + user.BirthdayType__c + ')' + ', ';
         }
 
-        return emailBody += 'happpy birthday to him/her!';
+        return emailBody += '\r\n happpy birthday to him/her! \r\n \r\n Thanks';
     }
 
     private static List<String> getEmailToAddresses()
@@ -92,11 +100,11 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
         String birthdayGroup = 'BirthdayEmailAlert';
         List<String> emailAddresses = new List<String>();
 
-        List<Group> birthdayEmailAlertGroups = [select Id from Group where Name = :birthdayGroup limit 1];
+        List<Group> birthdayEmailAlertGroups = [select Id from Group where DeveloperName = :birthdayGroup limit 1];
 
         if(birthdayEmailAlertGroups.size() > 0)
         {
-            Set<Id> groupMemberIds = GetUserIdsFromGroup(new Set<Id>{ birthdayEmailAlertGroups[0].Id });
+            Set<Id> groupMemberIds = getUserIdsFromGroup(new Set<Id>{ birthdayEmailAlertGroups[0].Id });
 
             for(User user : [select Email from User where Id in :groupMemberIds])
             {
@@ -107,7 +115,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
         return emailAddresses;
     }
 
-    public static Set<id> GetUserIdsFromGroup(Set<Id> groupIds)
+    public static Set<id> getUserIdsFromGroup(Set<Id> groupIds)
     {
         // store the results in a set so we don't get duplicates
         Set<Id> result=new Set<Id>();
@@ -133,7 +141,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
         }
         if(groupIdProxys.size() > 0)
         {
-            result.addAll(GetUSerIdsFromGroup(groupIdProxys));
+            result.addAll(getUSerIdsFromGroup(groupIdProxys));
         }
         return result;
     }
