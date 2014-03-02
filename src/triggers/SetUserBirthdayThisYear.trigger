@@ -8,7 +8,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
 
     for(User user : trigger.new)
     {
-        if(user.Birthday__c != null && ((user.BirthdayThisYear__c == null) ||
+        if(user.Birthday__c != null && ((user.NextBirthday__c == null) ||
             (Trigger.isUpdate && (user.Birthday__c != Trigger.oldMap.get(user.Id).Birthday__c))))
         {
             String birthdayType = String.isBlank(user.BirthdayType__c) ? 'Solar' : user.BirthdayType__c;
@@ -18,17 +18,17 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
             // When birthday this year hasn't passed, set birthday this year.
             if(birthdayThisYear >= Date.today())
             {
-                user.BirthdayThisYear__c = birthdayThisYear;
+                user.NextBirthday__c = birthdayThisYear;
             }
             else // When birthday this year passed, set birthday next year.
             {
-                user.BirthdayThisYear__c = getBirthday((Date.today().year() + 1), user.Birthday__c, birthdayType);
+                user.NextBirthday__c = getBirthday((Date.today().year() + 1), user.Birthday__c, birthdayType);
             }
 
             Date oldBirthdayThisYear;
             if(Trigger.isUpdate)
             {
-                oldBirthdayThisYear = Trigger.oldMap.get(user.Id).BirthdayThisYear__c;
+                oldBirthdayThisYear = Trigger.oldMap.get(user.Id).NextBirthday__c;
             }
 
             // Send email to HR

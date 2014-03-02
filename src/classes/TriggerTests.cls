@@ -20,19 +20,19 @@ private class TriggerTests
         insert prj;
         User u = [select Id, Name from User where IsActive = true limit 1];
         Change__c newChange = new Change__c(Project__c=prj.Id, Name = 'acme', AssignedTo__c = u.Id, Type__c='Change', Priority__c='Medium', Status__c='Open');
-        insert newChange; 
+        insert newChange;
     }
 
     @isTest
     static void testSendEmailAfterChangeUpdate()
     {
         MProject__c prj = new MProject__c(Name='acme');
-        insert prj; 
+        insert prj;
         User u = [select Id, Name from User where IsActive = true limit 1];
         Change__c change = new Change__c(Project__c=prj.Id, Name='acme', AssignedTo__c=u.Id, Type__c='Change', Priority__c='Medium', Status__c='Open');
         insert change;
         change.Name = 'acme2';
-        update change; 
+        update change;
     }
     @isTest
     static void testSendEmailAfterChangeCommentInsert()
@@ -100,7 +100,7 @@ private class TriggerTests
     static void testSendEmailAfterTaskUpdate()
     {
         MProject__c prj = new MProject__c(Name='acme');
-        insert prj; 
+        insert prj;
         User u = [select Id from User where IsActive = true limit 1];
         Change__c change = new Change__c(Project__c=prj.Id, Name='acme', AssignedTo__c=u.Id, Type__c='Change', Priority__c='Medium', Status__c='Open');
         insert change;
@@ -190,7 +190,7 @@ private class TriggerTests
 
         u.Birthday__c = Date.today();
         u.BirthdayType__c = 'Solar';
-        u.BirthdayThisYear__c = null;
+        u.NextBirthday__c = null;
 
         update u;
     }
