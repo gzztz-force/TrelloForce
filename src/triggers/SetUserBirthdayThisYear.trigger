@@ -67,7 +67,19 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
 
         if(emailAddresses.size() > 0)
         {
+            List<OrgWideEmailAddress> orgWideEmails = [select Id, DisplayName from OrgWideEmailAddress where Address='pm@meginfo.com' limit 1];
+
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+
+            if(orgWideEmails.size() > 0)
+            {
+                mail.setOrgWideEmailAddressId(orgWideEmails[0].Id);
+            }
+            else
+            {
+                mail.setSenderDisplayName('Meginfo System Administrator');
+            }
+
             mail.setToAddresses(getEmailToAddresses());
             mail.setSubject('Meginfo | Employees Birthday Alert');
             mail.setPlainTextBody(getEmailBody(birthdayUsers));
@@ -84,7 +96,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
              emailBody += user.FirstName + '( Birthday: ' + String.valueOf(user.Birthday__c) + ', Type: ' + user.BirthdayType__c + ')' + ', ';
         }
 
-        return emailBody += 'happpy birthday to him/her!';
+        return emailBody += '\r\n happpy birthday to him/her! \r\n \r\n Thanks';
     }
 
     private static List<String> getEmailToAddresses()
