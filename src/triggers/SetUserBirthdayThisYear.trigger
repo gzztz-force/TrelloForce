@@ -104,11 +104,11 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
         String birthdayGroup = 'BirthdayEmailAlert';
         List<String> emailAddresses = new List<String>();
 
-        List<Group> birthdayEmailAlertGroups = [select Id from Group where Name = :birthdayGroup limit 1];
+        List<Group> birthdayEmailAlertGroups = [select Id from Group where DeveloperName = :birthdayGroup limit 1];
 
         if(birthdayEmailAlertGroups.size() > 0)
         {
-            Set<Id> groupMemberIds = GetUserIdsFromGroup(new Set<Id>{ birthdayEmailAlertGroups[0].Id });
+            Set<Id> groupMemberIds = getUserIdsFromGroup(new Set<Id>{ birthdayEmailAlertGroups[0].Id });
 
             for(User user : [select Email from User where Id in :groupMemberIds])
             {
@@ -119,7 +119,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
         return emailAddresses;
     }
 
-    public static Set<id> GetUserIdsFromGroup(Set<Id> groupIds)
+    public static Set<id> getUserIdsFromGroup(Set<Id> groupIds)
     {
         // store the results in a set so we don't get duplicates
         Set<Id> result=new Set<Id>();
@@ -145,7 +145,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
         }
         if(groupIdProxys.size() > 0)
         {
-            result.addAll(GetUSerIdsFromGroup(groupIdProxys));
+            result.addAll(getUSerIdsFromGroup(groupIdProxys));
         }
         return result;
     }
