@@ -1,8 +1,4 @@
-/*
- * A trigger for set the user's birthday this year works when create or update user, or user's birthday passed.
- * The time dependent workflow will clear the BirthdayThisYear when the user brithday is today
- */
-trigger SetUserBirthdayThisYear on User (before insert, before update)
+trigger SetUserNextBirthday on User (before insert, before update)
 {
     List<User> birthdayUsers = new List<User>();
 
