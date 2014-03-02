@@ -16,7 +16,7 @@ trigger SetUserBirthdayThisYear on User (before insert, before update)
             Date birthdayThisYear = getBirthday(Date.today().year(), user.Birthday__c, birthdayType);
 
             // When birthday this year hasn't passed, set birthday this year.
-            if(birthdayThisYear >= Date.today())
+            if(birthdayThisYear > Date.today())
             {
                 user.NextBirthday__c = birthdayThisYear;
             }
