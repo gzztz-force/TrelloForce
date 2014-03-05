@@ -9,6 +9,7 @@
         }
 
         .new-page {
+            padding-top: 5px;c
             background-color: #EEEEEE;
         }
 
@@ -139,21 +140,26 @@
  
             function show()
             {
-                if(AllUpdateFlag){
-                    if($('#hasNextMark').val()=='true'){  
-                       if(!isLoading){
-                            isLoading = true;
-                           // if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){  
-                           if (($(window).height() + $(window).scrollTop()) >= $('body').height()) {                                                  
-                                loadMore2();
-                            }
-                            isLoading = false;
-                       }   
-                    }
+                if(!isLoading){
+                    if(AllUpdateFlag){
+                        if($('#hasNextMark').val()=='true'){  
+                               // if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){  
+                               if (($(window).height() + $(window).scrollTop()) >= $('body').height()) { 
+                                    setTimeout(loadMoreUpdateFunction,1000);                                                 
+                                    isLoading = true;
+                                }
+                           }  
+                        }
                     else{
-                        eval("$(window).bind('scroll',function(){}})");
+                        eval("$(window).bind('scroll',function(){})");
                     }
                 }
+            }
+
+            function loadMoreUpdateFunction()
+            {
+                loadMoreUpdate();
+                isLoading = false;
             }
             
             $("[class='icon-star bookmark']").click(function(){
@@ -165,8 +171,7 @@
                     }
                 else if($(this).attr('rel')=='page'){
                     
-                    }
-                
+                    }                
                 
             });
 
@@ -211,26 +216,23 @@
                             <a href="/apex/WikiNewPage" class="btn">Add Page</a>
                         </div>
                         <div class="span3 search-form">
-                            <!--
                             <form class="navbar-search pull-left" action="">
                                 <input type="text" class="search-query span2" placeholder="Search in Wiki" />
                             </form>
-                             -->
                         </div>
                     </div>
                     <div class="row-fluid">
                         <div class="span4">
                             <div class="well new-page">
                                 <h2>Hello, world!</h2>
-
-                                <p>Wiki Version 1 Function：
-                                Article Version Control
-                                Comment (Chatter)
-                                Search
-                                Markdown
-                                Highlight with Code
-                                Bookmark a page or space</p>
-
+                                <ul> Wiki Version 1 Function：
+                                    <li> Article Version Control</li>
+                                    <li> Comment (Chatter)</li>
+                                    <li> Search</li>
+                                    <li> Markdown</li>
+                                    <li> Highlight with Code</li>
+                                    <li> Bookmark a page or space</li>
+                                </ul>
                             </div>
                             <div class="spaces-pane">
                                 <ul id="myTab" class="nav nav-tabs">
@@ -289,11 +291,11 @@
                                         <apex:repeat value="{!PopularPages}" var="item">
                                         <li class="popular-page">
                                             <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                <span title="Zheng Jair" id="userThumbnailPhoto" class="avatar">
-                                                    <img width="45" height="45" title="Zheng Jair" class="avatar-photo" alt="Zheng Jair" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                    <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
                                                 </span>
                                             </a>
-                                            <div class="media pull-left">
+                                            <div class="media pull-left" style="margin-left:20px;">
                                                 <div class="media-body">
                                                     <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
                                                     <div class="page-author">
@@ -321,31 +323,23 @@
                                                 <li>
                                                     <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
                                                         <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                            <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="https://c.cs5.content.force.com/profilephoto/005/T" />
+                                                            <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
                                                         </span>
                                                     </a>
-                                                    <div class="media pull-left">
+                                                    <div class="media pull-left" style="margin-left:20px;">
                                                         <div class="media-body">
-                                                            <ul>
-                                                                <li>
-                                                                    <div class="update-author pull-left">
-                                                                        <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>
-                                                                    </div>
-                                                                </li>
-                                                                <li>
-                                                                    <div>
-                                                                        <img width="14" height="14" class="avatar-photo" alt="None" src="https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com"/>
-                                                                        <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
-                                                                        <div class="page-author">
-                                                                            <span>
-                                                                                <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                                    <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
-                                                                                </apex:outputText>
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            </ul>
+                                                            <div>
+                                                                <img width="14" height="14" class="avatar-photo" alt="None" src="https://plus.google.com/_/favicon?domain=blog.carbonfive.com"/>
+                                                                <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
+                                                                <div class="page-author">
+                                                                    <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>
+                                                                <span>
+                                                                    <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                        <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
+                                                                    </apex:outputText>
+                                                                </span>
+                                                                </div>
+                                                            </div>                                                               
                                                         </div>
                                                     </div>
                                                 </li>
@@ -354,16 +348,17 @@
                                             <li>
                                                 <apex:actionStatus id="load" >
                                                     <apex:facet name="start">
-                                                        <div >Loading more pages ...</div>
+                                                        <div> 
+                                                        <img src="{!$Resource.loadPic}" />
+                                                        Loading more pages ...</div>
                                                     </apex:facet>
                                                     <apex:facet name="stop">
                                                         <apex:outputPanel rendered="{!Not(HasNext)}"> There is no more pages</apex:outputPanel>
                                                     </apex:facet>
-                                                </apex:actionStatus>
-                                                
+                                                </apex:actionStatus>                                                
                                             </li>
                                             <input type="hidden" value="{!HasNext}" id="hasNextMark"/>
-                                            <apex:actionFunction name="loadMore2"  status="load" action="{!loadMorePopularPages}" reRender="popularPagesPanel" rendered="{!HasNext}"/>
+                                            <apex:actionFunction name="loadMoreUpdate"  status="load" action="{!loadMorePopularPages}" reRender="popularPagesPanel" rendered="{!HasNext}"/>
                                             
                                         </apex:outputPanel>                                       
                                     </ul>

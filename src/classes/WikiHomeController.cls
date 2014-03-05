@@ -61,7 +61,7 @@ public with sharing class WikiHomeController
     private List<WikiPageVersion__c> initPopularPages()
     {
         List<WikiPageVersion__c> pages= new List<WikiPageVersion__c>();
-        popularPagesSet = new ApexPages.StandardSetController([SELECT Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, WikiPage__r.LastPublishedDate__c   
+        popularPagesSet = new ApexPages.StandardSetController([SELECT Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, WikiPage__r.LastPublishedDate__c   
                                                                FROM WikiPageVersion__c WHERE IsLatestVersion__c = true ORDER BY WikiPage__r.LastPublishedDate__c DESC]);
 
         popularPagesSet.setPageSize(4);
