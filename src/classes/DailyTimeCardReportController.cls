@@ -6,9 +6,9 @@ public class DailyTimeCardReportController
     public DailyTimeCardReportController()
     {
     }
-    
+
     public String UserId { get; set; }
-    
+
     public String UserFullName
     {
         get
@@ -20,11 +20,11 @@ public class DailyTimeCardReportController
             }
             else
             {
-                return '';  
+                return '';
             }
         }
     }
-    
+
     //gets the total hour of today
     public Decimal TotalHours
     {
@@ -42,8 +42,7 @@ public class DailyTimeCardReportController
             }
         }
     }
-    
-    
+
     public ChartTable MyMembers
     {
         get
@@ -55,22 +54,49 @@ public class DailyTimeCardReportController
                 table.Columns.add(getDayOfWeek(Date.today().addDays(i)));
             }
             Map<Id, String> userMap = new Map<Id, String>();
-            table.addValue(UserFullName, table.Columns[0], 0);
+            //table.addValue(UserFullName, table.Columns[0], 0);
+            table.addValue(UserFullName, table.Columns[0], 0, 'No Leave');
             if(String.isNotEmpty(UserId))
             {
-                for(User usr : getTeamUsers(UserId))
+                for(User user : getTeamUsers(UserId))
                 {
-                    userMap.put(usr.Id, usr.Name);
-                    if(usr.Name != UserFullName)
+                    userMap.put(user.Id, user.Name);
+                    if(user.Name != UserFullName)
                     {
-                        table.addValue(usr.Name, table.Columns[0], 0);
+                        //table.addValue(user.Name, table.Columns[0], 0);
+                        table.addValue(UserFullName, table.Columns[0], 0, 'No Leave');
                     }
                 }
+
+                Map<LeaveInFin.Leave, Map<Date, String>> leaveToDaysThisWeek = getLeaveToDaysThisWeek(LeaveInFin.getAllLeaves());
+                System.debug('@@@leaves: ' + leaveToDaysThisWeek.size());
+                List<User> users = getLeaveUsersThisWeek(leaveToDaysThisWeek);
+                System.debug('@@@users: ' + users.size());
+                Map<Id, Map<Date, String>> userIdToLeaveDaysThisWeek = getUserIdToLeaveDates(leaveToDaysThisWeek, users);
+                System.debug('@@@leaveDays: ' + userIdToLeaveDaysThisWeek.keySet().size());
+                Map<Id, Map<Date, Decimal>> userIdToDaysHours = getUserIdToDaysHours(userMap.keySet());
                 
-                for(AggregateResult aggResult : [select TeamMember__r.User__c u, sum(Hours__c) h, Date__c d from TimeCard__c where TeamMember__r.User__c in :userMap.keyset() and Date__c <= :Date.today() and Date__c >= :Date.today().addDays(-6) group by TeamMember__r.User__c, Date__c])
+                for(Id userId : userIdToDaysHours.keySet())
                 {
-                    Id userId = (Id)aggResult.get('u');
-                    table.addValue(userMap.get(userId), getDayOfWeek((Date)aggResult.get('d')), (Decimal)aggResult.get('h'));
+                    for(Date d : userIdToDaysHours.get(userId).keySet())
+                    {
+                        if(userIdToDaysHours.get(userId).get(d) <= 4 && userIdToLeaveDaysThisWeek.containsKey(userId))
+                        {
+                            Map<Date, String> dayToHalfDay = userIdToLeaveDaysThisWeek.get(userId);
+                            if(userIdToLeaveDaysThisWeek.get(userId).keySet().contains(d))
+                            {
+                                table.addValue(userId, getDayOfWeek(d),  userIdToDaysHours.get(userId).get(d), dayToHalfDay.get(d));
+                            }
+                            else
+                            {
+                                table.addValue(userMap.get(userId), getDayOfWeek(d), userIdToDaysHours.get(userId).get(d), 'No Leave');
+                            }
+                        }
+                        else
+                        {
+                            table.addValue(userMap.get(userId), getDayOfWeek(d), userIdToDaysHours.get(userId).get(d), 'No Leave');
+                        }
+                    }
                 }
             }
             return table;
@@ -89,13 +115,13 @@ public class DailyTimeCardReportController
             return result;
         }
     }
-    
+
     //returns the day of week of specified date, e.g. Tuesday
     private static String getDayOfWeek(Date d)
     {
         return DateTime.newInstance(d, Time.newInstance(0, 0, 0, 0)).format('EEEE');
     }
-    
+
     public static List<User> getTeamUsers(Id userId)
     {
         List<User> users = [select Id, UserRoleId, UserRole.ParentRoleId from User where Id=:userId limit 1];
@@ -108,12 +134,12 @@ public class DailyTimeCardReportController
         }
         return null;
     }
-    
+
     private static Set<Id> getSubordinateRoles(Id roleId)
     {
         return getSubordinateRoles(new Set<Id> {roleId});
     }
-    
+
     private static Set<Id> getSubordinateRoles(Set<Id> roleIds)
     {
         List<UserRole> subRoles = [select Id from UserRole where Id in :roleIds or ParentRoleId in :roleIds];
@@ -127,7 +153,100 @@ public class DailyTimeCardReportController
         }
         return roleIds;
     }
-    
+
+    // gets user leave info this week , key : userid  value : key: leave date  value : halfday
+    public Map<Id, Map<Date, String>> getUserIdToLeaveDates(Map<LeaveInFin.Leave, Map<Date, String>> leaveToDaysThisWeek, List<User> users)
+    {
+        Map<Id, Map<Date, String>> userIdToLeaveDates = new Map<Id, Map<Date, String>>();
+
+        for(LeaveInFin.Leave leave : leaveToDaysThisWeek.keySet())
+        {
+            for(User user : users)
+            {
+                if(user.Email == leave.Employee_r.Email)
+                {
+                    Map<Date, String> dayToHalfDay = leaveToDaysThisWeek.get(leave);
+                    for(Date day : dayToHalfDay.keySet())
+                    {
+                        if(userIdToLeaveDates.containsKey(user.Id))
+                        {
+                            userIdToLeaveDates.get(user.Id).put(day, dayToHalfDay.get(day));
+                        }
+                        else
+                        {
+                            Map<Date, String> newDayToHalfDay = new Map<Date, String>();
+                            newDayToHalfDay.put(day, dayToHalfDay.get(day));
+                            userIdToLeaveDates.put(user.Id, newDayToHalfDay);
+                        }
+                    }
+                }
+            }
+        }
+        return userIdToLeaveDates;
+    }
+
+    public List<User> getLeaveUsersThisWeek(Map<LeaveInFin.Leave, Map<Date, String>> leaveToDaysThisWeek)
+    {
+        Set<String> userEmails = new Set<String>();
+
+        for(LeaveInFin.Leave leave : leaveToDaysThisWeek.keySet())
+        {
+            userEmails.add(leave.Employee_r.Email);
+        }
+
+        return [select Id, Name, Email from User where Email in :userEmails];
+    }
+
+    // gets leaves in this week.  key: leave value: key-> Date, value: halfday
+    public Map<LeaveInFin.Leave, Map<Date, String>> getLeaveToDaysThisWeek(List<LeaveInFin.Leave> leaves)
+    {
+        Map<LeaveInFin.Leave, Map<Date,String>> leaveToDaysThisWeek = new Map<LeaveInFin.Leave, Map<Date, String>>();
+        for(LeaveInFin.Leave leave : leaves)
+        {
+            if(leave.StartDate_c <= Date.today() && leave.EndDate_c >= Date.today().addDays(-6))
+            {
+                for(Integer i=0; i<=leave.StartDate_c.daysBetween(leave.EndDate_c); i++)
+                {
+                    if(leave.StartDate_c.addDays(i) >= Date.today().addDays(-6) && leave.StartDate_c.addDays(i) <= Date.today())
+                    {
+                        if(leaveToDaysThisWeek.containsKey(leave))
+                        {
+                            leaveToDaysThisWeek.get(leave).put(leave.StartDate_c.addDays(i), leave.HalfDay_c);
+                        }
+                        else
+                        {
+                            Map<Date, String> dayToHalfDay = new Map<Date, String>();
+                            dayToHalfDay.put(leave.StartDate_c.addDays(i), leave.HalfDay_c);
+                            leaveToDaysThisWeek.put(leave, dayToHalfDay);
+                        }
+                    }
+                }
+            }
+        }
+        return leaveToDaysThisWeek;
+    }
+
+    // gets user day hours in this week.  key: user Id, value: key:Date , value : hours
+    public Map<Id, Map<Date, Decimal>> getUserIdToDaysHours(Set<Id> userIds)
+    {
+        Map<Id, Map<Date, Decimal>> userIdToDaysHours = new Map<Id, Map<Date, Decimal>>();
+        for(AggregateResult aggResult : [select TeamMember__r.User__c u, sum(Hours__c) h, Date__c d from TimeCard__c where TeamMember__r.User__c in :userIds and Date__c <= :Date.today() and Date__c >= :Date.today().addDays(-6) group by TeamMember__r.User__c, Date__c])
+        {
+            if(userIdToDaysHours.containsKey((Id)aggResult.get('u')))
+            {
+                Map<Date, Decimal> dayToHours = userIdToDaysHours.get((Id)aggResult.get('u'));
+                dayToHours.put((Date)aggResult.get('d'), (Decimal)aggResult.get('h'));
+            }
+            else
+            {
+                Map<Date, Decimal> dayToHours = new Map<Date, Decimal>();
+                dayToHours.put((Date)aggResult.get('d'), (Decimal)aggResult.get('h'));
+                userIdToDaysHours.put((Id)aggResult.get('u'), dayToHours);
+            }
+        }
+        return userIdToDaysHours;
+    }
+
     public class MemberInfo
     {
         public MemberInfo(String name, Decimal hour)
@@ -136,11 +255,11 @@ public class DailyTimeCardReportController
             this.LoggedHour = hour;
             this.LoggedHour = (this.LoggedHour == null) ? 0 : this.LoggedHour;
         }
-    
+
         public String MemberName { get; set; }
         public Decimal LoggedHour { get; set; }
     }
-    
+
     public class ChangeInfo
     {
         public ChangeInfo(Change__c change)
@@ -155,9 +274,9 @@ public class DailyTimeCardReportController
                 this.DueDate = change.DueDate__c;
                 this.Status = change.Status__c;
                 this.Priority = change.Priority__c;
-            }   
+            }
         }
-        
+
         public String ChangeUrl { get; set; }
         public String ChangeId { get; set; }
         public String ChangeNumber { get; set; }
@@ -173,19 +292,19 @@ public class DailyTimeCardReportController
                 return Status == 'Open' || Status == 'In Progress' || Status == 'Reopened';
             }
         }
-        public String DueDateColor 
-        { 
-            get 
-            { 
-                return ( DueDate != null && DueDate <= Date.today() && IsOpen)? 'red': 'black'; 
-            } 
+        public String DueDateColor
+        {
+            get
+            {
+                return ( DueDate != null && DueDate <= Date.today() && IsOpen)? 'red': 'black';
+            }
         }
-        public String PriorityColor 
-        { 
-            get 
-            { 
-                return (Priority != null && Priority.contains('High') && IsOpen)? 'red' : 'black'; 
-            } 
+        public String PriorityColor
+        {
+            get
+            {
+                return (Priority != null && Priority.contains('High') && IsOpen)? 'red' : 'black';
+            }
         }
     }
 
