@@ -1,19 +1,27 @@
-<apex:page controller="WikiHomeController" docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+<apex:page controller="WikiHomeController" docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false">
     <style>
+        body{line-height:1.628;font-size:120%;}
         .container-custom {
-            padding: 5px 20px;
-        }
+            padding: 5px 20px;            
+            margin:auto 0px;
+            width:100%;
+          }
 
         .nav-wiki {
-            padding: 10px 0px 20px;
+            padding: 10px 0px;
+        }
+
+        h1 {
+            10
         }
 
         .new-page {
-            padding-top: 5px;
+            padding-top: 25px;
             background-color: #EEEEEE;
         }
 
         .new-page h2 {
+
             border-bottom: 1px solid #bbb;
             display: block;
         }
@@ -87,7 +95,7 @@
         }
 
         .add-btns {
-            margin-top: 6px;
+            margin-top: 0px;
         }
 
         .search-form {
@@ -96,8 +104,8 @@
 
     /* space pop-up style, created by allen */
         .new-Space #force textarea {
-            width: 90%;
-            max-width: 90%;
+            width: 98%;
+            max-width: 98%;
         }
 
         .new-Space {
@@ -120,16 +128,27 @@
 
         /* Add new space
          * ====================== */
+         
+        // 
         var AllUpdateFlag = false; //true means that the AllUpdatePanel is the current panel 
         var isLoading = false; // true means that it is loading
+        var isSearchWikiPage = false;
 
         $(function () {
 
             $('#addSpaceBtn').click(function () {
-                $('#addSpaceModal .control-group input').prop('required', true)
-                                                        .prop('placeholder', 'Apex, html5, etc.');
+                $('#addSpaceModal input').prop('required', true).prop('placeholder', 'Apex, html5, etc.');
                 $('#addSpaceAlert').hide();
             });
+            
+            $('i[data-toggle=tooltip]').mouseover(function() { 
+
+                $(this).tooltip('show'); 
+
+            }); 
+
+
+            
             $('.tabmark').click(function(){
                 if(this.rel=="a2")
                     AllUpdateFlag = true;
@@ -138,47 +157,55 @@
             });
             $(window).bind('scroll',function(){show()});
  
-            function show()
-            {
-                if(!isLoading){
-                    if(AllUpdateFlag){
-                        if($('#hasNextMark').val()=='true'){  
-                               // if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){  
-                               if (($(window).height() + $(window).scrollTop()) >= $('body').height()) { 
-                                    setTimeout(loadMoreUpdateFunction,1000);                                                 
-                                    isLoading = true;
-                                }
-                           }  
-                        }
-                    else{
-                        eval("$(window).bind('scroll',function(){})");
-                    }
-                }
-            }
-
-            function loadMoreUpdateFunction()
-            {
-                loadMoreUpdate();
-                isLoading = false;
-            }
             
-            $("[class='icon-star bookmark']").click(function(){
+            
+            $("[class='glyphicon glyphicon-star bookmark']").click(function(){
 
-               //alert($(this).attr('rel')+$(this).find('input').val());
-                
+               //alert($(this).attr('rel')+';;;;'+$(this).find('input').val());                
                 if($(this).attr('rel')=='space'){
+                    alert($(this).find('input').val());
                     favorSpace($(this).find('input').val());
+                    alert($(this).find('input').val()+',,,,,ok');
                     }
                 else if($(this).attr('rel')=='page'){
                     
-                    }                
-                
+                    }   
             });
 
-            
+            $('#searchWikiId').bind('input propertychange', function()
+                {
+                    if(!isSearchWikiPage){
+                        setTimeout(searchWikiPage,700);
+                        isSearchWikiPage = true;
+                    }
+                });
             
             
         });
+
+        function show()
+        {
+            if(!isLoading){
+                if(AllUpdateFlag){
+                    if($('#hasNextMark').val()=='true'){  
+                           // if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){  
+                           if (($(window).height() + $(window).scrollTop()) >= $('body').height()) { 
+                                setTimeout(loadMoreUpdateFunction,1000);                                                 
+                                isLoading = true;
+                            }
+                       }  
+                    }
+                else{
+                    eval("$(window).bind('scroll',function(){})");
+                }
+            }
+        }
+
+        function loadMoreUpdateFunction()
+        {
+            loadMoreUpdate();
+            isLoading = false;
+        }
         
         function favorSpace2(srcNode){
             //alert(srcNode);
@@ -200,31 +227,57 @@
                 $('#addSpaceModal button').button('reset');
             }
         }
-    </script>
-    <apex:composition template="WikiTemplate">
-        <apex:define name="body" >
-        <div id="force">
 
-            <apex:form >
-                <div class="container-fluid container-custom">
-                    <div class="row-fluid nav-wiki">
-                        <div class="span6">
-                            <h1>Wiki Home</h1>
+        function enterPress(e)
+        {
+            var e = e || window.event;
+            if(e.keyCode == 13){
+                alert(document.getElementById("searchWikiId").value());
+            }
+        }
+        function searchWikiPage()
+        {
+            
+           if($('#searchWikiId').val() != null)
+           {               
+                alert('hehe');
+                 searchWikiPageAction($('#searchWikiId').val());               
+           }
+            //searchWikiPageAction();
+            isSearchWikiPage = false;
+            alert('haha'+isSearchWikiPage);
+        }
+        
+    </script>
+    <apex:composition template="WikiTemplateWithBootstrap3">
+        <apex:define name="body">
+        <div id="force">
+            <apex:form onsubmit="return false">
+                <div class="container container-custom">
+                    <div class="row nav-wiki">
+                        <div class="col-md-6">
+                            <h1 class="h1">Wiki Home</h1>
                         </div>
-                        <div class="add-btns span3">
-                            <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn" data-toggle="modal">Add Space</a>
-                            <a href="/apex/WikiNewPage" class="btn">Add Page</a>
+                        <div class="add-btns col-md-3">
+                            <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
+                            <a href="/apex/WikiNewPage" class="btn btn-default">Add Page</a>
                         </div>
-                        <div class="span3 search-form">
-                            <form class="navbar-search pull-left" action="">
-                                <input type="text" class="search-query span2" placeholder="Search in Wiki" />
-                            </form>
+                        <div class="col-md-3">                          
+                            <input type="search" id="searchWikiId" class="search col-md-12 pull-left" placeholder="Search in Wiki" onkeypress="enterPerss()" onkeydown="enterPress(Event)"/>
+                            <apex:outputPanel id="TheSearchSuggest" rendered="{!PagesForSearch.size > 0}">
+                                <ul> 
+                                    <apex:repeat value="{!PagesForSearch}" var="item">
+                                        <li><a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
+                                        </li>
+                                    </apex:repeat>
+                                </ul>
+                            </apex:outputPanel>                            
                         </div>
                     </div>
-                    <div class="row-fluid">
-                        <div class="span4">
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="well new-page">
-                                <h2>Hello, world!</h2>
+                                <h2 class="h2">Hello, world!</h2>
                                 <ul> Wiki Version 1 Function：
                                     <li> Article Version Control</li>
                                     <li> Comment (Chatter)</li>
@@ -244,14 +297,17 @@
                                 <div class="tab-content">
                                     <div id="mySpace" class="tab-pane fade active in">
                                         <apex:outputPanel id="allSpaces"> <!-- For action function -->
-                                        <ul class="unstyled spaces-list">
+                                        <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!MySpaces}" var="space">
                                                 <li>
                                                     <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
                                                     <div>
                                                         <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a>
-                                                        <i class="icon-star bookmark" rel="space" title="Click to favor">
-                                                            <input type="hidden" value="{!space.Id}"/>
+                                                        
+                                                            <i class="glyphicon glyphicon-star bookmark" rel="space" title="Click to favor" data-toggle="tooltip" data-placement="left" > 
+                                                                <input type="hidden" value="{!space.Id}"/>
+                                                                
+                                                            
                                                         </i>
                                                     </div>
                                                 </li>
@@ -261,7 +317,7 @@
                                         </apex:outputPanel>
                                     </div>
                                     <div id="myPages" class="tab-pane fade">
-                                        <ul class="unstyled spaces-list">
+                                        <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!MyPages}" var="page">
                                                 <li>
                                                     <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
@@ -277,7 +333,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="span8">
+                        <div class="col-md-8">
                             <ul class="nav nav-tabs" id="popularul">
                                 <li class="active">
                                     <a href="#popularDiv" data-toggle="tab" class="tabmark" rel='a1'>Popular</a>
@@ -287,7 +343,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div id="popularDiv" class="tab-pane fade active in">
-                                    <ul class="unstyled popular-list">
+                                    <ul class="list-unstyled popular-list">
                                         <apex:repeat value="{!PopularPages}" var="item">
                                         <li class="popular-page">
                                             <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
@@ -317,7 +373,7 @@
                                     </ul>
                                 </div>
                                 <div id="allUpdateDiv" class="tab-pane fade">
-                                    <ul class="unstyled popular-list">
+                                    <ul class="list-unstyled popular-list">
                                         <apex:outputPanel id="popularPagesPanel">
                                            <apex:repeat value="{!PopularPages}" var="item">
                                                 <li>
@@ -366,13 +422,13 @@
 
                                 <div id="favoriteSpaceDiv" class="tab-pane fade">
                                     <apex:outputPanel id="popularFavoriteSpacesPanel"> <!-- For action function -->
-                                        <ul class="unstyled spaces-list">
+                                        <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!FavoriteSpaces}" var="space">
                                                 <li>
                                                     <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
                                                     <div>
                                                         <a href="#" onclick="window.open('/apex/wikispace?id={!space.Space__c}')" >{!space.space__r.Name}</a>
-                                                        <i class="icon-star bookmark" rel="unFavorSpace" title="Click to unfavor" onclick="favorSpace2(this)">
+                                                        <i class="glyphicon glyphicon-star icon-star bookmark" data-toggle="tooltip" data-placement="left" rel="unFavorSpace" title="Click to unfavor" onclick="favorSpace2(this)">
                                                             <input type="hidden" value="{!space.space__c}"/>
                                                         </i>
                                                     </div>
@@ -393,47 +449,54 @@
                 <apex:actionFunction name="unFavorSpace" action="{!unFavorSpace}" reRender="popularFavoriteSpacesPanel">
                     <apex:param assignTo="{!FavorSpaceId}" value="" name="favorspace2"/>
                 </apex:actionFunction>
+                <apex:actionFunction name="searchWikiPageAction" action="{!searchWikiPageAction}" reRender="TheSearchSuggest">
+                    <apex:param assignTo="{!SearchKey}" value="" name="searchWikiPageAction"/>
+                </apex:actionFunction>
             </apex:form>
 
             <!-- Add space modal
                 ================================ -->
-            <div class="modal hide" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false">
+            <div class="modal fade" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false" role="dialog">
+            <div class="modal-dialog">
+            <div class="modal-content"> 
+
                 <apex:form id="addSpaceForm">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-loading-text="&times;">
-                            <i class="icon-remove"></i>
-                        </button>
-                        <h3>New Space</h3>
+                        
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h3 class="modal-title">New Space</h3>
                     </div>
                     <div class="modal-body">
 
                         <!-- Error Messages -->
-                        <div id="addSpaceAlert" class="alert alert-error" style="display:{!IF(HasError, '', 'none')}">
+                        <div id="addSpaceAlert" class="alert alert-danger" style="display:{!IF(HasError, '', 'none')}">
                             <button type="button" class="close" data-dismiss="alert" data-loading-text="&times;">
                                 <i class="icon-remove"></i>
                             </button>
                             <apex:messages layout="table" />
                         </div>
-                        <div class="control-group">
+                        <div class="form-group">
                             <label class="control-label" for="inputName">Name</label>
-                            <div class="controls">
+                            <div>
                                 <apex:inputField value="{!NewSpace.Name}" style="width:300px"/>
                             </div>
                         </div>
-                        <div class="control-group">
+                        <div class="form-group">
                             <label class="control-label">Description</label>
-                            <div class="controls">
+                            <div >
                               <apex:inputTextarea value="{!NewSpace.Summary__c}" style="width:511px; heigh:80px"/>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">Close</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">Close</button>
                         <button type="button" onclick="addNewSpace(); " class="btn btn-primary" data-loading-text="Saving...">Save</button>
                         <apex:actionFunction name="newSpace" action="{!createNewSpace}" rerender="allSpaces, addSpaceForm" status=""
                          oncomplete="addSpaceOnComplete({!NOT(HasError)});"/>
                     </div>
                 </apex:form>
+                </div>
+            </div>
             </div>
         </div>
         </apex:define>
