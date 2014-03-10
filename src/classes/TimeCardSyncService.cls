@@ -9,6 +9,7 @@ public class TimeCardSyncService
     private static String managerName = 'Eric He';
     private static String managerEmail = 'eric.he@meginfo.com';
     private static String endpoint = 'https://inlab-developer-edition.ap1.force.com/services/apexrest/TimeCardManagment/';
+    private static String customerName = 'Touchpoint Solutions';
     private static String salesforceBaseUrl;
 
     private static Map<String, List<TimeCard__c>> timeCardOwner2TimeCards = new Map<String, List<TimeCard__c>>(); 
@@ -28,7 +29,7 @@ public class TimeCardSyncService
         for(TimeCard__c entry : [select Id, Name, IsSync__c, Billable__c, Date__c, Hours__c, Description__c, Project__c, Change__c,
                                         Project__r.Name, TeamMember__r.User__r.Name, TeamMember__r.User__r.Email, 
                                         Change__r.Name, Change__r.ExternalID__c, Change__r.Project__c, Change__r.Project__r.Name, Change__r.CreatedBy.Name, Change__r.CreatedBy.Email
-                                from TimeCard__c where IsSync__c = false and Project__r.Customer__r.Name = 'Touchpoint'
+                                from TimeCard__c where IsSync__c = false and Project__r.Customer__r.Name = :customerName
                                 order by Project__r.Name, Change__r.Name, Name])
         {
             // The Change__c field value must be set, because it's
@@ -84,6 +85,7 @@ public class TimeCardSyncService
         managerName = (orgDefault.Name__c != null) ? orgDefault.Name__c : managerName;
         managerEmail = (orgDefault.Email__c != null) ? orgDefault.Email__c : managerEmail;
         endpoint = (orgDefault.Endpoint__c != null) ? orgDefault.Endpoint__c : endpoint;
+        customerName = (orgDefault.CustomerName__c != null) ? orgDefault.CustomerName__c : customerName;
     }
 
     private static void importTimeCards()

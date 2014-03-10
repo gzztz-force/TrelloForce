@@ -7,6 +7,7 @@ public class TestDataUtil
 		setting.Name__c = 'Eric He';
 		setting.Email__c = 'eric.he@meginfo.com';
 		setting.Endpoint__c = 'https://inlab-developer-edition.ap1.force.com/services/apexrest/TimeCardManagment/';
+		setting.CustomerName__c = 'Touchpoint Solutions';
 		insert setting;
 	}
 
@@ -19,7 +20,7 @@ public class TestDataUtil
 
 	public static String createProject(String customerId, String projectName)
 	{
-		MProject__c newProject = new MProject__c(Name = projectName, Customer__c = customerId);
+		MProject__c newProject = new MProject__c(Name = projectName, Customer__c = customerId, Status__c = 'In Progress');
 		newProject.StartDate__c = Date.today();
 		newProject.EndDate__c = Date.today().addYears(1);
 		insert newProject;
