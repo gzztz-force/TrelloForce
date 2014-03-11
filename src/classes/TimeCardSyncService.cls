@@ -102,7 +102,8 @@ public class TimeCardSyncService
             request.setEndpoint(endpoint);
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json;charset=UTF-8');
-            request.setBody(generateJSONString());              
+            request.setBody(generateJSONString());  
+            request.setTimeout(120000);            
             Http http = new Http();
             HttpResponse response = http.send(request);
             Map<String, String> timeCardId2ErrorMsg = (Map<String, String>)JSON.deserialize(response.getBody(), Map<String, String>.class);
