@@ -11,8 +11,9 @@ trigger SetUserNextBirthday on User (before insert, before update)
 
             Date birthdayThisYear = getBirthday(Date.today().year(), user.Birthday__c, birthdayType);
 
+            Date chineseToday = getChineseDateByGMTDate();
             // When birthday this year hasn't passed, set birthday this year.
-            if(birthdayThisYear > Date.today())
+            if(birthdayThisYear > chineseToday)
             {
                 user.NextBirthday__c = birthdayThisYear;
             }
@@ -28,8 +29,8 @@ trigger SetUserNextBirthday on User (before insert, before update)
             }
 
             // Send email to HR
-            if((oldBirthdayThisYear == Date.today()) // A user is updated by updating the BirthdayThisYear field.
-                || (birthdayThisYear == Date.today())) // A new user is brithday when is created to send email.
+            if((oldBirthdayThisYear == chineseToday) // A user is updated by updating the BirthdayThisYear field.
+                || (birthdayThisYear == chineseToday)) // A new user is brithday when is created to send email.
             {
                 birthdayUsers.add(user);
             }
@@ -144,5 +145,17 @@ trigger SetUserNextBirthday on User (before insert, before update)
             result.addAll(getUSerIdsFromGroup(groupIdProxys));
         }
         return result;
+    }
+
+    private static Date getChineseDateByGMTDate()
+    {
+        Datetime chineseTime = System.now().addHours(8);
+        //yyyy-MM-dd HH:mm:ss
+        List<String> dateStr = String.valueOf(chineseTime).substring(0, 10).split('-');
+        Integer year = Integer.valueOf(dateStr[0]);
+        Integer month = Integer.valueOf(dateStr[1]);
+        Integer day = Integer.valueOf(dateStr[2]);
+
+        return Date.newInstance(year, month, day);
     }
 }
