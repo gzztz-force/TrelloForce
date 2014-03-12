@@ -90,10 +90,12 @@ trigger SetUserNextBirthday on User (before insert, before update)
         String emailBody = 'Hi,\r\n \r\nToday is birthday of ';
         for(User user : users)
         {
-             emailBody += user.FirstName + '( Birthday: ' + String.valueOf(user.Birthday__c) + ', Type: ' + user.BirthdayType__c + ')' + ', ';
+             emailBody += user.FirstName + '( Birthday: ' + String.valueOf(user.Birthday__c) + ', Type: ' + user.BirthdayType__c + ' )' + ', ';
         }
 
-        return emailBody += '\r\n happpy birthday to him/her! \r\n \r\n Thanks';
+        emailBody = emailBody.trim().removeEnd(',');
+
+        return emailBody += '. \r\n \r\nHapppy birthday to him/her!\r\n \r\nThanks';
     }
 
     private static List<String> getEmailToAddresses()
