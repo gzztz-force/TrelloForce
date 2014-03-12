@@ -3,3 +3,4 @@ src/staticresources/
 *.sublime-project
 *.sublime-workspace
 *.log
+deploy/
