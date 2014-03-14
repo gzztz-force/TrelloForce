@@ -8,6 +8,7 @@ public class DailyTimeCardReportController
     }
 
     public String UserId { get; set; }
+    public String LeaveType { get; set; }
 
     public String UserFullName
     {
@@ -54,8 +55,7 @@ public class DailyTimeCardReportController
                 table.Columns.add(getDayOfWeek(Date.today().addDays(i)));
             }
             Map<Id, String> userMap = new Map<Id, String>();
-            //table.addValue(UserFullName, table.Columns[0], 0);
-            table.addValue(UserFullName, table.Columns[0], 0, 'No Leave');
+            table.addValue(UserFullName, table.Columns[0], 0);
             if(String.isNotEmpty(UserId))
             {
                 for(User user : getTeamUsers(UserId))
@@ -63,38 +63,35 @@ public class DailyTimeCardReportController
                     userMap.put(user.Id, user.Name);
                     if(user.Name != UserFullName)
                     {
-                        //table.addValue(user.Name, table.Columns[0], 0);
-                        table.addValue(UserFullName, table.Columns[0], 0, 'No Leave');
+                        table.addValue(user.Name, table.Columns[0], 0);
                     }
                 }
 
                 Map<LeaveInFin.Leave, Map<Date, String>> leaveToDaysThisWeek = getLeaveToDaysThisWeek(LeaveInFin.getAllLeaves());
-                System.debug('@@@leaves: ' + leaveToDaysThisWeek.size());
                 List<User> users = getLeaveUsersThisWeek(leaveToDaysThisWeek);
-                System.debug('@@@users: ' + users.size());
                 Map<Id, Map<Date, String>> userIdToLeaveDaysThisWeek = getUserIdToLeaveDates(leaveToDaysThisWeek, users);
-                System.debug('@@@leaveDays: ' + userIdToLeaveDaysThisWeek.keySet().size());
                 Map<Id, Map<Date, Decimal>> userIdToDaysHours = getUserIdToDaysHours(userMap.keySet());
-                
-                for(Id userId : userIdToDaysHours.keySet())
+
+                for(Id userId : userMap.keySet())
                 {
-                    for(Date d : userIdToDaysHours.get(userId).keySet())
+                    if(userIdToDaysHours.containsKey(userId))
                     {
-                        if(userIdToDaysHours.get(userId).get(d) <= 4 && userIdToLeaveDaysThisWeek.containsKey(userId))
+                        for(Date d : userIdToDaysHours.get(userId).keySet())
                         {
-                            Map<Date, String> dayToHalfDay = userIdToLeaveDaysThisWeek.get(userId);
-                            if(userIdToLeaveDaysThisWeek.get(userId).keySet().contains(d))
+                            if(userIdToDaysHours.get(userId).get(d) <= 4 && userIdToLeaveDaysThisWeek.containsKey(userId))
                             {
-                                table.addValue(userId, getDayOfWeek(d),  userIdToDaysHours.get(userId).get(d), dayToHalfDay.get(d));
+                                Map<Date, String> dayToHalfDay = userIdToLeaveDaysThisWeek.get(userId);
+                                if(userIdToLeaveDaysThisWeek.get(userId).keySet().contains(d))
+                                {
+                                    String type = dayToHalfDay.get(d);
+                                    if(type == null)
+                                    {
+                                        type = 'Whole Day';
+                                    }
+                                    LeaveType = type;
+                                }
                             }
-                            else
-                            {
-                                table.addValue(userMap.get(userId), getDayOfWeek(d), userIdToDaysHours.get(userId).get(d), 'No Leave');
-                            }
-                        }
-                        else
-                        {
-                            table.addValue(userMap.get(userId), getDayOfWeek(d), userIdToDaysHours.get(userId).get(d), 'No Leave');
+                            table.addValue(userMap.get(userId), getDayOfWeek(d), userIdToDaysHours.get(userId).get(d));
                         }
                     }
                 }
