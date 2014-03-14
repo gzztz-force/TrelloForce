@@ -13,7 +13,7 @@ public class TimeCardSyncService
     private static String salesforceBaseUrl;
 
     private static Map<String, List<TimeCard__c>> timeCardOwner2TimeCards = new Map<String, List<TimeCard__c>>(); 
-    private static Map<String, List<change__c>> changeOwner2Changes = new Map<String, List<Change__c>>();
+    private static Map<String, Set<Change__c>> changeOwner2Changes = new Map<String, Set<Change__c>>();
     private static List<TimeCard__c> validTimeEntries = new List<TimeCard__c>();
     
     // To make callout from schedule job, we need annotate the static method with future.
@@ -26,16 +26,19 @@ public class TimeCardSyncService
         // Gets Salesforce Base Url.
         salesforceBaseUrl = URL.getSalesforceBaseUrl().toExternalForm();        
 
+        // key with change owner name combined with the owner email.
+        String changeOwnerKey;
         for(TimeCard__c entry : [select Id, Name, IsSync__c, Billable__c, Date__c, Hours__c, Description__c, Project__c, Change__c,
                                         Project__r.Name, TeamMember__r.User__r.Name, TeamMember__r.User__r.Email, 
                                         Change__r.Name, Change__r.ExternalID__c, Change__r.Project__c, Change__r.Project__r.Name, Change__r.CreatedBy.Name, Change__r.CreatedBy.Email
                                 from TimeCard__c where IsSync__c = false and Project__r.Customer__r.Name = :customerName
                                 order by Project__r.Name, Change__r.Name, Name])
         {
+            
             // The Change__c field value must be set, because it's
             // required in Touchpoint's system.
             if(String.isBlank(entry.Change__c))
-            {
+            {                
                 if(!timeCardOwner2TimeCards.containsKey(entry.TeamMember__r.User__r.Name))
                 {
                     timeCardOwner2TimeCards.put(entry.TeamMember__r.User__r.Name, new List<TimeCard__c>());
@@ -46,11 +49,12 @@ public class TimeCardSyncService
             // find the related Requirement__c id in Touchpoint's system.
             else if(String.isBlank(entry.Change__r.ExternalID__c))
             {
-                if(!changeOwner2Changes.containsKey(entry.Change__r.CreatedBy.Name))
+                changeOwnerKey = entry.Change__r.CreatedBy.Name + ':' + entry.Change__r.CreatedBy.Email;
+                if(!changeOwner2Changes.containsKey(changeOwnerKey))
                 {
-                    changeOwner2Changes.put(entry.Change__r.CreatedBy.Name, new List<Change__c>());
+                    changeOwner2Changes.put(changeOwnerKey, new Set<Change__c>());
                 }
-                changeOwner2Changes.get(entry.Change__r.CreatedBy.Name).add(entry.Change__r);
+                changeOwner2Changes.get(changeOwnerKey).add(entry.Change__r);
             }
             else
             {
@@ -313,31 +317,27 @@ public class TimeCardSyncService
     {
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
         mail.setSubject('Time Card Sync Exception: No ExternalID Specified - ' + Date.today().format());        
-        Set<String> changeOwnerEmails = new Set<String>();          
-        for(String changeOwner : changeOwner2Changes.keySet())
-        {
-            changeOwnerEmails.add(changeOwner2Changes.get(changeOwner).get(0).CreatedBy.Email);
-        }       
+        Set<String> changeOwnerEmails = new Set<String>();    
         // The email set in the custom settings must be added to get the notification.
         changeOwnerEmails.add(managerEmail);
-        mail.setToAddresses(new List<String>(changeOwnerEmails));
-        // Ordrs the Change records by Change Owner name.
-        List<String> changeOwners = new List<String>(changeOwner2Changes.keySet());
-        changeOwners.sort();
+                
         String summary = 'You are getting this email because some of Change records you created are not having ExternalID field populated, the ExternalID field must be specified to get our TimeCard records synced to our client\'s system.';
         String htmlBody = '<div style="background: #ddd; margin-top: 20px;">';
         htmlBody += '<div style="width: 90%; margin: auto; background: #FFF; border: 1px solid #ddd">';
         htmlBody += '<div style="background: #F2F2F2; padding: 30px 40px; font-size: 14px; color: #cc762b; font-weight: bold;">' + summary + '</div>';      
-        for(String changeOwner : changeOwners)
+        for(String changeOwnerKey : changeOwner2Changes.keySet())
         {
+            // changeOwnerKey = ChangeOwnerName + ':' + ChangeOwnerEmail.            
+            changeOwnerEmails.add(changeOwnerKey.substringAfter(':'));
+
             htmlBody += '<div style="margin: 20px 40px; border: 1px solid #ddd; border-radius: 4px;">';
-            htmlBody += '<div style="color: #0084b4; font-size: 14px; font-weight: bold; padding: 20px 10px;">' + changeOwner + '</div>';
+            htmlBody += '<div style="color: #0084b4; font-size: 14px; font-weight: bold; padding: 20px 10px;">' + changeOwnerKey.substringBefore(':') + '</div>';
             htmlBody += '<table width="100%" cellspacing="0" cellpadding="10">';
             htmlBody += '<tr>' +                        
                             '<th style="border-top: 1px solid #ddd; text-align: left; width: 40%">Project</th>' +
                             '<th style="border-top: 1px solid #ddd; text-align: left;">Change</th>' +
                         '</tr>';
-            for(Change__c change : changeOwner2Changes.get(changeOwner))
+            for(Change__c change : changeOwner2Changes.get(changeOwnerKey))
             {
                 htmlBody += '<tr>' + 
                                 '<td style="border-top: 1px solid #ddd;"><a href="' + salesforceBaseUrl + '/' + change.Project__c + '">' + change.Project__r.Name + '</a></td>' +
@@ -350,6 +350,7 @@ public class TimeCardSyncService
         htmlBody += '</div>';
         htmlBody += '</div>';
         mail.setHtmlBody(htmlBody);
+        mail.setToAddresses(new List<String>(changeOwnerEmails));
         Messaging.sendEmail(new Messaging.SingleEmailMessage[]{mail});
     }
 
