@@ -254,8 +254,9 @@
                                                             <input type="hidden" value="{!space.Id}"/>
                                                         </i>
                                                     </div>
+                                                    <div class="divider"></div>
                                                 </li>
-                                                <li class="divider"></li>
+                                                
                                             </apex:repeat>
                                         </ul>
                                         </apex:outputPanel>
@@ -269,8 +270,10 @@
                                                     <a href="/apex/WikiViewPage?id={!page.WikiPage__c}" >{!page.Title__c}</a>
                                                         <i class="icon-star bookmark" rel="page" title="Click to favor"></i>
                                                     </div>
+
+                                                    <div class="divider"></div>
                                                 </li>
-                                                <li class="divider"></li>
+                                                
                                             </apex:repeat>
                                           </ul>
                                     </div>

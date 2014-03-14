@@ -16,13 +16,17 @@ public with sharing class WikiHomeController
     //added by ray 
     public List<WikiPageVersion__c> PagesForSearch { get; set;}
     public String SearchKey { get; set; }
+    public String testStr { get; set; }
     
     public WikiHomeController()
     {
         NewSpace = new WikiSpace__c();
         PopularPages = initPopularPages();
         HasError = false;
-        PagesForSearch = new List<WikiPageVersion__c>();
+
+        SearchKey = 'page';
+        searchWikiPageAction();
+        SearchKey = '%' + 'ray' + '%';
     }
 
     public List<WikiSpace__c> getMySpaces()
@@ -113,10 +117,18 @@ public with sharing class WikiHomeController
         if(String.isNotBlank(SearchKey))
         {
             SearchKey = '%' + SearchKey + '%';
-            SearchKey = '%' + 'page' + '%';
+
             PagesForSearch = [SELECT Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, WikiPage__r.LastPublishedDate__c   
                                                                FROM WikiPageVersion__c WHERE IsLatestVersion__c = true and Title__c like : SearchKey ORDER BY WikiPage__r.LastPublishedDate__c DESC limit 10];
         }
+        else
+        {
+            PagesForSearch = new List<WikiPageVersion__c>();
+        }
+    }
+    public void testStrMethod()
+    {
+        testStr = 'testStr init';
     }
 
     @isTest
