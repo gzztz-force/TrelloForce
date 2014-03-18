@@ -16,6 +16,7 @@ public class WikiNewPageController
     {
         IsValid = true;
         pageId = ApexPages.currentPage().getParameters().get('id');
+        WikiSpaceId = ApexPages.currentPage().getParameters().get('spaceid');
         List<WikiPage__c> pages = [select Id, LastPublishedDate__c, (select Id, VersionNumber__c, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name, WikiPage__r.WikiSpace__r.Id
                                     from WikiPageVersions__r where WikiPage__c = :pageId and IsLatestVersion__c = true)
                                     from WikiPage__c where Id = :pageId];

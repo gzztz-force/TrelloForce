@@ -23,6 +23,10 @@ public with sharing class WikiSpaceController
 		where  Id = :spaceID];
 		return space;
 	}
+	public String getSpaceId()
+	{
+		return spaceID;
+	}
 
 	public List<WikiPage__c> getWikiPages()
 	{
