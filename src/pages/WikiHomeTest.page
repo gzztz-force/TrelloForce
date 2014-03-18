@@ -221,18 +221,16 @@
                     }
                 });
             $('#searchWikiId').bind('blur',function()
-                {
+                {                                        
                     $('#theSearchSpanId').hide(800);
-                    $('#theSearchSpanId span ul').empty();
                 });
             $('#searchWikiId').bind('focus',function()
                 {
-                    $('#theSearchSpanId span ul').empty();
+                    //$('#theSearchSpanId span ul').empty();
                     //$('#theSearchSpanId').show('slow');
+                    searchWikiPage();
                 });
-            $('#theSearchSpanId').hide();
-
-            
+            $('#theSearchSpanId').hide();            
 
             $.each($('#theSearchSpanId span ul').children('li'), function(index, val) {
 
@@ -336,20 +334,22 @@
         function searchWikiPageInJsArray(key)
         {
             $('#theSearchSpanId span ul').empty();
-            if(key != null && key != '')
-            {   
-                for(var i = 0; i < pageArr.length; i++)
-                {
-                    if(pageArr[i].title__c.indexOf(key) > -1)
-                    {
-                        $('#theSearchSpanId span ul').append($("<li><a href='"+pageArr[i].href__c+"' >"+pageArr[i].title__c+"</a><div class='divider'></div>"));
+            $('#theSearchSpanId').hide();
+            if(key != null && key != ''){
+                var j = 0;
+                for(var i = 0; i < pageArr.length; i++){
+                    if(pageArr[i].title__c.indexOf(key) > -1){
+                        $('#theSearchSpanId span ul').append($("<li><a href='"+pageArr[i].href__c+"'  target='blank'>"+pageArr[i].title__c+"</a><div class='divider'></div>")); 
+                        j++;
+                    }
+                    if(j > 15){
+                        break;
                     }
                 }
-                $('#theSearchSpanId').show();
-            }
-            else{
-                $('#theSearchSpanId').hide('slow');
-            }            
+                if(j > 0){
+                    $('#theSearchSpanId').show();        
+                }                         
+            }       
         }
 
         
@@ -419,7 +419,7 @@
                             <a href="/apex/WikiNewPage" target="blank" class="btn btn-default">Add Page</a>
                         </div>
                         <div class="col-md-3">                          
-                            <input type="search" id="searchWikiId" class="search col-md-12 pull-left" placeholder="Search in Wiki" onkeypress="enterPerss()" onkeydown="enterPress(Event)" autocomplete="off"/>
+                            <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query" placeholder="Search in Wiki" onkeypress="enterPerss()" onkeydown="enterPress(Event)" autocomplete="off"/>
                             <div id="theSearchSpanId" class="myAutoComplete">
                                 <apex:outputPanel id="TheSearchSuggest" rendered="{!PagesForSearch.size > 0}">
                                     <ul>
@@ -462,7 +462,8 @@
                                         <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!MySpaces}" var="space">
                                                 <li>
-                                                    <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                    <!--i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i-->
+                                                    <span class="glyphicon glyphicon-globe fav"></span>
                                                     <div>
                                                         <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a>                                                        
                                                         <i class="glyphicon glyphicon-star bookmark" rel="space" title="Click to favor" data-toggle="tooltip" data-placement="left" > 
@@ -486,7 +487,8 @@
                                                     </div>
                                                      
                                                 </li>  
-                                                <div class="divider"></div>                                            
+                                                <div class="divider"></div> 
+                                                                                          
                                             </apex:repeat>
                                           </ul>
                                     </div>
@@ -504,34 +506,43 @@
                             <div class="tab-content">
                                 <div id="popularDiv" class="tab-pane fade active in">
                                     <ul class="list-unstyled popular-list">
-                                        <apex:repeat value="{!PopularPages}" var="item">
+
+
+
+                                            
+                                        <apex:repeat value="{!MyPopularPages}" var="item">
                                         <li class="popular-page">
                                             <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                    <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
+                                                <span title="{!item.wikipageversion.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                    <img width="45" height="45" title="{!item.wikipageversion.CreatedBy.Name}" class="avatar-photo" alt="{!item.wikipageversion.CreatedBy.Name}" src="{!item.wikipageversion.CreatedBy.FullPhotoUrl}" />
                                                 </span>
                                             </a>
                                             <div class="media pull-left" style="margin-left:20px;">
                                                 <div class="media-body">
-                                                    <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
+                                                    <a href="/apex/WikiViewPage?id={!item.wikipageversion.WikiPage__c}" >{!item.wikipageversion.Title__c}</a>
                                                     <div class="page-author">
-                                                        <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>
+                                                        <a href="/{!item.wikipageversion.CreatedById}" >{!item.wikipageversion.CreatedBy.Name}</a>
                                                         <span>
                                                             <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
+                                                                <apex:param value="{!item.wikipageversion.WikiPage__r.LastPublishedDate__c}"/>
                                                             </apex:outputText>
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="pull-right comment">
-                                                <span class="badge">1</span>
+                                                <span class="badge">{!item.FeedComment}</span>
                                             </div>
                                              
                                         </li>
                                         <div class="divider"></div>
                                         
                                         </apex:repeat>
+
+
+
+
+
                                     </ul>
                                 </div>
                                 <div id="allUpdateDiv" class="tab-pane fade">

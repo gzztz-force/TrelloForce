@@ -55,6 +55,25 @@ public with sharing class WikiHomeController
             ApexPages.addMessages(ex);
         }
     }
+    public List<PopularWikiPage> getMyPopularPages()
+    {
+        List<WikiPage__c> popPages = [select id ,(SELECT Id, Title__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, wikipage__r.LastPublishedDate__c FROM WikiPageVersions__r WHERE IsLatestVersion__c = true),
+                                    (select Id,CommentCount from feeds) from WikiPage__c order by LastPublishedDate__c desc limit 4];
+
+        List<PopularWikiPage> pageTemps = new List<PopularWikiPage>();
+        for(WikiPage__c page : popPages)
+        {
+            Integer i = 0;
+            for(WikiPage__Feed wpf : page.feeds)
+            {
+                i += wpf.CommentCount + 1;
+            }
+            pageTemps.add(new PopularWikiPage(page.WikiPageVersions__r[0],i));
+        }
+
+        return pageTemps;
+    }
+
 
     public void loadMorePopularPages()
     {
@@ -119,7 +138,7 @@ public with sharing class WikiHomeController
             SearchKey = '%' + SearchKey + '%';
 
             PagesForSearch = [SELECT Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, WikiPage__r.LastPublishedDate__c   
-                                                               FROM WikiPageVersion__c WHERE IsLatestVersion__c = true and Title__c like : SearchKey ORDER BY WikiPage__r.LastPublishedDate__c DESC limit 10];
+                                                               FROM WikiPageVersion__c WHERE IsLatestVersion__c = true and Title__c like : SearchKey ORDER BY WikiPage__r.LastPublishedDate__c DESC];
         }
         else
         {
@@ -129,6 +148,19 @@ public with sharing class WikiHomeController
     public void testStrMethod()
     {
         testStr = 'testStr init';
+    }
+
+
+    public class PopularWikiPage
+    {
+        public WikiPageVersion__c WikiPageVersion { get; set; }
+        public Integer FeedComment { get; set; }
+
+        public PopularWikiPage(WikiPageVersion__c WikiPageVer,Integer feedComment)
+        {
+            this.WikiPageVersion = WikiPageVer;
+            this.FeedComment = feedComment;
+        }
     }
 
     @isTest

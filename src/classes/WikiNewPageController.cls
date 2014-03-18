@@ -16,7 +16,7 @@ public class WikiNewPageController
     {
         IsValid = true;
         pageId = ApexPages.currentPage().getParameters().get('id');
-        List<WikiPage__c> pages = [select Id, LastPublishedDate__c, (select Id, VersionNumber__c, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name
+        List<WikiPage__c> pages = [select Id, LastPublishedDate__c, (select Id, VersionNumber__c, WikiPage__c, Title__c, Body__c, Label__c, WikiPage__r.WikiSpace__r.Name, WikiPage__r.WikiSpace__r.Id
                                     from WikiPageVersions__r where WikiPage__c = :pageId and IsLatestVersion__c = true)
                                     from WikiPage__c where Id = :pageId];
         isNew = (pages.size() <= 0) ? true : false;
@@ -33,6 +33,7 @@ public class WikiNewPageController
             {
                 parentPage = pages[0];
                 LatestPage = pageVersions[0];
+                WikiSpaceId = pageVersions[0].WikiPage__r.WikiSpace__r.Id;
                 versionPageClone = LatestPage.clone(true);
             }
             else
