@@ -19,7 +19,7 @@ public class ChartTable
     public List<String> Columns { get; set; }
     public List<RowInfo> Rows { get; set; }
 
-    public void addValue(String key, String column, Decimal value)
+    public void addValue(String key, String column, CellInfo cell)
     {
         Integer columnIndex = getColumnIndex(column);
         if(columnIndex == -1)
@@ -41,7 +41,7 @@ public class ChartTable
             rowIndex.put(key, foundRow);
         }
 
-        foundRow.addValue(columnIndex, value);
+        foundRow.addValue(columnIndex, cell);
     }
 
     public void addColumn(String columnName)
@@ -78,7 +78,7 @@ public class ChartTable
         public RowInfo(String key)
         {
             this.PrimaryKey = key;
-            Cells = new List<Decimal>();
+            Cells = new List<CellInfo>();
             Cumulative = false;
             Visible = true;
         }
@@ -88,40 +88,63 @@ public class ChartTable
             this(key);
             for(Integer i = 0; i < columnCount; i++)
             {
-                Cells.add(0);
+                Cells.add(new CellInfo(0));
             }
         }
 
         public Boolean Cumulative { get; set; }
         public String PrimaryKey { get; set; }
-        public List<Decimal> Cells { get ;set; }
+        public List<CellInfo> Cells { get ;set; }
         public Boolean Visible { get; set; }
 
-        public void addValue(Integer columnIndex, Decimal value)
+        public void addValue(Integer columnIndex, CellInfo cell)
         {
-            if(value != null)
+            if(cell.Hours != null)
             {
                 while(Cells.size() <= columnIndex)
                 {
-                    Cells.add(0);
+                    Cells.add(new CellInfo(0));
                 }
                 if(Cumulative)
                 {
-                    Cells[columnIndex] += value;
+                    Cells[columnIndex].Hours += cell.Hours;
+                    Cells[columnIndex].LeaveType = cell.LeaveType;
+                    Cells[columnIndex].ImageName = cell.ImageName;
                 }
                 else
                 {
-                    Cells[columnIndex] = value;
+                    Cells[columnIndex] = cell;
                 }
             }
         }
+    }
+
+    public class CellInfo
+    {
+        public CellInfo(Decimal hours)
+        {
+            this.Hours = hours;
+            LeaveType = EmployeeLeave.LeaveType.NONE.name();
+            this.ImageName = '';
+        }
+
+        public CellInfo(Decimal hours, String leaveType, String ImageName)
+        {
+            this.Hours = hours;
+            this.LeaveType = leaveType;
+            this.ImageName = ImageName;
+        }
+
+        public Decimal Hours { get; set; }
+        public String LeaveType { get; set; }
+        public String ImageName { get; set; }
     }
 
     @isTest
     static void testChartTable()
     {
         ChartTable table = new ChartTable();
-        table.addValue('key', 'column1', 1);
+        table.addValue('key', 'column1', new CellInfo(1, 'leaveType', 'imageName'));
 
         System.assertEquals(1, table.Columns.size());
         System.assertEquals(1, table.Rows.size());
