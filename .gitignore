@@ -1,11 +1,6 @@
 config/
 src/staticresources/
 *.sublime-project
-<<<<<<< HEAD
 *.sublime-workspace
 *.log
 deploy/
-=======
-*.log
-*.sublime-workspace
->>>>>>> refs/heads/feature/sync_timecard
