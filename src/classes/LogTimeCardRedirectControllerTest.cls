@@ -8,12 +8,12 @@ public class LogTimeCardRedirectControllerTest
         
         currentPage.getHeaders().put('HTTP_X_SKYFIRE_PHONE','ipad');
         Test.setCurrentPage(currentPage);
-        boolean isMobile = new LogTimeCardRedirectController().IsMobile;
-        system.assert(isMobile);
+        Boolean isMobile = new LogTimeCardRedirectController().IsMobile;
+        System.assert(isMobile == true);
         
         currentPage.getHeaders().put('HTTP_X_SKYFIRE_PHONE','windows');
         Test.setCurrentPage(currentPage);
         isMobile = new LogTimeCardRedirectController().IsMobile;
-        system.assert(isMobile == false);
+        System.assert(isMobile == false);
     }
 }
