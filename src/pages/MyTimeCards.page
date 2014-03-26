@@ -1,0 +1,62 @@
+<apex:page controller="MyTimeCardsController" showHeader="false" standardStylesheets="false" docType="html-5.0" language="en_US" cache="false">
+    <head>
+        <title>My Time Cards</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <apex:stylesheet value="{!URLFOR($Resource.PMHtml_SF1, 'styles/sf1-icons.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.PMHtml_SF1, 'styles/sf1-app.css')}"/>
+        <style>
+            .test_ul li {
+                display:inline-block;
+                zoom:1;
+                padding:0 20px 0px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <article class="mam bg-1 border border--3 brm">
+            <header class="clear pam border-bottom border--8">
+                <h1 class="fl man fw-normal f1 text-color-1">My Time Cards</h1>
+            </header>
+            <ul class="man pan list-plain">
+                <apex:repeat value="{!TimeCards}" var="item" rendered="{!TimeCards.size > 0}">
+                    <li class="pam border-bottom border--8" onclick="gotoDetailPage('{!item.TimeCardId}')">
+                        <div class="mbs flag flag--rev">
+                            <div class="flag--body">
+                                <span class="f3 text-color-1 fw-semibold"><apex:outputText value="{!item.Project}"/></span>
+                            </div>
+                            <div class="flag--image prm">
+                                <div class="icon icon--record bgs-100 a-mid sq-30"></div>
+                            </div>
+                        </div>
+                        <ul class="list-plain man pan test_ul">
+                            <li class="f5 text-color-2"><apex:outputText value="{!item.Hours}"/></li>
+                            <li class="f5 text-color-2">
+                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                    <apex:param value="{!item.DateValue}" />
+                                </apex:outputText>
+                            </li>
+                        </ul>
+                        <ul class="list-plain man pan">
+                            <li class="f5 text-color-2"><apex:outputText value="{!item.Description}"/></li>
+                        </ul>
+                    </li>
+                </apex:repeat>
+            </ul>
+        </article>
+
+        <script type="text/javascript">
+            function gotoDetailPage(itemIn)
+            {
+                var cardId = itemIn;
+                if((typeof sforce != 'undefined') && (sforce != null))
+                {
+                    sforce.one.navigateToSObject(cardId);
+                }
+                else
+                {
+                    window.location.href = '/' + cardId;
+                }
+            }
+        </script>
+    </body>
+</apex:page>

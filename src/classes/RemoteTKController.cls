@@ -25,7 +25,7 @@
  */
 
 global class RemoteTKController {
-    private static String makeError(String message, String errorCode) {
+    public static String makeError(String message, String errorCode) {
         JSONGenerator gen = JSON.createGenerator(false);
         gen.writeStartArray();
         gen.writeStartObject();
@@ -37,7 +37,7 @@ global class RemoteTKController {
         return gen.getAsString();
     }
 
-    private static String writeFields(String objtype, SObject obj, String fields) {
+    public static String writeFields(String objtype, SObject obj, String fields) {
         Map<String, Object> fieldMap = null;
         try {
             fieldMap = (Map<String, Object>)JSON.deserializeUntyped(fields);

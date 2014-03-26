@@ -1,0 +1,431 @@
+<apex:page docType="html-5.0" language="en_US" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false" showHeader="false" sidebar="false" controller="LogTimeCardController" cache="true">
+<head>
+    <title>Log Time Card at Salesforce1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta content='yes' name='apple-mobile-web-app-capable'/>
+
+    <style type="text/css">
+        @font-face {
+            font-family: ProximaNovaSoft-Regular !important;
+            src: url({!$Resource.ProximaNovaSoft});
+        }
+        .sf1input, .sf1textarea {
+            width:100%;
+            font-family: 'ProximaNovaSoft-Regular', 'Helvetica Neue';
+            font-size: 15px;
+            color: #3c3d3e;
+            padding: 7px 14px;
+            line-height: 25px;
+            border: 1px solid #cfd0d2;
+            border-radius: 5px;
+            background-color: #e8eaeb;
+            box-shadow: inset 0 2px 2px rgba(0,0,0,.07);
+            box-sizing: border-box;
+        }
+
+        .sf1input:focus, .sf1textarea:focus {
+            border: 1px solid #bbc0c4;
+            background-color: #fff;
+            outline-style: none;
+        }
+
+        .sf1select {
+            -webkit-appearance: none;
+            border: 1px solid #bbc0c4;
+            background-image: -moz-linear-gradient(#ffffff,#f1f1f1);
+            background-image: -webkit-linear-gradient(#ffffff,#f1f1f1);
+            background-image: -ms-linear-gradient(#ffffff,#f1f1f1);
+            background-image: linear-gradient(#ffffff,#f1f1f1);
+            background-repeat: no-repeat;
+            background-position: 95% 50%;
+            color: #3c3d3e;
+            padding: 7px 14px;
+            line-height: 25px;
+            font-family: 'ProximaNovaSoft-Regular', 'Helvetica Neue';
+            font-size: 15px;
+            width: 100%;
+            border: 1px solid #cfd0d2;
+            border-radius: 5px;
+        }
+
+        .sf1input[type="checkbox"] {
+            -webkit-appearance: none;
+            display: inline-block;
+            height: 22px;
+            margin: 0 6px 0 0;
+            border: 1px solid #c3c6c9;
+            padding: 0;
+            width: 22px;
+            vertical-align: middle;
+            background: white -webkit-linear-gradient(bottom,rgba(0,1,1,0.05) 0,rgba(255,255,255,0.05) 100%);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05),inset 0 0 1px 1px white;
+        }
+
+        .sf1input[type="checkbox"]:checked {
+            border: 1px solid #2c75a3;
+            background-color: #3b9fdd;
+            -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2);
+            -moz-box-shadow: 0 0 2px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2);
+            box-shadow: 0 0 2px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2);
+            background-image: -webkit-gradient(linear,50% 100%,50% 0,color-stop(0,#3b9fdd),color-stop(100%,#3b9fdd));
+            background-image: -webkit-linear-gradient(bottom,#3b9fdd 0,#3b9fdd 100%);
+            background-image: -moz-linear-gradient(bottom,#3b9fdd 0,#3b9fdd 100%);
+            background-image: -o-linear-gradient(bottom,#3b9fdd 0,#3b9fdd 100%);
+            background-image: linear-gradient(bottom,#3b9fdd 0,#3b9fdd 100%);
+        }
+
+        .sf1input[type="checkbox"]:checked::after {
+            display: block;
+            left: 3px;
+            top: 3px;
+            height: 6px;
+            width: 10px;
+            border-bottom: 4px solid white;
+            border-left: 4px solid white;
+            -webkit-transform: rotate(-45deg);
+            position: relative;
+            content: '';
+        }
+
+        .sf1label {
+            font-family: 'ProximaNovaSoft-Regular','Helvetica Neue';
+            font-size: 13px;
+            color: #696e71;
+            margin: 0;
+            padding-bottom: 8px;
+            padding-top: 8px;
+            display: block;
+            min-width: 100px;
+        }
+
+        .sf1button {
+            font-size: 16px;
+            color: #44596c;
+            text-shadow: none;
+            margin: 0;
+            padding: 4px 14px;
+            height: 35px;
+            font-size: 16px;
+            font-family: 'ProximaNovaSoft-Regular';
+            font-weight: normal;
+            border: 1px solid #bbc0c4;
+            border-radius: 5px;
+            background: -moz-linear-gradient(#ffffff,#f1f1f1);
+            background: -webkit-linear-gradient(#ffffff,#f1f1f1);
+            background: -ms-linear-gradient(#ffffff,#f1f1f1);
+            background: linear-gradient(#ffffff,#f1f1f1);
+            box-shadow: none;
+            text-align: center;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .sf1button:active {
+            background: #e9e9e9;
+        }
+
+        .sf1buttonSFBlue {
+            font-size: 16px;
+            color: #44596c;
+            text-shadow: none;
+            margin: 0;
+            padding: 4px 14px;
+            height: 35px;
+            font-size: 16px;
+            font-family: 'ProximaNovaSoft-Regular', 'Helvetica Neue';
+            font-weight: normal;
+            border: 1px solid #bbc0c4;
+            border-radius: 5px;
+            background: -moz-linear-gradient(#2a93d5,#107abb);
+            background: -webkit-linear-gradient(#2a93d5,#107abb)
+            background: -ms-linear-gradient(#2a93d5,#107abb);
+            background: linear-gradient(#2a93d5,#107abb);
+            box-shadow: none;
+            text-align: center;
+            cursor: pointer;
+            box-sizing: border-box;
+            color:white;
+        }
+
+        .selectArrow {
+            position: absolute;
+            right: 10px;
+            top: 16px;
+            margin-left: 15px;
+            width: 16px;
+            display: block;
+            height: 16px;
+            background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9ImRvd25fMV8iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIwIDAgNjQgNjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDY0IDY0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJEb3duX3g0MF8yeC5wbmdfMV8iPg0KCTxnIGlkPSJkaXJlY3Rkb3duX2NvcHkiPg0KCQk8Zz4NCgkJCTxwYXRoIGZpbGw9IiM5Njk4OTkiIGQ9Ik01NS4wNjYsMTcuODY2Yy0wLjUzMy0wLjkzNC0xLjQ2Ny0xLjUzMy0yLjUzMy0xLjZDNTIuMzk4LDE2LjE5OSw0Mi4zOTgsMTUuNiwzMiwxNS42DQoJCQkJYy0xMC4zOTksMC0yMC40LDAuNi0yMC41MzMsMC42NjdjLTEuMDY2LDAuMDY2LTIuMDY2LDAuNjY2LTIuNTMzLDEuNmMtMC41MzMsMC45MzQtMC41MzMsMi4wNjYsMCwzDQoJCQkJYzcuOTMzLDE0LjA2NiwyMC40LDI2LjI2NywyMC45MzMsMjYuNzMyYzEuMiwxLjA2NiwzLjA2NiwxLjA2Niw0LjI2NywwYzAuNTMzLTAuNDY3LDEzLTEyLjY2NiwyMC45MzMtMjYuNzMyDQoJCQkJQzU1LjYsMTkuOTMzLDU1LjYsMTguOCw1NS4wNjYsMTcuODY2eiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=);
+            background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9ImRvd25fMV8iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIwIDAgNjQgNjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDY0IDY0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJEb3duX3g0MF8yeC5wbmdfMV8iPg0KCTxnIGlkPSJkaXJlY3Rkb3duX2NvcHkiPg0KCQk8Zz4NCgkJCTxwYXRoIGZpbGw9IiM5Njk4OTkiIGQ9Ik01NS4wNjYsMTcuODY2Yy0wLjUzMy0wLjkzNC0xLjQ2Ny0xLjUzMy0yLjUzMy0xLjZDNTIuMzk4LDE2LjE5OSw0Mi4zOTgsMTUuNiwzMiwxNS42DQoJCQkJYy0xMC4zOTksMC0yMC40LDAuNi0yMC41MzMsMC42NjdjLTEuMDY2LDAuMDY2LTIuMDY2LDAuNjY2LTIuNTMzLDEuNmMtMC41MzMsMC45MzQtMC41MzMsMi4wNjYsMCwzDQoJCQkJYzcuOTMzLDE0LjA2NiwyMC40LDI2LjI2NywyMC45MzMsMjYuNzMyYzEuMiwxLjA2NiwzLjA2NiwxLjA2Niw0LjI2NywwYzAuNTMzLTAuNDY3LDEzLTEyLjY2NiwyMC45MzMtMjYuNzMyDQoJCQkJQzU1LjYsMTkuOTMzLDU1LjYsMTguOCw1NS4wNjYsMTcuODY2eiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=),-moz-linear-gradient(#ffffff,#f1f1f1);
+            background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9ImRvd25fMV8iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIwIDAgNjQgNjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDY0IDY0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJEb3duX3g0MF8yeC5wbmdfMV8iPg0KCTxnIGlkPSJkaXJlY3Rkb3duX2NvcHkiPg0KCQk8Zz4NCgkJCTxwYXRoIGZpbGw9IiM5Njk4OTkiIGQ9Ik01NS4wNjYsMTcuODY2Yy0wLjUzMy0wLjkzNC0xLjQ2Ny0xLjUzMy0yLjUzMy0xLjZDNTIuMzk4LDE2LjE5OSw0Mi4zOTgsMTUuNiwzMiwxNS42DQoJCQkJYy0xMC4zOTksMC0yMC40LDAuNi0yMC41MzMsMC42NjdjLTEuMDY2LDAuMDY2LTIuMDY2LDAuNjY2LTIuNTMzLDEuNmMtMC41MzMsMC45MzQtMC41MzMsMi4wNjYsMCwzDQoJCQkJYzcuOTMzLDE0LjA2NiwyMC40LDI2LjI2NywyMC45MzMsMjYuNzMyYzEuMiwxLjA2NiwzLjA2NiwxLjA2Niw0LjI2NywwYzAuNTMzLTAuNDY3LDEzLTEyLjY2NiwyMC45MzMtMjYuNzMyDQoJCQkJQzU1LjYsMTkuOTMzLDU1LjYsMTguOCw1NS4wNjYsMTcuODY2eiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=),-webkit-linear-gradient(#ffffff,#f1f1f1);
+            background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9ImRvd25fMV8iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIwIDAgNjQgNjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDY0IDY0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJEb3duX3g0MF8yeC5wbmdfMV8iPg0KCTxnIGlkPSJkaXJlY3Rkb3duX2NvcHkiPg0KCQk8Zz4NCgkJCTxwYXRoIGZpbGw9IiM5Njk4OTkiIGQ9Ik01NS4wNjYsMTcuODY2Yy0wLjUzMy0wLjkzNC0xLjQ2Ny0xLjUzMy0yLjUzMy0xLjZDNTIuMzk4LDE2LjE5OSw0Mi4zOTgsMTUuNiwzMiwxNS42DQoJCQkJYy0xMC4zOTksMC0yMC40LDAuNi0yMC41MzMsMC42NjdjLTEuMDY2LDAuMDY2LTIuMDY2LDAuNjY2LTIuNTMzLDEuNmMtMC41MzMsMC45MzQtMC41MzMsMi4wNjYsMCwzDQoJCQkJYzcuOTMzLDE0LjA2NiwyMC40LDI2LjI2NywyMC45MzMsMjYuNzMyYzEuMiwxLjA2NiwzLjA2NiwxLjA2Niw0LjI2NywwYzAuNTMzLTAuNDY3LDEzLTEyLjY2NiwyMC45MzMtMjYuNzMyDQoJCQkJQzU1LjYsMTkuOTMzLDU1LjYsMTguOCw1NS4wNjYsMTcuODY2eiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=),-ms-linear-gradient(#ffffff,#f1f1f1);
+            background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9ImRvd25fMV8iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIwIDAgNjQgNjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDY0IDY0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJEb3duX3g0MF8yeC5wbmdfMV8iPg0KCTxnIGlkPSJkaXJlY3Rkb3duX2NvcHkiPg0KCQk8Zz4NCgkJCTxwYXRoIGZpbGw9IiM5Njk4OTkiIGQ9Ik01NS4wNjYsMTcuODY2Yy0wLjUzMy0wLjkzNC0xLjQ2Ny0xLjUzMy0yLjUzMy0xLjZDNTIuMzk4LDE2LjE5OSw0Mi4zOTgsMTUuNiwzMiwxNS42DQoJCQkJYy0xMC4zOTksMC0yMC40LDAuNi0yMC41MzMsMC42NjdjLTEuMDY2LDAuMDY2LTIuMDY2LDAuNjY2LTIuNTMzLDEuNmMtMC41MzMsMC45MzQtMC41MzMsMi4wNjYsMCwzDQoJCQkJYzcuOTMzLDE0LjA2NiwyMC40LDI2LjI2NywyMC45MzMsMjYuNzMyYzEuMiwxLjA2NiwzLjA2NiwxLjA2Niw0LjI2NywwYzAuNTMzLTAuNDY3LDEzLTEyLjY2NiwyMC45MzMtMjYuNzMyDQoJCQkJQzU1LjYsMTkuOTMzLDU1LjYsMTguOCw1NS4wNjYsMTcuODY2eiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=),linear-gradient(#ffffff,#f1f1f1);
+            background-size: 16px 16px,100% 100%;
+
+        }
+
+        .selectBlock {
+            position: relative;
+        }
+
+        textarea {
+            padding: 0;
+        }
+
+        /* Loading Module*/
+        .forceGlobalModalIndicator.hidden {
+            display: none;
+        }
+
+        .forceGlobalModalIndicator .modal-glass {
+            background-color: #000000;
+            bottom: 0;
+            display: block;
+            left: 0;
+            margin-left: 40px;
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 999;
+        }
+
+        .forceGlobalModalIndicator .hideEl {
+            display: none;
+        }
+
+        .forceGlobalModalIndicator .indicatorContainer {
+            background: none repeat scroll 0 0 #354452;
+            border-radius: 5px;
+            color: #FFFFFF;
+            display: block;
+            height: 82px;
+            left: 0;
+            margin: -65px auto;
+            opacity: 0.9;
+            padding-top: 22px;
+            position: absolute;
+            right: 0;
+            text-align: center;
+            top: 50%;
+            width: 110px;
+            z-index: 1000;
+        }
+
+        @-moz-keyframes spin {
+          0% {
+            -moz-transform: rotate(0deg);
+          }
+          100% {
+            -moz-transform: rotate(359deg);
+          }
+        }
+        @-webkit-keyframes spin {
+          0% {
+            -webkit-transform: rotate(0deg);
+          }
+          100% {
+            -webkit-transform: rotate(359deg);
+          }
+        }
+        @-o-keyframes spin {
+          0% {
+            -o-transform: rotate(0deg);
+          }
+          100% {
+            -o-transform: rotate(359deg);
+          }
+        }
+        @-ms-keyframes spin {
+          0% {
+            -ms-transform: rotate(0deg);
+          }
+          100% {
+            -ms-transform: rotate(359deg);
+          }
+        }
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(359deg);
+          }
+        }
+
+        .forceGlobalModalIndicator .indicatorContainer .icon.spinnerIcon {
+            -webkit-animation: spin 0.8s infinite linear;
+            -moz-animation: spin 0.8s infinite linear;
+            -o-animation: spin 0.8s infinite linear;
+            animation: spin 0.8s infinite linear;
+
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2M3B4IiBoZWlnaHQ9IjYzcHgiIHZpZXdCb3g9IjAgMCA2MyA2MyI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTMxLjUwMSwxNi43ODF2LTQuODg2Yy0xMC43ODksMC0xOS41MzYsOC43NDUtMTkuNTM2LDE5LjUzNWMwLDEwLjc4OSw4Ljc0NywxOS41MzUsMTkuNTM2LDE5LjUzNWMxMC43ODgsMCwxOS41MzQtOC43NDYsMTkuNTM0LTE5LjUzNWMwLTUuMjE0LTIuMDQ5LTkuOTQ4LTUuMzc3LTEzLjQ1Mmw0LjcxOS00LjQ4M2M0LjQ0LDQuNjcxLDcuMTY4LDEwLjk4Myw3LjE2OCwxNy45MzdjMCwxNC4zODUtMTEuNjYyLDI2LjA0My0yNi4wNDIsMjYuMDQzYy0xNC4zODYsMC0yNi4wNDctMTEuNjU4LTI2LjA0Ny0yNi4wNDNjMC0xNC4zODgsMTEuNjYxLTI2LjA0NywyNi4wNDctMjYuMDQ3VjAuNWw5Ljc2Nyw4LjEzOUwzMS41MDEsMTYuNzgxeiIvPjwvc3ZnPg==") no-repeat scroll center center / 100% auto rgba(0, 0, 0, 0);
+        }
+        .forceGlobalModalIndicator .indicatorContainer .icon.checkIcon {
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NHB4IiBoZWlnaHQ9IjY0cHgiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTYzLjU3NiwxOC4zMjFjMC41Mi0wLjUxOSwwLjUyLTEuNDA3LDAtMS45MjVsLTkuMzIyLTkuMzIyYy0wLjUxOC0wLjUxOC0xLjQwNi0wLjUxOC0xLjkyMywwTDIzLjk5MiwzNS40ODZsLTEyLjM1Ni0xMi40M2MtMC41MTgtMC41MTgtMS40MDYtMC41MTgtMS45MjQsMGwtOS4zMjMsOS4zMjJjLTAuNTE5LDAuNTE5LTAuNTE5LDEuNDA1LDAsMS45MjRMMjMuMDMsNTYuOTQzYzAuMjk2LDAuMjIzLDAuNTkyLDAuMzcxLDAuOTYyLDAuMzcxYzAuMzcsMCwwLjY2Ni0wLjE0OCwwLjk2Mi0wLjM3MUw2My41NzYsMTguMzIxeiIvPjwvc3ZnPg==") no-repeat scroll center center / 100% auto rgba(0, 0, 0, 0);
+        }
+        .forceGlobalModalIndicator .indicatorContainer .icon {
+            color: #FFFFFF;
+            height: 36px;
+            width: 36px;
+        }
+        .forceGlobalModalIndicator .indicatorContainer .message {
+            font-family: 'ProximaNovaSoft-Medium';
+            font-size: 15px;
+            margin-top: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div style="height: 600px; ">
+        <apex:form >
+            <div class="alert-panel"></div>
+            <div>
+                <label for="selectProject" class="sf1label">Project</label>
+                <div class="selectBlock">
+                    <span class="selectArrow"></span>
+                    <select class="sf1select" style="margin-bottom:5px" id="selectProject">
+                    <apex:repeat value="{!RecentProjects}" var="rp">
+                        <!-- Set option as a default -->
+                        <apex:outputPanel layout="none" rendered="{!rp.IsLatestUsedProject}">
+                            <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!Not(rp.IsLatestUsedProject)}">
+                            <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                        </apex:outputPanel>
+                    </apex:repeat>
+                    </select>
+                </div>
+
+            </div>
+            <div>
+                <label for="selectChange" class="sf1label">Change</label>
+                <div class="selectBlock">
+                    <span class="selectArrow"></span>
+                    <select class="sf1select" id="selectChange">
+                        <apex:repeat value="{!RecentProjects}" var="rp">
+                            <apex:outputPanel rendered="{!rp.IsLatestUsedProject}">
+                                <apex:repeat value="{!rp.Changes}" var="change">
+                                    <option value="{!change.Id}">{!change.Name}</option>
+                                </apex:repeat>
+                            </apex:outputPanel>
+                        </apex:repeat>
+                    </select>
+                </div>
+            </div>
+            <div style="display:none">
+                <input id="inputDate" class="sf1input" value="{!YEAR(TODAY())}-{!MONTH(TODAY())}-{!DAY(TODAY())}"/>
+            </div>
+            <div>
+                <label for="inputHours" class="sf1label">Hours</label>
+                <input id="inputHours" type="number" class="sf1input" placeholder="" />
+            </div>
+            <div>
+                <label for="inputDescription" class="sf1label">Description</label>
+                <textarea id="inputDescription" class="sf1textarea" placeholder="" rows="3"></textarea>
+            </div>
+        </apex:form>
+    </div>
+
+    <div id="loadingImage" class="forceGlobalModalIndicator oneStyle oneOne hidden" data-aura-rendered-by="950:1.1">
+        <div class="modal-glass" data-aura-rendered-by="951:1.1">&nbsp;</div>
+        <div class="indicatorContainer" role="alert" data-aura-rendered-by="953:1.1">
+            <img class="spinnerIcon icon uiImage" alt="" src="/auraFW/resources/aura/s.gif" data-aura-rendered-by="957:1.1" />
+            <div class="message" id="_gModal_Message" data-aura-rendered-by="958:1.1">Saving</div>
+        </div>
+    </div>
+
+    <script src="{!URLFOR($Resource.Zepto)}"></script>
+    <script src="{!URLFOR($Resource.canvaspublisher)}"></script>
+
+    <script>
+        var selected = function(){ return this.selected; }
+
+        $(function() {
+            /*
+             * Select options
+             * Update the changes option when project is updted
+             */
+            var projectId = $('#selectProject option').filter(selected).val();
+
+            $('#selectProject').change(function () {
+                var selectedProject = $('#selectProject option').filter(selected);
+                var changeObjs = selectedProject.data('changes-info');
+
+                $('#selectChange').empty().append($('<option>'));
+
+                $.each(changeObjs, function (i, item) {
+                    $('#selectChange')
+                        .append($('<option>', { value : item.Id })
+                        .text(item.Name));
+                });
+
+                // Trigger change event to update Select2 value
+                $('#selectChange').change();
+            });
+
+            $('#inputHours').click(function() {
+                Sfdc.canvas.publisher.publish({name: "publisher.setValidForSubmit", payload:"true"});
+                console.log('touch event');
+
+                Sfdc.canvas.publisher.subscribe({name: "publisher.post", onData:function(e){
+                    $('#loadingImage').show();
+                    saveTimeCardByDate($('#inputDate').val() + ' 00:00:00');
+                }});
+            })
+        });
+
+        function saveTimeCardByDate(myDate, e)
+        {
+            var $selectedPorject = $('#selectProject option').filter(selected);
+            var project = $selectedPorject.val();
+            var memberId = $selectedPorject.data('member-id');
+            var change = $('#selectChange option:checked').val();
+            var date = myDate;
+            var hours = $('#inputHours').val();
+            var description = $('#inputDescription').val();
+
+            var timeCardbody = JSON.stringify({
+                'Project__c': project,
+                'TeamMember__c': memberId,
+                'Change__c': change,
+                'Hours__c': hours,
+                'Date__c': date,
+                'Description__c': description,
+            });
+            LogTimeCardController.create('TimeCard__c', timeCardbody, saveActionCallback, { escape: false });
+
+            return false;
+        }
+
+        function saveActionCallback (result) {
+            //Remote result map key:id, success, data[today, yesterday], error[fields, message, errorCode]
+            result = JSON.parse(result);
+            var htmlMessage;
+            if (result.success)
+            {
+                // Clear the data
+                $('#inputHours').val('');
+                $('#inputDescription').val('');
+                $('#todayHours').text(result.data.today);
+
+                // Redirect user to record detail
+                sforce.one.navigateToSObject(result.id);
+            }
+            else
+            {
+                var error = JSON.parse(result.error);
+                htmlMessage = '<strong>Error！</strong> ' + error.message + '.';
+                showMessage('error', htmlMessage);
+                $('#loadingImage').hide();
+            }
+        }
+
+        function showMessage(type, message) {
+            $('.alert-panel').children().remove();
+            $('.alert-panel').append($('<div class="alert alert-' + type + ' fade in" style="position:inherit">' + message + '</div>'));
+        }
+    </script>
+</body>
+</apex:page>

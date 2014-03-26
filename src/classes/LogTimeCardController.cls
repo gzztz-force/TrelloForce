@@ -2,10 +2,32 @@
  * The controller for LogTimeCard page
  * Use it in Chatter Action
  */
-public with sharing class LogTimeCardController
+global with sharing class LogTimeCardController
 {
     private static final Integer QUERY_PROJECT_NUMBER = 10;
     private static final Integer QUERY_CHANGE_NUMBER = 50;
+
+    private Map<String, String> loggedHoursMap;
+    public LogTimeCardController()
+    {
+        loggedHoursMap = getTodayAndYesterdayHours();
+    }
+
+    public String TodayHours
+    {
+        get
+        {
+            return (loggedHoursMap.get('today') != null) ? loggedHoursMap.get('today') : '0.0';
+        }
+    }
+
+    public String YesterdayHours
+    {
+        get
+        {
+            return (loggedHoursMap.get('yesterday') != null) ? loggedHoursMap.get('yesterday') : '0.0';
+        }
+    }
 
     public List<ProjectWithChanges> RecentProjects
     {
@@ -39,7 +61,6 @@ public with sharing class LogTimeCardController
                 result.add(pc);
             }
         }
-
         return result;
     }
 
@@ -102,5 +123,60 @@ public with sharing class LogTimeCardController
         public MProject__c Project { get; set; }
         public List<Change__c> Changes { get; set; }
         public String ChangesJsonData { get; set; }
+    }
+
+    @remoteAction
+    global static String create(String objtype, String fields)
+    {
+        Map<String, Object> handleResult = new Map<String, Object>();
+        Boolean isSuccess = true;
+        Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objtype);
+        if (targetType == null) {
+            return RemoteTKController.makeError('The requested resource does not exist', 'NOT_FOUND');
+        }
+
+        SObject obj = targetType.newSObject();
+        String error = RemoteTKController.writeFields(objType, obj, fields);
+        if (error != null) {
+            return error;
+        }
+
+        try {
+            insert obj;
+        } catch (DMLException dmle) {
+            String fieldNames = '';
+            for (String field : dmle.getDmlFieldNames(0)) {
+                if (fieldNames.length() > 0) {
+                    fieldNames += ',';
+                }
+                fieldNames += '"'+field+'"';
+            }
+            isSuccess = false;
+            handleResult.put('error', '{"fields":['+fieldNames+'],"message":"'+dmle.getDmlMessage(0)+'","errorCode":"'+dmle.getDmlType(0).name()+'"}');
+        }
+        handleResult.put('id', obj.id);
+        handleResult.put('success', isSuccess);
+        handleResult.put('data', getTodayAndYesterdayHours());
+
+        return JSON.serialize(handleResult);
+    }
+
+    //Map Key: today, yesterday
+    private static Map<String, String> getTodayAndYesterdayHours()
+    {
+        List<AggregateResult> hoursSet = [select SUM(Hours__c), Date__c from Timecard__c where (Date__c = YESTERDAY or Date__c = TODAY) and TeamMember__r.User__c = :Userinfo.getUserId() Group by Date__c];
+        Map<String, String> hoursMap = new Map<String, String>();
+        for(AggregateResult result : hoursSet)
+        {
+            if(Date.today() == result.get('Date__c'))
+            {
+                hoursMap.put('today', String.valueOf(result.get('expr0')));
+            }
+            else
+            {
+                hoursMap.put('yesterday', String.valueOf(result.get('expr0')));
+            }
+        }
+        return hoursMap;
     }
 }
