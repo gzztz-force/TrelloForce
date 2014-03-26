@@ -16,7 +16,7 @@ public with sharing class WikiViewPageController
 
     private void getPubishedPage()
     {
-        List<WikiPage__c> publishedPages = [select Id, WikiSpace__r.Name, CreatedById, LastModifiedById, LastPublishedDate__c,
+        List<WikiPage__c> publishedPages = [select Id, WikiSpace__r.Name,WikiSpace__c, CreatedById, LastModifiedById, LastPublishedDate__c,
                                             (select Body__c, Label__c, Title__c, CreatedById, LastModifiedDate from WikiPageVersions__r
                                              where IsLatestVersion__c = true)
                                            from WikiPage__c where Id = :pageId];

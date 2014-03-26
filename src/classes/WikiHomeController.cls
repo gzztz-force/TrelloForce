@@ -4,7 +4,7 @@
  */
 public with sharing class WikiHomeController
 {
-    private ApexPages.StandardSetController popularPagesSet;   
+    private ApexPages.StandardSetController popularPagesSet;  
 
     public WikiSpace__c NewSpace { get; set; }
     public Boolean HasError { get; set; }

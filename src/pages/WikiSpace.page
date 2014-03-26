@@ -1,106 +1,124 @@
-<apex:page controller="WikiSpaceController" doctype="html-5.0" sidebar="false" showheader="true" >
- 	<apex:stylesheet value="{!URLFOR($Resource.bootstrap, 'css/bootstrap.css')}" />
+<apex:page controller="WikiSpaceController" doctype="html-5.0" sidebar="false" showheader="false" >
+ 	<apex:stylesheet value="{!URLFOR($Resource.bootstrap3, 'bootstrap/css/bootstrap.css')}" />
     <apex:includeScript value="{!URLFOR($Resource.jQueryLatest, 'jquery.min.js')}"/>
-    <script src="{!URLFOR($Resource.MarkdownJS, 'lib/markdown.js')}"></script>
-    <script src="{!URLFOR($Resource.bootstrap, 'js/bootstrap.min.js')}"></script>
+    <script src="{!URLFOR($Resource.bootstrap3, 'bootstrap/js/bootstrap.min.js')}"></script>
     <script src="{!URLFOR($Resource.jQueryValidation, 'jquery.validate.min.js')}"></script>
 
     <style type="text/css">
-    	#tab1 > tbody > tr:nth-child(3n+1){
+    	#tab1 > tbody#tbody1 > tr:nth-child(3n+1){
 			background-color: #999999;
 		}
-
-
     </style>
+    <div id="force">
+    <div class="container">
+	    <apex:outputPanel rendered="{!WikiPages.size > 0}">	
+			<apex:form >
+				<!--<div class="container-fluid">
+					<div class="row-fluid">
+						<div class="span2"> -->
+							<table id="tab1" class="table table-bordered">
+								<tbody id="tbody1">
+								<apex:repeat value="{!WikiPages}" var="page">
+								
+								    <tr>
+								    	<th>Page Name</th>
+								    	<th>TotalPageVersion</th>
+								    	<th>FirstPublishedDate</th>
+								    	<th>LastPublishedDate</th>
+								    </tr>
+									<tr>	
+										<td><a href="/apex/WikiViewPage?id={!page.Id}"><apex:outputfield value="{!page.Name}"/></a></td>		
+										<td><apex:outputfield value="{!page.TotalPageVersion__c}"/></td>
+										<td><apex:outputfield value="{!page.FirstPublishedDate__c}"/></td>
+										<td><apex:outputfield value="{!page.LastPublishedDate__c}"/></td>
+									</tr>
+									<tr>
+									<td colspan="4" style="vertical-align:bottom;">
 
-    <apex:outputPanel rendered="{!WikiPages.size > 0}">
-
-	<div id="force">
-		<apex:form >
-			<!--<div class="container-fluid">
-				<div class="row-fluid">
-					<div class="span2"> -->
-						<table id="tab1" class="table table-bordered">
-							<apex:repeat value="{!WikiPages}" var="page">
-							
-							    <tr>
-							    	<th>Name</th>
-							    	<th>TotalPageVersion</th>
-							    	<th>FirstPublishedDate</th>
-							    	<th>LastPublishedDate</th>
-							    </tr>
-								<tr>	
-									<td><apex:outputfield value="{!page.Name}"/></td>		
-									<td><apex:outputfield value="{!page.TotalPageVersion__c}"/></td>
-									<td><apex:outputfield value="{!page.FirstPublishedDate__c}"/></td>
-									<td><apex:outputfield value="{!page.LastPublishedDate__c}"/></td>
-								</tr>
-						<tr>
-								<td colspan="4" style="vertical-align:bottom;">
-
-									<table class="table table-bordered">
-										<tr>
-									    	<th>Name</th>
-									    	<th>Title</th>
-									    	<th>VersionNumber</th>
-									    	<th>PublishStatus</th>
-										 </tr>
-										<apex:repeat value="{!page.WikiPageVersions__r}" var="version">
+										<table class="table table-bordered">
 											<tr>
-												<td><apex:outputfield value="{!version.Name}"/></td>
-												<td><apex:outputfield value="{!version.Title__c}"/></td>
-												<td><apex:outputfield value="{!version.VersionNumber__c}"/></td>
-												<td><apex:outputfield value="{!version.PublishStatus__c}"/></td>
-											</tr>
-										</apex:repeat>
-									</table>
-								</td>
-							</tr>
-							
-							</apex:repeat>
-						</table>
-					<!--</div> -->
-					<!-- <div class="span10">
-						<table class="table table-bordered">
-							<tr>
-						    	<th>Name</th>
-						    	<th>Title</th>
-						    	<th>VersionNumber</th>
-						    	<th>PublishStatus</th>
-							 </tr>
-							<apex:repeat value="{!WikiPageVersions__r}" var="version">
-								<tr>
-									<td><apex:outputfield value="{!version.Name}"/></td>
-									<td><apex:outputfield value="{!version.Title__c}"/></td>
-									<td><apex:outputfield value="{!version.VersionNumber__c}"/></td>
-									<td><apex:outputfield value="{!version.PublishStatus__c}"/></td>
+										    	<th>PageVersion Name</th>
+										    	<th>Title</th>
+										    	<th>VersionNumber</th>
+										    	<th>PublishStatus</th>
+											 </tr>
+											<apex:repeat value="{!page.WikiPageVersions__r}" var="version">
+												<tr>
+													<td><apex:outputfield value="{!version.Name}"/></td>
+													<td><apex:outputfield value="{!version.Title__c}"/></td>
+													<td><apex:outputfield value="{!version.VersionNumber__c}"/></td>
+													<td><apex:outputfield value="{!version.PublishStatus__c}"/></td>
+												</tr>
+											</apex:repeat>
+										</table>
+									</td>
 								</tr>
-							</apex:repeat>
-						</table>
-					</div> --> 
-			<!--	</div>
-			</div> -->
-		</apex:form>
+								
+								</apex:repeat>
+								</tbody>
+								
+								
+								<tbody>
+								<tr >
+									<td style="width:30%;border:0px;"> 
+										<a href="/apex/WikiNewPage?spaceid={!spaceID}" class="btn btn-default">Add A Page</a>			    
+									</td>
+									<td  colspan="3" style="vertical-align:bottom;border:0px;">
+											<apex:outputPanel>
+												<apex:commandLink action="{!priviousWikiPages}" value="<<<" rendered="{!HasPrevious}"/>
+												<apex:outputText value="<<<" rendered="{!not(HasPrevious)}"/>
+												&nbsp;&nbsp;&nbsp;&nbsp;
+												<apex:outputText value="{!CurrentPage}/{!PageNum}"/>
+												&nbsp;&nbsp;&nbsp;&nbsp;
+
+												<apex:commandLink action="{!nextWikiPages}" value=">>>" rendered="{!HasNext}"/>
+												<apex:outputText value=">>>" rendered="{!not(HasNext)}"/>
+
+											</apex:outputPanel>
+									</td>
+								</tr>
+			   					</tbody>
+							</table>
+						<!--</div> -->
+						<!-- <div class="span10">
+							<table class="table table-bordered">
+								<tr>
+							    	<th>Name</th>
+							    	<th>Title</th>
+							    	<th>VersionNumber</th>
+							    	<th>PublishStatus</th>
+								 </tr>
+								<apex:repeat value="{!WikiPageVersions__r}" var="version">
+									<tr>
+										<td><apex:outputfield value="{!version.Name}"/></td>
+										<td><apex:outputfield value="{!version.Title__c}"/></td>
+										<td><apex:outputfield value="{!version.VersionNumber__c}"/></td>
+										<td><apex:outputfield value="{!version.PublishStatus__c}"/></td>
+									</tr>
+								</apex:repeat>
+							</table>
+						</div> --> 
+				<!--	</div>
+				</div> -->
+			</apex:form>		
+		</apex:outputPanel>
+	    <apex:outputPanel rendered="{!WikiPages.size == 0}">
+	    	<table id="tab2" class="table table-bordered">
+	    		<tr>
+			    	<th>Name</th>
+			    	<th>TotalPageVersion</th>
+			    	<th>FirstPublishedDate</th>
+			    	<th>LastPublishedDate</th>
+			    </tr>
+			    <tr><td colspan="4" style="vertical-align:bottom;"> 
+			    <p>
+			    Opps. There is no Pages related to the space!</p>
+			    
+			    	<a href="/apex/WikiNewPage?spaceId={!spaceID}" class="btn btn-default">Add A Page</a>
+			    
+			    </td></tr>
+	    	</table>
+	    </apex:outputPanel>
 	</div>
-	</apex:outputPanel>
-    <apex:outputPanel rendered="{!WikiPages.size == 0}">
-    	<div>
-    	<apex:form>
-    	<table id="tab2" class="table table-bordered">
-    		<tr>
-		    	<th>Name</th>
-		    	<th>TotalPageVersion</th>
-		    	<th>FirstPublishedDate</th>
-		    	<th>LastPublishedDate</th>
-		    </tr>
-		    <tr><td colspan="4" style="vertical-align:bottom;"> 
-		    Opps. There is no Pages related to the space!<br/>
-		    
-		    	<a href="/apex/WikiNewPage">Add A Page</a>
-		    
-		    </td></tr>
-    	</table>
-</apex:form>
-    	</div>
-    </apex:outputPanel>
+	</div>
 </apex:page>

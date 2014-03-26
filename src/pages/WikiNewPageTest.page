@@ -1,5 +1,6 @@
-<apex:page controller="WikiNewPageController" docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+<apex:page controller="WikiNewPageController" docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false">
 <apex:includeScript value="{!$Resource.JQuery161}"/>
+<!--<apex:includeScript value="{!$Resource.Markdown}"/>-->
 <apex:includeScript value="{!$Resource.JQueryAutoSize}"/>
 <style type="text/css">
 select, textarea, input, ul {
@@ -83,7 +84,7 @@ textarea {
     width: 100%;
     padding: 0px 0px 0px 5px;
     overflow: auto;
-    margin: 0px 0px 10px;
+    margin: 10px 0px;
     float: left;
 }
 
@@ -95,7 +96,10 @@ textarea {
     font-weight:bold;
     color:rgba(149,149,149,0.5);
 }
-
+#mainContainer #leftMainContainer #extensionBar
+{
+	margin: 10px 0px;
+}
 #mainContainer #leftMainContainer #extensionBar #spaceDiv {
     display: inline-block;
     clear: both;
@@ -121,13 +125,19 @@ textarea {
     margin: 0px 20px 0px;
 }
 
-#force ul[id$=errorTip] {
+#force #errorTip ul{
+	display: inline-block;
     margin: 0px 0px 9px;
 }
 
 #rightMainContainer {
     background-color: #f5f5f5;
     height: 440px;
+}
+#rightMainContainer p
+{
+	position: relative;
+	left: -5px;
 }
 .tips-title {
     font-size: 20px;
@@ -137,25 +147,29 @@ textarea {
 }
 </style>
 
-<apex:composition template="WikiTemplate">
+<apex:composition template="WikiTemplateWithBootstrap3">
     <apex:define name="body">
         <apex:form>
-            <div id="force" class="container-fluid">
-                <header class="row-fluid nav-header">
+            <div id="force" class="container">
+                <header class="row nav-header">
                     <h1>New Page</h1>
-                    <apex:messages id="errorTip" styleClass="label label-important" /> <!-- layout -->
+                    <div id="errorTip">
+                    {!Test}
+                    <apex:messages styleClass="label label-danger" /> <!-- layout -->
+                    </div>
                 </header>
 
-                <section id="mainContainer" class="row-fluid">
-                    <div id="leftMainContainer" class="span9">
+                <section id="mainContainer" class="row">
+
+                    <div id="leftMainContainer" class="col-md-9">
                         <div id="titleSection" >
                             <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" onblur="checkValueOnblur(this)" onclick="checkValueOnclick(this)"/>
                         </div>
-                        <div id="contentSection" class="row-fluid">
+                        <div id="contentSection">
                             <div id="toolBar" class="div-border">
-                                <i class="icon-bold"></i>
-                                <i class="icon-globe"></i>
-                                <i class="icon-list"></i>
+                                <i class="glyphicon glyphicon-bold"></i>
+                                <i class="glyphicon glyphicon-globe"></i>
+                                <i class="glyphicon glyphicon-list"></i>
                             </div>
                             <div>
                                 <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" onkeyup="changeContents(this)" rows="15" />
@@ -163,34 +177,35 @@ textarea {
                                     <span class="preview-tips">Preview</span>
                                 </div>
                             </div>
-                            <div id="extensionBar" class="row-fluid">
-                                <div id="spaceDiv" class="span2">
+                            <div id="extensionBar" class="row">
+                                <div id="spaceDiv" class="col-md-2">
                                     <span>Space</span>
-                                    <apex:selectList id="selectList" styleclass="select-style" value="{!LatestPage.WikiPage__r.WikiSpace__r.Name}" size="0">
+                                    <!--<apex:selectList id="selectList" styleclass="select-style" value="{!LatestPage.WikiPage__r.WikiSpace__r.Name}" size="0">-->
+                                    <apex:selectList id="selectList" styleclass="select-style" value="{!WikiSpaceId}" size="1">
                                         <apex:selectOptions value="{!SpaceOptions}"/>
                                     </apex:selectList>
                                 </div>
-                                <div id="tagDiv" class="span9">
+                                <div id="tagDiv" class="col-md-9">
                                     <i><strong>Tags</strong></i>
                                     <apex:inputText id="tagInput" value="{!LatestPage.Label__c}"/>
                                 </div>
                             </div>
                         </div>
-                        <div id="submitSection" class="row-fluid">
+                        <div id="submitSection">
                             <apex:commandButton action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary"/>
                             <apex:commandButton action="{!cancel}" value="Cancel" styleclass="btn"/>
                         </div>
                     </div>
-                    <div id="rightMainContainer" class="span3 div-border">
+                    <div id="rightMainContainer" class="col-md-3 div-border">
                         <p><span class="tips-title">How to Format</span></p>
-                        <p><i class="icon-chevron-right"></i>put returns between paragraphs</p>
-                        <p><i class="icon-chevron-right"></i>for linebreak add 2 spaces at end</p>
-                        <p><i class="icon-chevron-right"></i>_italic_ or **bold**</p>
-                        <p><i class="icon-chevron-right"></i>indent code by 4 spaces</p>
-                        <p><i class="icon-chevron-right"></i>backtick escapes `like _so_`</p>
-                        <p><i class="icon-chevron-right"></i>quote by placing > at start of line</p>
-                        <p><i class="icon-chevron-right"></i>to make links:[foo](http://foo.com)</p>
-                        <p><i class="icon-chevron-right"></i>formatting help »</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;put returns between paragraphs</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;for linebreak add 2 spaces at end</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;_italic_ or **bold**</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;indent code by 4 spaces</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;backtick escapes `like _so_`</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;quote by placing > at start of line</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;to make links:[foo](http://foo.com)</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;formatting help »</p>
                     </div>
                 </section>
             </div>

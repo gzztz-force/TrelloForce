@@ -59,7 +59,7 @@
                             <li class="active">/                                
                             </li>
                             <li>
-                                <a href="#">{!PubPage.WikiPage.WikiSpace__r.Name}</a> 
+                                <a href="/apex/wikispace?id={!PubPage.WikiPage.WikiSpace__c}">{!PubPage.WikiPage.WikiSpace__r.Name}</a> 
                             </li>
                              <li class="active">/                                
                             </li>
@@ -88,7 +88,8 @@
 
                     <button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='/apex/WikiNewPage?id={!PubPage.WikiPage.Id}'">Edit Page</button><br/><br/>
                     
-                    <div id="page-body" class="page-body"> </div>
+                    <div id="page-body" class="page-body">
+                    </div>
                 </div>
 
                 <!-- Chatter -->

@@ -585,7 +585,11 @@
                                             Loading more pages ...</div>
                                         </apex:facet>
                                         <apex:facet name="stop">
-                                            <apex:outputPanel rendered="{!Not(HasNext)}"> There is no more pages</apex:outputPanel>
+                                            <apex:outputPanel rendered="{!Not(HasNext)}">
+                                                <div class="well">
+                                                There is no more pages
+                                                </div>
+                                            </apex:outputPanel>
                                         </apex:facet>
                                     </apex:actionStatus>
                                     <input type="hidden" value="{!HasNext}" id="hasNextMark"/>
