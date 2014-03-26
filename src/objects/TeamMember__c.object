@@ -54,13 +54,11 @@
     <fields>
         <fullName>IsActiveUser__c</fullName>
         <externalId>false</externalId>
-        <formula>If(User__r.IsActive, &quot;True&quot;, &quot;False&quot;)</formula>
+        <formula>User__r.IsActive</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
         <label>Active User</label>
-        <required>false</required>
         <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
+        <type>Checkbox</type>
     </fields>
     <fields>
         <fullName>LastActivityDate__c</fullName>
@@ -170,7 +168,10 @@
         <sourceObject>TimeCard__c</sourceObject>
     </namedFilters>
     <pluralLabel>Team Members</pluralLabel>
-    <searchLayouts/>
+    <searchLayouts>
+        <lookupDialogsAdditionalFields>Project__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Role__c</lookupDialogsAdditionalFields>
+    </searchLayouts>
     <sharingModel>ControlledByParent</sharingModel>
     <webLinks>
         <fullName>New_Team_Member</fullName>
