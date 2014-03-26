@@ -67,7 +67,7 @@
                     </apex:column>
                     <apex:column value="{!member.LastActivityDate__c}" />
                 </apex:pageBlockTable>
-                <apex:outputLink style="line-height:24px" value = "/a0K?rlid=00N80000003iWor&id={!MProject__c.Id}">Go to list ({!TotalTeamMembersCount}) »</apex:outputLink>
+                <apex:outputLink style="line-height:24px" value="/a0K?rlid=00N80000003iWor&id={!MProject__c.Id}">Go to list ({!TotalTeamMembersCount}) »</apex:outputLink>
                 <apex:outputPanel rendered="{!ChartType != ''}" layout="none">
                     &nbsp;|&nbsp;<a href="javascript:void(0)" onclick="openReport()" class="reportBtn">Open Time Card Report</a>
                 </apex:outputPanel>
