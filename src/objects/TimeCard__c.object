@@ -44,18 +44,39 @@
         <actionName>View</actionName>
         <type>Default</type>
     </actionOverrides>
-    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <compactLayoutAssignment>Time_Card</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>Time_Card</fullName>
+        <fields>Name</fields>
+        <fields>Date__c</fields>
+        <fields>Hours__c</fields>
+        <fields>TeamMember__c</fields>
+        <label>Time Card</label>
+    </compactLayouts>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>false</enableActivities>
-    <enableEnhancedLookup>false</enableEnhancedLookup>
-    <enableFeeds>false</enableFeeds>
+    <enableFeeds>true</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>true</enableReports>
+    <fields>
+        <fullName>BillableHours__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(Billable__c, Hours__c, 0)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Billable Hours</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
     <fields>
         <fullName>Billable__c</fullName>
         <defaultValue>true</defaultValue>
         <externalId>false</externalId>
         <label>Billable</label>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
@@ -68,6 +89,7 @@
         <relationshipLabel>Time Cards</relationshipLabel>
         <relationshipName>Time_Cards</relationshipName>
         <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Lookup</type>
     </fields>
@@ -76,7 +98,8 @@
         <defaultValue>Today()</defaultValue>
         <externalId>false</externalId>
         <label>Date</label>
-        <required>false</required>
+        <required>true</required>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Date</type>
     </fields>
@@ -85,6 +108,7 @@
         <externalId>false</externalId>
         <label>Description</label>
         <length>32000</length>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>LongTextArea</type>
         <visibleLines>10</visibleLines>
@@ -96,6 +120,7 @@
         <precision>12</precision>
         <required>true</required>
         <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Number</type>
         <unique>false</unique>
@@ -105,8 +130,22 @@
         <defaultValue>false</defaultValue>
         <externalId>false</externalId>
         <label>IsSync</label>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Month__c</fullName>
+        <externalId>false</externalId>
+        <formula>MONTH(Date__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Month</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
     </fields>
     <fields>
         <fullName>Project__c</fullName>
@@ -116,7 +155,8 @@
         <relationshipLabel>Time Cards</relationshipLabel>
         <relationshipName>TimeCards</relationshipName>
         <relationshipOrder>0</relationshipOrder>
-        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <reparentableMasterDetail>true</reparentableMasterDetail>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>MasterDetail</type>
         <writeRequiresMasterRead>false</writeRequiresMasterRead>
@@ -129,7 +169,8 @@
         <relationshipLabel>Time Cards</relationshipLabel>
         <relationshipName>Time_Cards</relationshipName>
         <relationshipOrder>1</relationshipOrder>
-        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <reparentableMasterDetail>true</reparentableMasterDetail>
+        <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>MasterDetail</type>
         <writeRequiresMasterRead>true</writeRequiresMasterRead>
@@ -137,27 +178,74 @@
     <label>Time Card</label>
     <listViews>
         <fullName>All</fullName>
-        <columns>Project__c</columns>
+        <columns>NAME</columns>
         <columns>Hours__c</columns>
         <columns>Date__c</columns>
         <columns>Description__c</columns>
+        <columns>Project__c</columns>
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>
     <nameField>
         <displayFormat>TC-{0000000}</displayFormat>
         <label>Time Card Name</label>
+        <trackFeedHistory>false</trackFeedHistory>
         <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Time Cards</pluralLabel>
-    <searchLayouts/>
+    <searchLayouts>
+        <customTabListAdditionalFields>Project__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Change__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Hours__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Description__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>TeamMember__c</customTabListAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Date__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Hours__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Description__c</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>Date__c</searchFilterFields>
+        <searchFilterFields>Hours__c</searchFilterFields>
+        <searchResultsAdditionalFields>Date__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Hours__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Description__c</searchResultsAdditionalFields>
+    </searchLayouts>
     <sharingModel>ControlledByParent</sharingModel>
     <validationRules>
-        <fullName>Time_Cards_On_Wrong_User</fullName>
+        <fullName>ChangeRequiredForCertainCustomers</fullName>
         <active>true</active>
-        <errorConditionFormula>AND( TeamMember__r.User__c !=  $User.Id ,
-CONTAINS( $Profile.Name , &quot;Developer&quot;))</errorConditionFormula>
-        <errorMessage>You cannot create time cards for other people.</errorMessage>
+        <description>Imprivata/WhiteHat time has to be logged under a change.</description>
+        <errorConditionFormula>AND(OR(Project__r.CustomerName__c = &quot;Imprivata&quot;, Project__r.CustomerName__c = &quot;Whitehat Security&quot;), ISBLANK(Change__c))</errorConditionFormula>
+        <errorMessage>Imprivata/WhiteHat time has to be logged under a change.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>TimeCardCantBeLoggedForOtherPerson</fullName>
+        <active>true</active>
+        <description>Time card cannot be logged for someone else.</description>
+        <errorConditionFormula>AND(TeamMember__r.User__c !=  $User.Id,
+CONTAINS($Profile.Name , &quot;Developer&quot;), ISNEW())</errorConditionFormula>
+        <errorMessage>Time card cannot be logged for someone else.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>TimeCardCantBeLoggedUnderBilledChange</fullName>
+        <active>true</active>
+        <description>Time card cannot be logged under a billed change.</description>
+        <errorConditionFormula>ISNEW() &amp;&amp; Change__r.Billed__c</errorConditionFormula>
+        <errorMessage>Time card cannot be logged under a billed change.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>TimeCardCantBeLoggedUnderClosedProject</fullName>
+        <active>true</active>
+        <description>Time card cannot be logged under a closed projects.</description>
+        <errorConditionFormula>ISNEW() &amp;&amp; TEXT( Project__r.Status__c ) = &quot;Closed&quot;</errorConditionFormula>
+        <errorMessage>Time card cannot be logged under a closed projects.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>TouchpointTimeCardNeedToBeBillable</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(Project__r.CustomerName__c = &quot;Touchpoint Solutions&quot;, NOT(Billable__c), $Profile.Name &lt;&gt; &quot;Platform System Admin&quot;)</errorConditionFormula>
+        <errorDisplayField>Billable__c</errorDisplayField>
+        <errorMessage>Touchpoint time cards need to be billable.</errorMessage>
     </validationRules>
     <webLinks>
         <fullName>New_Time_Card</fullName>

@@ -50,7 +50,16 @@
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>Visualforce</type>
     </actionOverrides>
-    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <compactLayoutAssignment>Change</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>Change</fullName>
+        <fields>Name</fields>
+        <fields>Status__c</fields>
+        <fields>Priority__c</fields>
+        <fields>DueDate__c</fields>
+        <fields>AssignedTo__c</fields>
+        <label>Change</label>
+    </compactLayouts>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>true</enableActivities>
     <enableEnhancedLookup>true</enableEnhancedLookup>
@@ -86,6 +95,11 @@
             <isRequired>true</isRequired>
         </displayedFields>
         <displayedFields>
+            <field>Billable__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
             <field>Billed__c</field>
             <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
@@ -110,7 +124,7 @@
         <fullName>AssignedTo__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
         <externalId>false</externalId>
-        <label>Owner</label>
+        <label>Assigned To</label>
         <referenceTo>User</referenceTo>
         <relationshipName>Change_Management</relationshipName>
         <required>false</required>
@@ -121,22 +135,25 @@
     </fields>
     <fields>
         <fullName>Billable__c</fullName>
-        <defaultValue>false</defaultValue>
+        <defaultValue>true</defaultValue>
+        <description>This field should be checked if the client will be charged for doing this change</description>
         <externalId>false</externalId>
+        <inlineHelpText>This field should be checked if the client will be charged for doing this change</inlineHelpText>
         <label>Billable</label>
         <trackFeedHistory>false</trackFeedHistory>
-        <trackHistory>false</trackHistory>
+        <trackHistory>true</trackHistory>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
         <fullName>Billed__c</fullName>
         <defaultValue>false</defaultValue>
-        <description>Indicates if this change was already billed to the customer.</description>
+        <description>Indicates if this change was already billed to the client</description>
         <externalId>false</externalId>
+        <inlineHelpText>Indicates if this change was already billed to the client</inlineHelpText>
         <label>Billed</label>
         <trackFeedHistory>false</trackFeedHistory>
-        <trackHistory>false</trackHistory>
+        <trackHistory>true</trackHistory>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
@@ -157,7 +174,7 @@
         <required>false</required>
         <trackFeedHistory>false</trackFeedHistory>
         <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Date</type>
     </fields>
     <fields>
@@ -190,7 +207,7 @@
         <required>false</required>
         <trackFeedHistory>true</trackFeedHistory>
         <trackHistory>true</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Date</type>
     </fields>
     <fields>
@@ -202,7 +219,7 @@
         <scale>2</scale>
         <trackFeedHistory>true</trackFeedHistory>
         <trackHistory>true</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Number</type>
         <unique>false</unique>
     </fields>
@@ -277,7 +294,7 @@
         </picklist>
         <trackFeedHistory>true</trackFeedHistory>
         <trackHistory>true</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Picklist</type>
     </fields>
     <fields>
@@ -317,10 +334,6 @@
                 <default>false</default>
             </picklistValues>
             <picklistValues>
-                <fullName>Waiting for Information</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
                 <fullName>Ready for Testing</fullName>
                 <default>false</default>
             </picklistValues>
@@ -348,7 +361,7 @@
         </picklist>
         <trackFeedHistory>true</trackFeedHistory>
         <trackHistory>true</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Picklist</type>
     </fields>
     <fields>
@@ -380,7 +393,7 @@
         </picklist>
         <trackFeedHistory>true</trackFeedHistory>
         <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Picklist</type>
     </fields>
     <label>Change</label>
@@ -400,44 +413,48 @@
         </sharedTo>
     </listViews>
     <listViews>
-        <fullName>AllOpen</fullName>
+        <fullName>CM_Dev_Project</fullName>
         <columns>ChangeNumber__c</columns>
         <columns>NAME</columns>
-        <columns>Project__c</columns>
-        <columns>AssignedTo__c</columns>
-        <columns>Priority__c</columns>
+        <columns>CREATED_DATE</columns>
+        <columns>DueDate__c</columns>
+        <columns>Estimate__c</columns>
         <columns>Status__c</columns>
+        <columns>CREATEDBY_USER</columns>
         <filterScope>Everything</filterScope>
+        <filters>
+            <field>Project__c</field>
+            <operation>equals</operation>
+            <value>Costume Manager Dev Tasks</value>
+        </filters>
         <filters>
             <field>Status__c</field>
             <operation>notEqual</operation>
             <value>Closed,Cancelled</value>
         </filters>
-        <label>All Open</label>
-        <sharedTo>
-            <roleAndSubordinates>CEO</roleAndSubordinates>
-        </sharedTo>
+        <label>CM Dev Project</label>
     </listViews>
     <listViews>
         <fullName>Costume_manager</fullName>
+        <columns>ChangeNumber__c</columns>
         <columns>NAME</columns>
+        <columns>CREATED_DATE</columns>
         <columns>Status__c</columns>
         <columns>DueDate__c</columns>
         <columns>Estimate__c</columns>
         <columns>AssignedTo__c</columns>
         <columns>Priority__c</columns>
         <columns>OpenedBy__c</columns>
-        <columns>CREATED_DATE</columns>
         <filterScope>Everything</filterScope>
         <filters>
             <field>Project__c</field>
-            <operation>equals</operation>
-            <value>Costume Manager &amp; Studio Director integration</value>
+            <operation>contains</operation>
+            <value>Costume Manager</value>
         </filters>
         <filters>
             <field>Status__c</field>
             <operation>notEqual</operation>
-            <value>Closed,Cancelled</value>
+            <value>Cancelled</value>
         </filters>
         <label>Costume manager</label>
     </listViews>
@@ -461,19 +478,6 @@
         <name>Time Card_Change</name>
         <sourceObject>TimeCard__c</sourceObject>
     </namedFilters>
-    <namedFilters>
-        <fullName>nf_01IS000000059XbMAI_00NS00000016GkMMAU</fullName>
-        <active>true</active>
-        <field>TimeCardAction__c.Change__c</field>
-        <filterItems>
-            <field>Change__c.Project__c</field>
-            <operation>equals</operation>
-            <valueField>$Source.Project__c</valueField>
-        </filterItems>
-        <isOptional>false</isOptional>
-        <name>Timecard Action_Change</name>
-        <sourceObject>TimeCardAction__c</sourceObject>
-    </namedFilters>
     <pluralLabel>Changes</pluralLabel>
     <searchLayouts>
         <customTabListAdditionalFields>AssignedTo__c</customTabListAdditionalFields>
@@ -485,25 +489,43 @@
     </searchLayouts>
     <sharingModel>ControlledByParent</sharingModel>
     <validationRules>
-        <fullName>BilledChangeCannotBeReestimated</fullName>
+        <fullName>BilledChangeCantBeReestimated</fullName>
         <active>true</active>
-        <description>Billed change cannot be re-estimated</description>
+        <description>Billed change cannot be re-estimated.</description>
         <errorConditionFormula>AND(ISCHANGED(Estimate__c), Billed__c)</errorConditionFormula>
-        <errorMessage>Billed change cannot be re-estimated</errorMessage>
+        <errorDisplayField>Estimate__c</errorDisplayField>
+        <errorMessage>Billed change cannot be re-estimated.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>ChangeCantBeCreatedUnderSelectedProject</fullName>
+        <active>false</active>
+        <errorConditionFormula>AND(ISNEW(), OR(ISPICKVAL(Project__r.Status__c, &quot;Not Started&quot;), ISPICKVAL(Project__r.Status__c, &quot;Pending&quot;), ISPICKVAL(Project__r.Status__c, &quot;Closed&quot;)))</errorConditionFormula>
+        <errorDisplayField>Project__c</errorDisplayField>
+        <errorMessage>The selected project has not been started, or the project is pending or closed.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>DueDateMustInFuture</fullName>
+        <active>true</active>
+        <description>Due date must be a date in the future.</description>
+        <errorConditionFormula>DueDate__c &lt; TODAY() &amp;&amp; TEXT(Status__c) &lt;&gt; &apos;Closed&apos; &amp;&amp; TEXT(Status__c) &lt;&gt; &apos;Cancelled&apos;</errorConditionFormula>
+        <errorDisplayField>DueDate__c</errorDisplayField>
+        <errorMessage>Due Date must be a date in the future.</errorMessage>
     </validationRules>
     <validationRules>
         <fullName>OnlyOpenerOrAdminCanCloseChange</fullName>
         <active>true</active>
+        <description>Only the change owner or system administrator can close this change.</description>
         <errorConditionFormula>AND(ISCHANGED(Status__c), ISPICKVAL(Status__c, &quot;Closed&quot;), OpenedBy__c &lt;&gt; $User.Id, $Profile.Name &lt;&gt; &quot;Platform System Admin&quot;)</errorConditionFormula>
         <errorDisplayField>Status__c</errorDisplayField>
-        <errorMessage>Only the change owner or system administrator can close this change</errorMessage>
+        <errorMessage>Only the change owner or system administrator can close this change.</errorMessage>
     </validationRules>
     <validationRules>
-        <fullName>OpenerCannotBeChanged</fullName>
+        <fullName>OpenerCantBeChanged</fullName>
         <active>true</active>
+        <description>Change opener cannot be changed.</description>
         <errorConditionFormula>ISCHANGED(OpenedBy__c)</errorConditionFormula>
         <errorDisplayField>OpenedBy__c</errorDisplayField>
-        <errorMessage>Change opener cannot be changed</errorMessage>
+        <errorMessage>Change opener cannot be changed.</errorMessage>
     </validationRules>
     <webLinks>
         <fullName>CloseChange</fullName>

@@ -13,7 +13,7 @@
             <type>role</type>
         </recipients>
         <recipients>
-            <recipient>ProjectManager</recipient>
+            <recipient>TeamManager</recipient>
             <type>role</type>
         </recipients>
         <recipients>
