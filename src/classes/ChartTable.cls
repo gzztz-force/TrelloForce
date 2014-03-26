@@ -19,6 +19,13 @@ public class ChartTable
     public List<String> Columns { get; set; }
     public List<RowInfo> Rows { get; set; }
 
+    public void addValue(String key, String column, Decimal value)
+    {
+        CellInfo cell = new CellInfo(value);
+
+        addValue(key, column, cell);
+    }
+
     public void addValue(String key, String column, CellInfo cell)
     {
         Integer columnIndex = getColumnIndex(column);
@@ -144,7 +151,7 @@ public class ChartTable
     static void testChartTable()
     {
         ChartTable table = new ChartTable();
-        table.addValue('key', 'column1', new CellInfo(1, 'leaveType', 'imageName'));
+        table.addValue('key', 'column1', 1);
 
         System.assertEquals(1, table.Columns.size());
         System.assertEquals(1, table.Rows.size());
