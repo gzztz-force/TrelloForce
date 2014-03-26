@@ -35,6 +35,32 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <enableFeeds>true</enableFeeds>
     <fields>
+        <fullName>BirthdayType__c</fullName>
+        <externalId>false</externalId>
+        <label>Birthday Type</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Solar</fullName>
+                <default>true</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Lunar</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Birthday__c</fullName>
+        <externalId>false</externalId>
+        <label>Birthday</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
         <fullName>CallCenterId</fullName>
         <type>Lookup</type>
     </fields>
@@ -47,20 +73,40 @@
         <type>Lookup</type>
     </fields>
     <fields>
+        <fullName>IsDeveloper__c</fullName>
+        <description>1 represents developer user, 
+0 represents non-developer</description>
+        <externalId>false</externalId>
+        <formula>IF((IsEmployee__c == 1) &amp;&amp; 
+(UserRole.Name != &apos;Finance User&apos;) &amp;&amp; 
+(UserRole.Name != &apos;CEO&apos;),
+1, 0)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Developer</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>IsEmployee__c</fullName>
         <description>1 represents regular employee user,
 0 represents non-employee</description>
         <externalId>false</externalId>
         <formula>CASE( UserRole.Name ,
  &quot;CEO&quot;, 1,
- &quot;Project Manager&quot;, 1,
- &quot;Project Manager A&quot;, 1,
- &quot;Project Manager B&quot;, 1,
- &quot;Project Manager C&quot;, 1,
+ &quot;Team Manager&quot;, 1,
+ &quot;BJ Team Manager A&quot;, 1,
+ &quot;BJ Team Manager B&quot;, 1,
+ &quot;WH Team Manager C&quot;, 1,
  &quot;Developer&quot;, 1,
- &quot;Developer A&quot;, 1,
- &quot;Developer B&quot;, 1,
- &quot;Developer C&quot;, 1,
+ &quot;BJ Developer A&quot;, 1,
+ &quot;BJ Developer B&quot;, 1,
+ &quot;WH Developer C&quot;, 1,
+ &quot;BJ Developer Intern A&quot;, 1,
+ &quot;BJ Developer Intern B&quot;, 1,
+ &quot;WH Developer Intern C&quot;, 1,
  &quot;Tester&quot;, 1,
  &quot;Finance User&quot;, 1,
  0)</formula>
@@ -71,6 +117,14 @@
         <scale>0</scale>
         <type>Number</type>
         <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>NextBirthday__c</fullName>
+        <externalId>false</externalId>
+        <label>Next Birthday</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Date</type>
     </fields>
     <fields>
         <fullName>ProfileId</fullName>
@@ -103,6 +157,7 @@
     </fields>
     <listViews>
         <fullName>ActiveUsers</fullName>
+        <columns>CORE.USERS.FIRST_NAME</columns>
         <columns>FULL_NAME</columns>
         <columns>CORE.USERS.ALIAS</columns>
         <columns>CORE.USERS.USERNAME</columns>

@@ -14,7 +14,7 @@ public class IOSChangeNotificationService extends MobileNotificationService
         }
         Map<String, List<String>> userId2DeviceTokens = getUserId2DeviceTokensByUserIds(userIds);
         Map<Id, List<String>> changeId2DeviceTokens = getParentId2DeviceTokens(changeId2UserIds, userId2DeviceTokens);
-        
+
         NotificationInfo notification = new NotificationInfo(System.now(), true);
         for(Change__c change : newChanges)
         {
@@ -30,18 +30,18 @@ public class IOSChangeNotificationService extends MobileNotificationService
         }
         pushNotification(notification);
     }
-    
+
     public override Map<String, List<String>> getUserId2DeviceTokensByUserIds(Set<Id> userIds)
     {
         //android devices should be DeviceType__c = 'android'
         return getUserId2DeviceTokensByUserIdsAndType(userIds, 'ios');
     }
-    
+
     public override void pushNotification(NotificationInfo notification)
     {
         sendHttpCalloutInFuture('http://184.72.226.199:8080/PushNotification/PushNotification', notification.generateJson());
     }
-    
+
     @isTest
     static void testIOSChangeNotificationService()
     {
@@ -49,23 +49,24 @@ public class IOSChangeNotificationService extends MobileNotificationService
         List<User> users = [select Id, Name from User where IsEmployee__c = 1 and IsActive = true limit 2];
         MobileDevice__c mobileDevice = new MobileDevice__c(Name = users[0].Name, UserId__c = users[0].Id, DeviceToken__c = deviceToken, DeviceType__c = 'ios');
         insert mobileDevice;
-        
-        MProject__c project = new MProject__c(Name = 'acme');
+
+        MProject__c project = new MProject__c(Name = 'acme', Status__c = 'In Progress');
         insert project;
         List<Change__c> changes = new List<Change__c>();
-        changes.add(new Change__c(Name = 'acme1', Project__c = project.Id, AssignedTo__c = users[0].Id, Type__c = 'Change', Priority__c = 'Low', 
+        changes.add(new Change__c(Name = 'acme1', Project__c = project.Id, AssignedTo__c = users[0].Id, Type__c = 'Change', Priority__c = 'Low',
                                   Status__c = 'Open', DueDate__c = System.today(), Description__c = 'luffy'));
-        changes.add(new Change__c(Name = 'acme2', Project__c = project.Id, AssignedTo__c = users[1].Id, Type__c = 'Task', Priority__c = 'Low', 
+        changes.add(new Change__c(Name = 'acme2', Project__c = project.Id, AssignedTo__c = users[1].Id, Type__c = 'Task', Priority__c = 'Low',
                                   Status__c = 'Open', DueDate__c = System.today(), Description__c = 'luffy'));
         insert changes;
-        
+        List<Change__c> oldChanges = changes;
+
         List<EntitySubscription> entitySubscriptions = new List<EntitySubscription>();
         entitySubscriptions.add(new EntitySubscription(ParentId = changes[0].Id, SubscriberId = users[0].Id));
         entitySubscriptions.add(new EntitySubscription(ParentId = changes[0].Id, SubscriberId = users[1].Id));
         entitySubscriptions.add(new EntitySubscription(ParentId = changes[1].Id, SubscriberId = users[0].Id));
         entitySubscriptions.add(new EntitySubscription(ParentId = changes[1].Id, SubscriberId = users[1].Id));
         insert entitySubscriptions;
-        
+
         Test.startTest();
         Change__c change1 = changes[0];
         Change__c change2 = changes[1];
@@ -75,6 +76,8 @@ public class IOSChangeNotificationService extends MobileNotificationService
         changes.add(change1);
         changes.add(change2);
         update changes;
+        IOSChangeNotificationService changeNotification = new IOSChangeNotificationService();
+        changeNotification.push(changes, oldChanges);
         Test.stopTest();
     }
 }

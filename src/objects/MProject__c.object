@@ -46,7 +46,15 @@
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>Visualforce</type>
     </actionOverrides>
-    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <compactLayoutAssignment>Project</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>Project</fullName>
+        <fields>Name</fields>
+        <fields>Status__c</fields>
+        <fields>LeftHours__c</fields>
+        <fields>EndDate__c</fields>
+        <label>Project</label>
+    </compactLayouts>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>true</enableActivities>
     <enableEnhancedLookup>true</enableEnhancedLookup>
@@ -63,6 +71,16 @@
         <trackHistory>false</trackHistory>
         <trackTrending>false</trackTrending>
         <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Billable__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <label>Billable</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
     </fields>
     <fields>
         <fullName>CustomerName__c</fullName>
@@ -107,7 +125,7 @@
         <required>false</required>
         <trackFeedHistory>false</trackFeedHistory>
         <trackHistory>true</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Date</type>
     </fields>
     <fields>
@@ -120,9 +138,18 @@
         <scale>0</scale>
         <trackFeedHistory>false</trackFeedHistory>
         <trackHistory>true</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Number</type>
         <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>IsClosed__c</fullName>
+        <externalId>false</externalId>
+        <formula>ISPICKVAL( Status__c ,&apos;closed&apos;)</formula>
+        <label>IsClosed</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
     </fields>
     <fields>
         <fullName>LeftHours__c</fullName>
@@ -159,7 +186,7 @@
         </picklist>
         <trackFeedHistory>true</trackFeedHistory>
         <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Picklist</type>
     </fields>
     <fields>
@@ -216,7 +243,7 @@
         <required>false</required>
         <trackFeedHistory>false</trackFeedHistory>
         <trackHistory>true</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Date</type>
     </fields>
     <fields>
@@ -248,7 +275,7 @@
         </picklist>
         <trackFeedHistory>true</trackFeedHistory>
         <trackHistory>true</trackHistory>
-        <trackTrending>false</trackTrending>
+        <trackTrending>true</trackTrending>
         <type>Picklist</type>
     </fields>
     <label>Project</label>
@@ -294,6 +321,7 @@
     <recordTypes>
         <fullName>Master_Project</fullName>
         <active>true</active>
+        <compactLayoutAssignment>Project</compactLayoutAssignment>
         <label>Master Project</label>
         <picklistValues>
             <picklist>Priority__c</picklist>
