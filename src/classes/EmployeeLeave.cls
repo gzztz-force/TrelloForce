@@ -1,127 +1,55 @@
 public with sharing class EmployeeLeave
 {
-	private static final String clientId = '3MVG9_7ddP9KqTzdeUy2xmOr2N74sReSNZxQSX1g4ZCL8LMxMudc.PFIsdwEPIRM_4lEYiswlk7aUbw_8Jx5A';
-    private static final String clientSecret = '1823320581773834609';
-    private static final String username = 'jair.zheng@fin.meginfo.com.sandbox';
-    private static final String password = 'meginfo2008';
-
-    public static OAuth2 login()
-    {
-        OAuth2 oauth;
-        //Here write a sample query or fetch from custom settings the consumer ,client secret and username and password of destination org
-        String requestBody = 'grant_type=password&client_id=' + clientId + '&client_secret=' + clientSecret + 
-                             '&username=' + username + '&password=' + password;
-
-        HttpRequest request = new HttpRequest();
-        request.setBody(requestBody);
-        request.setMethod('POST');
-        request.setEndpoint('https://test.salesforce.com/services/oauth2/token');//Note if my domain is set up use the proper domain name else use login.salesforce.com for prod or developer or test.salesforce.com for sandbox instance
-        HttpResponse response = (new Http()).send(request);
-
-        OAuth2 objAuthenticationInfo = (OAuth2)JSON.deserialize(response.getbody(), OAuth2.class);
-
-        if(String.isBlank(objAuthenticationInfo.access_token) || String.isBlank(objAuthenticationInfo.instance_url))
-        {
-            throw new LoginException('Login failed!');
-            oauth = null;
-        }
-        else
-        {
-            oauth = objAuthenticationInfo;
-        }
-
-        return oauth;
-    }
-
     public static List<Leave> getAllLeaves()
     {
-        List<Leave> leaves;
-        OAuth2 oauth = login();
+        String q = 'select Id, StartDate__c, EndDate__c, HalfDay__c, Employee__c, Employee__r.Name, Employee__r.Email from Leave__c';
 
-        if(oauth != null)
-        {
-            Date upperLimit = Date.today();
-            Date lowerLimit = Date.today().addDays(-6);
-            PageReference theUrl = new PageReference(oauth.instance_url + '/services/data/v22.0/query/');
+        HttpResponse response = SFRestAPI.query(q);
+        JSONParser parser = JsonParserAndGenerator.parseJson(response);
 
-            theUrl.getParameters().put('q', 'select Id, StartDate__c, EndDate__c, HalfDay__c, Employee__r.Name, Employee__r.Email from Leave__c');
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint(theUrl.getUrl());
-            request.setMethod('GET');
-            request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
-
-            HttpResponse response = (new Http()).send(request);
-            System.debug('@@@query: ' + response.getBody());
-            String body = replaceCustomFieldSuffix(response.getBody());
-            JSONParser parser = JSON.createParser(replaceRelationFieldSuffix(body));
-
-            do
-            {
-                parser.nextToken();
-            }
-            while(parser.hasCurrentToken() && !'records'.equals(parser.getCurrentName()));
-
-            parser.nextToken();
-
-            leaves = (List<Leave>) parser.readValueAs(List<Leave>.class);
-        }
-        return leaves;
+        return (List<Leave>)parser.readValueAs(List<Leave>.class);
     }
 
-    public static void createLeave()
+    public static void createLeave(Date startDate, Date endDate, String halfDay, String employeeId)
     {
-        OAuth2 oauth = login();
-        if(oauth != null)
-        {
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint(oauth.instance_url + '/services/data/v20.0/sobjects/Leave__c/');
-            request.setMethod('POST');
-            request.setBody('{ "StartDate__c" : "2014-3-17", "EndDate__c": "2014-3-17", "Employee__c" : "005J0000001eNRj"}');
-            request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
-            request.setHeader('Content-Type', 'application/json');
-            HttpResponse response = (new Http()).send(request);
+        Employee employee = new Employee(employeeId);
+        Leave leave = new Leave(startDate, endDate, halfDay, employee);
 
-            System.debug('@@@create: ' + response.getBody());
-        }
+        String obj = 'Leave__c';
+        String jsonBody = generateJson(leave);
+
+        SFRestAPI.create(obj, jsonBody);
     }
 
     public static void deleteLeave(String leaveId)
     {
-        OAuth2 oauth = login();
-        if(oauth != null)
-        {
-            HttpRequest request = new HttpRequest();
+        String obj = 'Leave__c';
 
-            request.setEndpoint(oauth.instance_url + '/services/data/v20.0/sobjects/Leave__c/' + leaveId);
-            request.setMethod('DELETE');
-            request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
-            (new Http()).send(request);
-        }
+        SFRestAPI.del(obj, leaveId);
     }
 
-    private static String replaceCustomFieldSuffix(String body)
+    private static String generateJson(Leave leave)
     {
-        //regex not thoroughly tested
-        return body.replaceAll('_c"\\s*:', 'c" :');
-    }
+        Map<String, String> fieldToValueMap = new Map<String, String>();
 
-    private static String replaceRelationFieldSuffix(String body)
-    {
-        return body.replaceAll('_r"\\s*:', 'r" :');
-    }
+        fieldToValueMap.put('StartDate__c', String.valueOf(leave.StartDate_c));
+        fieldToValueMap.put('EndDate__c', String.valueOf(leave.EndDate_c));
+        fieldToValueMap.put('HalfDay__c', leave.HalfDay_c);
+        fieldToValueMap.put('Employee__c', leave.Employee_r.Id);
 
-    //To get aouthentication detail Wrapper
-    public class OAuth2
-    {
-        public String id { get; set; }
-        public String issued_at { get; set; }
-        public String instance_url { get; set; }
-        public String signature { get; set; }
-        public String access_token { get; set; }
+        return JSON.serialize(fieldToValueMap);
     }
 
     public class Leave
     {
+        public Leave(Date startDate, Date endDate, String halfDay, Employee employee)
+        {
+            this.StartDate_c = startDate;
+            this.EndDate_c = endDate;
+            this.HalfDay_c = halfDay;
+            this.Employee_r = employee;
+        }
+
         public String Id { get; set; }
         public Date StartDate_c { get; set; }
         public Date EndDate_c { get; set; }
@@ -131,11 +59,16 @@ public with sharing class EmployeeLeave
 
     public class Employee
     {
+        public Employee(String id)
+        {
+            this.Id = id;
+        }
+
+        public String Id { get; set; }
         public String Name { get; set; }
         public String Email { get; set; }
     }
 
-    public class LoginException extends Exception{}
 
     public enum LeaveType { NONE, MORNING, AFTERNOON, WHOLEDAY }
 }
