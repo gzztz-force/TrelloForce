@@ -16,6 +16,7 @@ public class TestDataFactory
         {
             MProject__c p = new MProject__c();
             p.Name = 'ProjectA' + i;
+            p.Status__c = 'In Progress';
             projects.add(p);
         }
 
@@ -41,7 +42,7 @@ public class TestDataFactory
         return teamMembers;
     }
 
-    public static void createChanges()
+    public static List<Change__c> createChanges()
     {
         List<MProject__c> projects = createProjects();
 
@@ -54,11 +55,13 @@ public class TestDataFactory
                 Change__c c = new Change__c();
                 c.Project__c = project.Id;
                 c.Name = 'Change' + i;
+                c.Priority__c = 'Low';
                 changes.add(c);
             }
         }
 
         insert changes;
+        return changes;
     }
 
     public static void createTimecards()
