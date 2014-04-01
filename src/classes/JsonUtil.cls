@@ -1,4 +1,4 @@
-public class JsonParserAndGenerator
+public class JsonUtil
 {
     public static JSONParser parseJson(HttpResponse response)
     {
