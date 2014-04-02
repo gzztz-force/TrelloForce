@@ -46,7 +46,7 @@ public class ChartBuilder
                         'data: [';
         for(ChartTable.CellInfo cell : row.Cells)
         {
-            result += cell + ',';
+            result += cell.Hours + ',';
         }
         if(result.endsWith(','))
         {
