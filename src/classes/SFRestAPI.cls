@@ -1,8 +1,65 @@
 public class SFRestAPI
 {
-    public static OAuth2 login()
+    private static OAuth2 oauth;
+
+    public static HttpResponse query(String q)
     {
-        OAuth2 oauth;
+        if(oauth == null)
+        {
+            login();
+        }
+
+        HttpResponse response;
+        HttpRequest request = new HttpRequest();
+
+        PageReference theUrl = new PageReference(oauth.instance_url + '/services/data/v22.0/query/');
+        theUrl.getParameters().put('q', q);
+
+        request.setEndpoint(theUrl.getUrl());
+        request.setMethod('GET');
+        request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
+
+        response = (new Http()).send(request);
+
+        return response;
+    }
+
+    public static void create(String sObj, String jsonBody)
+    {
+        if(oauth == null)
+        {
+            login();
+        }
+
+        HttpRequest request = new HttpRequest();
+
+        request.setEndpoint(oauth.instance_url + '/services/data/v20.0/sobjects/' + sObj + '/');
+        request.setMethod('POST');
+        request.setBody(jsonBody);
+        request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
+        request.setHeader('Content-Type', 'application/json');
+
+        (new Http()).send(request);
+    }
+
+    public static void del(String sObj, String id)
+    {
+        if(oauth == null)
+        {
+            login();
+        }
+
+        HttpRequest request = new HttpRequest();
+
+        request.setEndpoint(oauth.instance_url + '/services/data/v20.0/sobjects/' + sObj + '/' + id);
+        request.setMethod('DELETE');
+        request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
+
+        (new Http()).send(request);
+    }
+
+    private static OAuth2 login()
+    {
         //Here write a sample query or fetch from custom settings the consumer ,client secret and username and password of destination org
         String requestBody = 'grant_type=password&client_id=' + FinanceServer__c.getInstance().ClientId__c +
                              '&client_secret=' + FinanceServer__c.getInstance().ClientSecret__c +
@@ -13,76 +70,41 @@ public class SFRestAPI
         request.setBody(requestBody);
         request.setMethod('POST');
         request.setEndpoint(FinanceServer__c.getInstance().EndPoint__c);//Note if my domain is set up use the proper domain name else use login.salesforce.com for prod or developer or test.salesforce.com for sandbox instance
+
         HttpResponse response = (new Http()).send(request);
 
-        OAuth2 objAuthenticationInfo = (OAuth2)JSON.deserialize(response.getbody(), OAuth2.class);
+        OAuth2 objAuth = (OAuth2)JSON.deserialize(response.getbody(), OAuth2.class);
 
-        if(String.isBlank(objAuthenticationInfo.access_token) || String.isBlank(objAuthenticationInfo.instance_url))
+        if(Test.isRunningTest())
         {
-            throw new LoginException('Login failed!');
-            oauth = null;
+            oauth = new OAuth2();
+            oauth.access_token = 'test access_token';
+            oauth.instance_url = 'test instance_url';
         }
         else
         {
-            oauth = objAuthenticationInfo;
+            if(String.isBlank(objAuth.access_token) || String.isBlank(objAuth.instance_url))
+            {
+                throw new LoginException('Login failed!');
+                oauth = null;
+            }
+            else
+            {
+                oauth = objAuth;
+            }
         }
-
         return oauth;
-    }
-
-    public static HttpResponse query(String q)
-    {
-        OAuth2 oauth = login();
-
-        HttpResponse response;
-        if(oauth != null)
-        {
-            PageReference theUrl = new PageReference(oauth.instance_url + '/services/data/v22.0/query/');
-
-            theUrl.getParameters().put('q', q);
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint(theUrl.getUrl());
-            request.setMethod('GET');
-            request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
-
-            response = (new Http()).send(request);
-        }
-
-        return response;
-    }
-
-    public static void create(String sObj, String jsonBody)
-    {
-        OAuth2 oauth = login();
-        if(oauth != null)
-        {
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint(oauth.instance_url + '/services/data/v20.0/sobjects/' + sObj + '/');
-            request.setMethod('POST');
-            request.setBody(jsonBody);
-            request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
-            request.setHeader('Content-Type', 'application/json');
-            (new Http()).send(request);
-        }
-    }
-
-    public static void del(String sObj, String id)
-    {
-        OAuth2 oauth = login();
-        if(oauth != null)
-        {
-            HttpRequest request = new HttpRequest();
-
-            request.setEndpoint(oauth.instance_url + '/services/data/v20.0/sobjects/' + sObj + '/' + id);
-            request.setMethod('DELETE');
-            request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
-            (new Http()).send(request);
-        }
     }
 
     //To get aouthentication detail Wrapper
     public class OAuth2
     {
+        //public OAuth2(String accessToken, String instanceUrl)
+        //{
+        //    this.access_token = accessToken;
+        //    this.instance_url = instanceUrl;
+        //}
+
         public String id { get; set; }
         public String issued_at { get; set; }
         public String instance_url { get; set; }
