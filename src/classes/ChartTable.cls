@@ -15,6 +15,12 @@ public class ChartTable
         Cumulative = false;
     }
 
+    public ChartTable(Boolean isCumulative)
+    {
+        this();
+        this.Cumulative = isCumulative;
+    }
+
     public Boolean Cumulative { get; set; }
     public List<String> Columns { get; set; }
     public List<RowInfo> Rows { get; set; }
