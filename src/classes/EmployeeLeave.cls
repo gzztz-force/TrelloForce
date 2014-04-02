@@ -1,13 +1,18 @@
-public with sharing class EmployeeLeave
+public class EmployeeLeave
 {
-    public static List<Leave> getAllLeaves()
+    public static List<Leave> getLeaves(String q)
     {
-        String q = 'select Id, StartDate__c, EndDate__c, HalfDay__c, Employee__c, Employee__r.Name, Employee__r.Email from Leave__c';
-
         HttpResponse response = SFRestAPI.query(q);
-        JSONParser parser = JsonParserAndGenerator.parseJson(response);
+        JSONParser parser = JsonUtil.parseJson(response);
 
-        return (List<Leave>)parser.readValueAs(List<Leave>.class);
+        try
+        {
+            return (List<Leave>)parser.readValueAs(List<Leave>.class);
+        }
+        catch(Exception ex)
+        {
+            return new List<Leave>();
+        }
     }
 
     public static void createLeave(Date startDate, Date endDate, String halfDay, String employeeId)
@@ -67,8 +72,8 @@ public with sharing class EmployeeLeave
         public String Id { get; set; }
         public String Name { get; set; }
         public String Email { get; set; }
+        public String UserName { get; set; }
     }
-
 
     public enum LeaveType { NONE, MORNING, AFTERNOON, WHOLEDAY }
 }
