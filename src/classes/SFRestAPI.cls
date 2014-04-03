@@ -12,12 +12,12 @@ public class SFRestAPI
         HttpResponse response;
         HttpRequest request = new HttpRequest();
 
-        PageReference theUrl = new PageReference(oauth.instance_url + '/services/data/v22.0/query/');
+        PageReference theUrl = new PageReference(oauth.Instance_Url + '/services/data/v22.0/query/');
         theUrl.getParameters().put('q', q);
 
         request.setEndpoint(theUrl.getUrl());
         request.setMethod('GET');
-        request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
+        request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
 
         response = (new Http()).send(request);
 
@@ -33,10 +33,10 @@ public class SFRestAPI
 
         HttpRequest request = new HttpRequest();
 
-        request.setEndpoint(oauth.instance_url + '/services/data/v20.0/sobjects/' + sObj + '/');
+        request.setEndpoint(oauth.Instance_Url + '/services/data/v20.0/sobjects/' + sObj + '/');
         request.setMethod('POST');
         request.setBody(jsonBody);
-        request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
+        request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
         request.setHeader('Content-Type', 'application/json');
 
         (new Http()).send(request);
@@ -51,9 +51,9 @@ public class SFRestAPI
 
         HttpRequest request = new HttpRequest();
 
-        request.setEndpoint(oauth.instance_url + '/services/data/v20.0/sobjects/' + sObj + '/' + id);
+        request.setEndpoint(oauth.Instance_Url + '/services/data/v20.0/sobjects/' + sObj + '/' + id);
         request.setMethod('DELETE');
-        request.setHeader('Authorization', 'Bearer ' + oauth.access_token);
+        request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
 
         (new Http()).send(request);
     }
@@ -75,23 +75,14 @@ public class SFRestAPI
 
         OAuth2 objAuth = (OAuth2)JSON.deserialize(response.getbody(), OAuth2.class);
 
-        if(Test.isRunningTest())
+        if(String.isBlank(objAuth.Access_Token) || String.isBlank(objAuth.Instance_Url))
         {
-            oauth = new OAuth2();
-            oauth.access_token = 'test access_token';
-            oauth.instance_url = 'test instance_url';
+            throw new LoginException('Login failed!');
+            oauth = null;
         }
         else
         {
-            if(String.isBlank(objAuth.access_token) || String.isBlank(objAuth.instance_url))
-            {
-                throw new LoginException('Login failed!');
-                oauth = null;
-            }
-            else
-            {
-                oauth = objAuth;
-            }
+            oauth = objAuth;
         }
         return oauth;
     }
@@ -99,17 +90,11 @@ public class SFRestAPI
     //To get aouthentication detail Wrapper
     public class OAuth2
     {
-        //public OAuth2(String accessToken, String instanceUrl)
-        //{
-        //    this.access_token = accessToken;
-        //    this.instance_url = instanceUrl;
-        //}
-
-        public String id { get; set; }
-        public String issued_at { get; set; }
-        public String instance_url { get; set; }
-        public String signature { get; set; }
-        public String access_token { get; set; }
+        public String Id { get; set; }
+        public String Issued_At { get; set; }
+        public String Instance_Url { get; set; }
+        public String Signature { get; set; }
+        public String Access_Token { get; set; }
     }
 
     public class LoginException extends Exception{}
