@@ -1,0 +1,28 @@
+<apex:page showHeader="true" sidebar="true" controller="WiKiSearchController">
+	<apex:form>
+		<apex:pageBlock>
+			<apex:pageBlockButtons>
+				<apex:commandButton value="Search" action="{!search}">
+				</apex:commandButton>
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection>
+				<apex:inputText value="{!Key}">
+				</apex:inputText>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+	<apex:outputPanel id="Show">
+		<apex:repeat value="{!Versions}" var="ver">
+			<a href="#">
+				<apex:outputLabel value="{!ver.Title__c}">
+				</apex:outputLabel>
+			</a>
+			<br/>
+			<apex:outputText value="{!ver.Body__c}">
+			</apex:outputText>
+			<br/>
+		</apex:repeat>
+		<apex:outputText value="{!Key}">
+		</apex:outputText>
+	</apex:outputPanel>
+</apex:page>
