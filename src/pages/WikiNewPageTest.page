@@ -174,7 +174,7 @@ textarea {
                             <div>
                                 <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" onkeyup="changeContents(this)" rows="15" />
                                 <div id="previewDiv" class="div-border">
-                                    <span class="preview-tips">Preview</span>
+                                    <textarea class="preview-tips">Preview</textarea>
                                 </div>
                             </div>
                             <div id="extensionBar" class="row">
@@ -205,7 +205,8 @@ textarea {
                         <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;backtick escapes `like _so_`</p>
                         <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;quote by placing > at start of line</p>
                         <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;to make links:[foo](http://foo.com)</p>
-                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;formatting help »</p>
+                        
+                        <p><i class="icon-chevron-right"></i>formatting help <a href="http://wowubuntu.com/markdown/" target="blank">»》》</a></p>
                     </div>
                 </section>
             </div>
@@ -218,15 +219,16 @@ textarea {
 
                 function changeContents()
                 {
+                    document.getElementById("recv").scrollTop = document.getElementById("recv").scrollHeight
                     var value = $("[id$=contentInput]").val();
                     if (value == '' || value == null)
                     {
                         $("#previewDiv").empty();
-                        $("<span class='preview-tips'>Preview</span>").appendTo($("#previewDiv"));
+                        $("<textarea class='preview-tips'>Preview</textarea>").appendTo($("#previewDiv"));
                     }
                     else
                     {
-                        $("#previewDiv").html(markdown.toHTML(value));
+                        $("#previewDiv").html(markdown.toHTML(value)).scrollTop($(this).scrollHeight);
                     }
                 }
 

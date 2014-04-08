@@ -190,7 +190,7 @@ textarea {
                         <p><i class="icon-chevron-right"></i>backtick escapes `like _so_`</p>
                         <p><i class="icon-chevron-right"></i>quote by placing > at start of line</p>
                         <p><i class="icon-chevron-right"></i>to make links:[foo](http://foo.com)</p>
-                        <p><i class="icon-chevron-right"></i>formatting help »</p>
+                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;formatting help »</p>
                     </div>
                 </section>
             </div>

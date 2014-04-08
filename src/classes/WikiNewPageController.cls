@@ -69,26 +69,19 @@ public class WikiNewPageController
         {
             parentPage.WikiSpace__c = WikiSpaceId;// LatestPage.WikiPage__r.WikiSpace__c;
             parentPage.LastPublishedDate__c = System.now();
-            Test = '1';
             if (isNew)
             {
-                Test = '2';
-                upsert parentPage;
-                Test = '3';
+                insert parentPage;
             }
             else
-            {Test = '4';
+            {
                 update parentPage;
-                Test = '5';
                 versionPageClone.IsLatestVersion__c = false;
                 update versionPageClone;
-                Test = '6';
             }
 
             WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, Label__c = LatestPage.Label__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true,VersionNumber__c = LatestPage.VersionNumber__c + 1, LastPublishedDate__c = System.Now());
-            Test = '7';
             insert newVersionPage;
-            Test = '8';
         }
         catch(Exception ex)
         {
@@ -96,7 +89,7 @@ public class WikiNewPageController
             ApexPages.addMessages(ex);
             return null;
         }
-        return new PageReference('/apex/WikiHome');
+        return new PageReference('/apex/WikiHomeTest');
     }
 
     public PageReference cancel()
