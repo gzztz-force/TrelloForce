@@ -395,26 +395,4 @@ public class DailyTimeCardReportController
             }
         }
     }
-
-    @isTest
-    static void testDailyTimeCardReportController()
-    {
-        MProject__c project = new MProject__c(Name= 'ProjectTesting', Priority__c = 'medium', EstimatedHours__c = 300, Status__c = 'In Progress');
-        insert project;
-        Change__c change = new Change__c(Name = 'Testing', Project__c = project.Id, OpenedBy__c = UserInfo.getUserId(), Type__c = 'Change', Estimate__c = 56, DueDate__c = Date.today().addDays(7), Status__c = 'In Progress', AssignedTo__c = UserInfo.getUserId(), Priority__c = 'Medium');
-        insert change;
-        List<TeamMember__c> members = new List<TeamMember__c> { new TeamMember__c(Name = 'Acme', Project__c = project.Id, User__c = UserInfo.getUserId(),  Role__c = 'Project Manager') };
-        insert members;
-        List<TimeCard__c> cards = new List<TimeCard__c>{
-                                        new TimeCard__c(Date__c = Date.today(), Hours__c = 8, Project__c = project.Id, TeamMember__c = members[0].Id),
-                                        new TimeCard__c(Date__c = Date.today(), Hours__c = 7, Project__c = project.Id, TeamMember__c = members[0].Id)};
-        insert cards;
-
-        DailyTimeCardReportController controller = new DailyTimeCardReportController();
-        controller.UserId = UserInfo.getUserId();
-        String name = controller.UserFullName;
-        System.assert(controller.TotalHours != -1);
-        System.assert(controller.MyMembers != null);
-        System.assert(controller.Changes != null);
-    }
-}
+ }
