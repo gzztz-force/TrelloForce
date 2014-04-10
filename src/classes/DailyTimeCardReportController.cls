@@ -335,19 +335,6 @@ public class DailyTimeCardReportController
         return imageName;
     }
 
-    public class MemberInfo
-    {
-        public MemberInfo(String name, Decimal hour)
-        {
-            this.MemberName = name;
-            this.LoggedHour = hour;
-            this.LoggedHour = (this.LoggedHour == null) ? 0 : this.LoggedHour;
-        }
-
-        public String MemberName { get; set; }
-        public Decimal LoggedHour { get; set; }
-    }
-
     public class ChangeInfo
     {
         public ChangeInfo(Change__c change)
