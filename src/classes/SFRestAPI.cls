@@ -6,7 +6,7 @@ public class SFRestAPI
     {
         if(oauth == null)
         {
-            login();
+            oauth = Test.isRunningTest()?testLogin():login();
         }
 
         HttpResponse response;
@@ -28,7 +28,7 @@ public class SFRestAPI
     {
         if(oauth == null)
         {
-            login();
+            oauth = Test.isRunningTest()?testLogin():login();
         }
 
         HttpRequest request = new HttpRequest();
@@ -46,7 +46,7 @@ public class SFRestAPI
     {
         if(oauth == null)
         {
-            login();
+            oauth = Test.isRunningTest()?testLogin():login();
         }
 
         HttpRequest request = new HttpRequest();
@@ -60,11 +60,13 @@ public class SFRestAPI
 
     private static OAuth2 login()
     {
+        FinanceServer__c financeServer = FinanceServer__c.getInstance();
+
         //Here write a sample query or fetch from custom settings the consumer ,client secret and username and password of destination org
-        String requestBody = 'grant_type=password&client_id=' + FinanceServer__c.getInstance().ClientId__c +
-                             '&client_secret=' + FinanceServer__c.getInstance().ClientSecret__c +
-                             '&username=' + FinanceServer__c.getInstance().Username__c +
-                             '&password=' + FinanceServer__c.getInstance().Password__c;
+        String requestBody = 'grant_type=password&client_id=' + financeServer.ClientId__c +
+                             '&client_secret=' + financeServer.ClientSecret__c +
+                             '&username=' + financeServer.Username__c +
+                             '&password=' + financeServer.Password__c;
 
         HttpRequest request = new HttpRequest();
         request.setBody(requestBody);
@@ -84,6 +86,15 @@ public class SFRestAPI
         {
             oauth = objAuth;
         }
+        return oauth;
+    }
+
+    private static OAuth2 testLogin()
+    {
+        oauth = new OAuth2();
+        oauth.Access_Token = 'test token';
+        oauth.Instance_Url = 'http://acme.com';
+
         return oauth;
     }
 
