@@ -349,6 +349,9 @@ public class DailyTimeCardReportController
                 this.DueDate = change.DueDate__c;
                 this.Status = change.Status__c;
                 this.Priority = change.Priority__c;
+                Boolean isOpen = this.IsOpen;
+                String dueDateColor = this.DueDateColor;
+                String priorityColor = this.PriorityColor;
             }
         }
 
