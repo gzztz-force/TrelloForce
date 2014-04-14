@@ -58,7 +58,7 @@ public class SFRestAPI
         (new Http()).send(request);
     }
 
-    private static OAuth2 login()
+    public static OAuth2 login()
     {
         FinanceServer__c financeServer = FinanceServer__c.getInstance();
 
@@ -71,7 +71,7 @@ public class SFRestAPI
         HttpRequest request = new HttpRequest();
         request.setBody(requestBody);
         request.setMethod('POST');
-        request.setEndpoint(FinanceServer__c.getInstance().EndPoint__c);//Note if my domain is set up use the proper domain name else use login.salesforce.com for prod or developer or test.salesforce.com for sandbox instance
+        request.setEndpoint(financeServer.EndPoint__c);//Note if my domain is set up use the proper domain name else use login.salesforce.com for prod or developer or test.salesforce.com for sandbox instance
 
         HttpResponse response = (new Http()).send(request);
 
@@ -79,7 +79,6 @@ public class SFRestAPI
 
         if(String.isBlank(objAuth.Access_Token) || String.isBlank(objAuth.Instance_Url))
         {
-            throw new LoginException('Login failed!');
             oauth = null;
         }
         else

@@ -2,7 +2,16 @@ public class EmployeeLeave
 {
     public static List<Leave> getLeaves(String q)
     {
-        HttpResponse response = SFRestAPI.query(q);
+        HttpResponse response;
+        try
+        {
+            response = SFRestAPI.query(q);
+        }
+        catch(Exception ex)
+        {
+            System.debug(ex);
+        }
+
         JSONParser parser = JsonUtil.parseJson(response);
 
         try
