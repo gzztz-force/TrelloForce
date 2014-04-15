@@ -24,7 +24,7 @@ public class ChartBuilder
         }
         return result;
     }
-    
+
     public String getRows()
     {
         String result = '';
@@ -38,15 +38,15 @@ public class ChartBuilder
         }
         return result;
     }
-    
+
     public String buildRow(ChartTable.RowInfo row)
     {
         String result = '{' +
                         'name: "' + row.PrimaryKey + '",' +
                         'data: [';
-        for(Decimal cell : row.Cells)
+        for(ChartTable.CellInfo cell : row.Cells)
         {
-            result += cell + ',';
+            result += cell.Hours + ',';
         }
         if(result.endsWith(','))
         {
@@ -55,7 +55,7 @@ public class ChartBuilder
         result += '], color: getUserColor("' + row.PrimaryKey + '"), visible: ' + ((row.Visible) ? 'true' : 'false') + '}';
         return result;
     }
-    
+
     @isTest
     static void testChartBuilder()
     {

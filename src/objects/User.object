@@ -90,6 +90,16 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>FinUserName__c</fullName>
+        <description>Store username in finance system.</description>
+        <externalId>false</externalId>
+        <label>Fin UserName</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
         <fullName>IsEmployee__c</fullName>
         <description>1 represents regular employee user,
 0 represents non-employee</description>

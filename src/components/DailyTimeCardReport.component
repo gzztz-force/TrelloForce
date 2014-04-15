@@ -2,7 +2,7 @@
     <apex:attribute name="userId" type="String" description="this is the owner of the time card" assignTo="{!UserId}" access="global"/> 
     <apex:variable var="t0" value="{!TEXT(MONTH(TODAY())) & '/' & TEXT(DAY(TODAY())) & '/' & TEXT(YEAR(TODAY()))}"/>
     <apex:variable var="t7" value="{!TEXT(MONTH(TODAY()-6)) & '/' & TEXT(DAY(TODAY()-6)) & '/' & TEXT(YEAR(TODAY()-6))}"/>
-    
+
     <table width="800" border="0" cellpadding="5" cellspacing="0">
     <tr>
     <td>
@@ -37,14 +37,16 @@
                 <apex:repeat value="{!MyMembers.Rows}" var="member">
                     <tr style="height:100px;background:url('http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'timelineBkg.png')}') repeat-x bottom;">
                         <td style="font-size:14px;color:#716c6c;font-weight:bold;width:180px;"><a class="color:#716c6c;" href="https://na6.salesforce.com/00O80000004n3di?colDt_q=Custom&colDt_s={!t7}&colDt_e={!t0}&pv0={!member.PrimaryKey}">{!member.PrimaryKey}</a></td>
-                        <apex:repeat value="{!member.Cells}" var="hours">
-                            <apex:variable var="imageName" value="{!IF(hours>=6, 'greenCircle.png', IF(hours>=4, 'yellowCircle.png', 'redCircle.png'))}" />
-                            <apex:variable var="imageSize" value="{!MIN(hours*6, 48)}" />
-                            <td style="padding:15px 10px; background:url('http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'Vline.png')}') no-repeat center bottom"><img src="http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, imageName)}" alt="{!hours}" title="{!hours} hr(s)" style="width:{!imageSize}px; height:{!imageSize}px;"/></td>
+                        <apex:repeat value="{!member.Cells}" var="cell">
+                            <apex:variable var="imageSize" value="{!MIN(cell.Hours*6, 48)}" />
+                            <td style="padding:15px 10px; background:url('http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'Vline.png')}') no-repeat center bottom">
+                            <apex:image url="https://cs1.salesforce.com{!URLFOR($Resource.TimeCardRes, cell.ImageName)}" alt="{!cell.Hours}" title="{!cell.Hours} hr(s)" style="width:{!imageSize}px; height::{!imageSize}px;" rendered="{!cell.LeaveType == 'NONE' && cell.ImageName != ''}"/>
+                            <apex:image url="https://cs1.salesforce.com{!URLFOR($Resource.TimeCardRes, cell.ImageName)}" alt="{!cell.Hours}" title="{!cell.Hours} hr(s)" style="width:48px; height:48px;" rendered="{!cell.LeaveType != 'NONE' && cell.ImageName != ''}"/>
+                            </td>
                         </apex:repeat>
                         <td style="width:180px;">&nbsp;</td>
                     </tr>
-                </apex:repeat>     
+                </apex:repeat>
             </table>
     </apex:outputPanel>
     <div style="min-height: 10px; clear: both"></div>
