@@ -162,11 +162,11 @@ public class TestDataFactory
     public static void createFinanceServerCustomSetting()
     {
         FinanceServer__c setting = new FinanceServer__c();
-        setting.ClientId__c = '3MVG9_7ddP9KqTzdeUy2xmOr2N74sReSNZxQSX1g4ZCL8LMxMudc.PFIsdwEPIRM_4lEYiswlk7aUbw_8Jx5A';
-        setting.ClientSecret__c = '1823320581773834609';
+        setting.ClientId__c = 'X1g4ZCL8LMxMudc.PFIsdwEPIRM_4lEYiswlk7aUbw_8Jx5A';
+        setting.ClientSecret__c = '18233205812388';
         setting.Endpoint__c = 'https://test.salesforce.com/services/oauth2/token';
-        setting.Username__c = 'jair.zheng@fin.meginfo.com.sandbox';
-        setting.Password__c = 'meginfo2008';
+        setting.Username__c = 'acme@fin.meginfo.com.sandbox';
+        setting.Password__c = 'acme';
 
         insert setting;
     }
