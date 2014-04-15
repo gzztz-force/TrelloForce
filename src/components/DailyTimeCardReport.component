@@ -40,8 +40,8 @@
                         <apex:repeat value="{!member.Cells}" var="cell">
                             <apex:variable var="imageSize" value="{!MIN(cell.Hours*6, 48)}" />
                             <td style="padding:15px 10px; background:url('http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, 'Vline.png')}') no-repeat center bottom">
-                            <apex:image url="https://cs1.salesforce.com{!URLFOR($Resource.TimeCardRes, cell.ImageName)}" alt="{!cell.Hours}" title="{!cell.Hours} hr(s)" style="width:{!imageSize}px; height::{!imageSize}px;" rendered="{!cell.LeaveType == 'NONE' && cell.ImageName != ''}"/>
-                            <apex:image url="https://cs1.salesforce.com{!URLFOR($Resource.TimeCardRes, cell.ImageName)}" alt="{!cell.Hours}" title="{!cell.Hours} hr(s)" style="width:48px; height:48px;" rendered="{!cell.LeaveType != 'NONE' && cell.ImageName != ''}"/>
+                            <apex:image url="http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, cell.ImageName)}" alt="{!cell.Hours}" title="{!cell.Hours} hr(s)" style="width:{!imageSize}px; height:{!imageSize}px;" rendered="{!cell.LeaveType == 'NONE' && cell.ImageName != ''}"/>
+                            <apex:image url="http://www.meginfo.com{!URLFOR($Resource.TimeCardRes, cell.ImageName)}" alt="{!cell.Hours}" title="{!cell.Hours} hr(s)" style="width:48px; height:48px;" rendered="{!cell.LeaveType != 'NONE' && cell.ImageName != ''}"/>
                             </td>
                         </apex:repeat>
                         <td style="width:180px;">&nbsp;</td>
