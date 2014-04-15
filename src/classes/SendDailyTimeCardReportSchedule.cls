@@ -75,7 +75,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
     global void execute(SchedulableContext SC)
     {
         SendDailyTimeCardReportSchedule batch = new SendDailyTimeCardReportSchedule();
-        Database.executeBatch(batch, 10);
+        Database.executeBatch(batch, 1);
     }
     
     //recurring holiday is not supported
