@@ -90,7 +90,7 @@ public class WikiNewPageController
             ApexPages.addMessages(ex);
             return null;
         }
-        return new PageReference('/apex/WikiHomeTest');
+        return new PageReference('/apex/WikiViewPage?id='+parentPage.Id);
     }
 
     public PageReference cancel()

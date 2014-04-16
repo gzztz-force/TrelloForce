@@ -1,16 +1,10 @@
 <apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false" controller="WikiViewPageController">
-    <apex:includeScript value="{!URLFOR($Resource.rgraphLibs, 'libraries/RGraph.common.core.js')}"/>
-    <apex:includeScript value="{!URLFOR($Resource.rgraphLibs, 'libraries/RGraph.common.dynamic.js')}"/>
-    <apex:includeScript value="{!URLFOR($Resource.rgraphLibs, 'libraries/RGraph.bar.js')}"/>
-
-    <apex:includeScript value="{!URLFOR($Resource.rgraphLibs, 'libraries/RGraph.common.effects.js')}"/>
-    <apex:includeScript value="{!URLFOR($Resource.rgraphLibs, 'libraries/RGraph.drawing.text.js')}"/>
-
-    <apex:includeScript value="{!URLFOR($Resource.rgraphLibs, 'libraries/RGraph.common.key.js')}"/>
-    <apex:includeScript value="{!URLFOR($Resource.rgraphLibs, 'libraries/RGraph.drawing.rect.js')}"/>
-
-    <apex:includeScript value="{!URLFOR($Resource.rgraphLibs, 'libraries/jquery.min.js')}"/>
+<link rel="stylesheet" type="text/css" href="{!UrlFor($resource.HighLight,'HighLight/styles/default.css')}"/>
     <style>
+        alldiv
+        {
+           
+        }
         .content {
             padding: 0 25px;
             margin: 0 auto;
@@ -37,26 +31,17 @@
             padding-left: 10px;
             padding-top: 12px;
         }
+        #force pre,#force code
+        {
+            font-family: "Menlo";
+        }
+
     </style>
 
     <script>
-        var likeVar = 0;
-        var unlikeVar = 0;
-        var IsVoted = false;        
-
         $(document).ready(function($) {
-
             new Editor($("#text-input"), $("#page-body"));
-
-            $("#showOrHideVote").click(function(){
-                toggleVoteDiv();
-            });
-            likeVar = {!PubPage.WikiPageVersion.LikeVotes__c};
-            unlikeVar = {!PubPage.WikiPageVersion.UnlikeVotes__c};
-            IsVoted = Boolean({!IsVoted});
-            DrawMainChart();
-            
-
+            $("pre,code").css("font-family","Menlo");
         });
 
 
@@ -68,48 +53,7 @@
             input.editor = this;
             this.update();
         }
-        
-        function toggleVoteDiv()
-        {
-           var obj = $("#showOrHideVote");
-           var obj2 = $("#theVoteDiv");
-           if(obj.attr("rel") == "show")
-           {
-               obj.attr("rel","hide");
-               obj.html("<button type='button' class='btn btn-default'>Hide Vote</button>");
-                
-               obj2.show();
-           }
-           else if(obj.attr("rel") == "hide")
-           {
-                obj.attr("rel","show");
-                obj.html("<button type='button' class='btn btn-default'>Show Vote</button>");
-                obj2.hide();
-           }
-        }
-        function voteWikiPage(p1)
-        {
-            if(IsVoted == false)
-            {
-                if(p1 == 'like')
-                {
-                    likeVar = parseInt(likeVar) + 1;
-                }
-                else if(p1 == 'unlike')
-                {
-                    unlikeVar = parseInt(unlikeVar) + 1;
-                }   
-                vote(p1);        
-                DrawMainChart();
-                $("#voteButtons").html("<div>You have already voted the Page.</div>");
-                IsVoted = true;
-            }
-            else
-            {
-                alert('can only vote once.');
-            }
-            
-        }
+        /*
         function DrawMainChart()
             {
                 var ca = document.getElementById("cvs");
@@ -122,7 +66,7 @@
                     .Set('title', 'Vote Result')
                     .Set('background.grid.autofit.numvlines', data.length)
                     .Draw();
-            }
+            }*/
     </script>
     <apex:form>
         <apex:actionFunction name="vote" action="{!vote}" reRender="voteArea">
@@ -131,7 +75,7 @@
     </apex:form>
     <apex:composition template="WikiTemplate"><!--WikiTemplateWithBootstrap3-->
         <apex:define name="body" >
-            <div class="content">
+            <div class="content" style=" background-color: f9f9f9;">
                 <div id="force" >
                     <div class="navbar ">
                         <ul class="breadcrumb">
@@ -168,27 +112,6 @@
                     <hr/>                  
                     <div id="page-body" class="page-body"></div>                
                     <hr/>
-                    <div>
-                         <div rel="show">
-                            <button type="button" id="showOrHideVote" class="btn btn-default">Show Vote</button>
-                        </div>
-                        <div id="theVoteDiv" style="display:none;" class="well well-sm">
-                            <apex:outputPanel id="voteArea">
-                            </apex:outputPanel>
-                            <div>
-                                <canvas id="cvs" width="250" height="250">[No canvas support]</canvas><br /> <br/> 
-                            </div>
-                            <apex:outputPanel rendered="{!Not(IsVoted)}">
-                                <div style="margin-left:20px;" id="voteButtons">
-                                    <button onclick="voteWikiPage('like')" class="btn btn-default">Like</button>
-                                    <button onclick="voteWikiPage('unlike')" class="btn btn-default">Unlike</button>
-                                </div>
-                            </apex:outputPanel>
-                            <apex:outputPanel rendered="{!IsVoted}"> 
-                                <div>You have already voted the Page.</div>
-                            </apex:outputPanel>                            
-                        </div>
-                    </div>
                 </div>            
                 <!-- Chatter -->
                 <chatter:feedWithFollowers entityId="{!PubPage.WikiPage.Id}"/>
@@ -207,5 +130,19 @@
             </div>
         </apex:repeat>
     </div>
-    
+
+    <pre> 
+    <code> 
+        public class a 
+        {
+            String a = 'chenyuncai';
+        }
+    </code>
+    </pre>
+    <script type="text/javascript" src="{!UrlFor($resource.HighLight,'HighLight/highlight.pack.js')}"></script>
+    <script >
+       // $("pre code *").removeClass();
+        hljs.initHighlightingOnLoad();
+        $("code .hljs-keyword").css("font-family","Menlo");
+    </script> 
 </apex:page>

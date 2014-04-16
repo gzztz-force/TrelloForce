@@ -4,26 +4,20 @@
  */
 public with sharing class WikiHomeController
 {
-     
+    private ApexPages.StandardSetController popularPagesSet;
+    private Integer feedItemCount;    
+    private Integer feedPageSize;
+    private Integer feedPageNum;
 
     public WikiSpace__c NewSpace { get; set; }
     public Boolean HasError { get; set; }
     public Id FavorSpaceId { get; set; }
-
-    //added by ray 
-    public List<PopularWikiPage> MyPopularPages { get; set; }
-    private ApexPages.StandardSetController popularPagesSet;
+    public List<PopularWikiPage> MyPopularPages { get; set; }    
     public Boolean HasMorePageMark { get; set; }
-    
-
     public List<WikiPageVersion__c> PagesForSearch { get; set;}
     public String SearchKey { get; set; }
     public String testStr { get; set; }
-
-    public List<WikiPage__Feed> FeedItems { get; set;}
-    private Integer feedItemCount;
-    private Integer feedPageSize;
-    private Integer feedPageNum;
+    public List<WikiPage__Feed> FeedItems { get; set;}    
     public Boolean HasMoreFeedMark { get; set; }
     public Map<Id,User> IdUserMap { get; set; }
     
@@ -34,7 +28,7 @@ public with sharing class WikiHomeController
         HasError = false;
         feedItemCount = [select Id from WikiPage__Feed where Type in ('TrackedChange','TextPost')].size();       
         getUpdateInfo();
-        PagesForSearch = [SELECT Id, Title__c, WikiPage__c FROM WikiPageVersion__c WHERE IsLatestVersion__c = true order by WikiPage__r.LastPublishedDate__c DESC];
+        PagesForSearch = [select Id, Title__c, WikiPage__c from WikiPageVersion__c where IsLatestVersion__c = true order by WikiPage__r.LastPublishedDate__c desc];
     }
 
     public List<WikiSpace__c> getMySpaces()
@@ -65,6 +59,7 @@ public with sharing class WikiHomeController
         }
         HasMorePageMark = popularPagesSet.getHasNext();
     }
+
     public void getUpdateInfo()
     {        
         feedPageSize = 8;
@@ -109,8 +104,7 @@ public with sharing class WikiHomeController
 
     
     public void loadMorePopularPagesAction()
-    {
-        
+    {        
         if(HasMorePageMark)
         {
             popularPagesSet.next();
@@ -127,6 +121,7 @@ public with sharing class WikiHomeController
             }
         }
     }
+
     public void loadMoreFeedItemsAction()
     {
         Integer offset = feedPageSize * (feedPageNum -1); 
@@ -146,6 +141,7 @@ public with sharing class WikiHomeController
             feedPageNum += 1; 
         }
     }
+
     public void favorSpace()
     {
         for(WikiSpace__c space : getMySpaces())
@@ -175,6 +171,7 @@ public with sharing class WikiHomeController
             }
         }
     }
+
     public void createNewSpace()
     {
         HasError = false;
@@ -201,8 +198,8 @@ public with sharing class WikiHomeController
         {
             String searchKeyTemp = '%' + SearchKey + '%';
 
-            PagesForSearch = [SELECT Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, WikiPage__r.LastPublishedDate__c   
-                                                               FROM WikiPageVersion__c WHERE IsLatestVersion__c = true and (Title__c like :searchKeyTemp or Tag__c like :searchKeyTemp) ORDER BY WikiPage__r.LastPublishedDate__c DESC limit 100];
+            PagesForSearch = [select Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, WikiPage__r.LastPublishedDate__c   
+                                                               from WikiPageVersion__c where IsLatestVersion__c = true and (Title__c like :searchKeyTemp or Tag__c like :searchKeyTemp) order by WikiPage__r.LastPublishedDate__c desc limit 100];
         }
         else
         {

@@ -1,5 +1,6 @@
 <apex:page controller="WikiHomeController" docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" >
     <style>
+    body{background-color: f9f9f9;}
         /*
         .row:before,
         .row:after ,.container:before,
@@ -13,8 +14,7 @@
             content: " ";
             clear: both;
         }
-        */
-        
+        */        
         .container-custom {
             padding: 5px 20px;
             width: 100%;
@@ -247,10 +247,8 @@
             }); 
         }
 
-        function show()
-        {
-            if(!isLoading)
-            {
+        function show(){
+            if(!isLoading){
                 // if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){  
                 if (($(window).height() + $(window).scrollTop()) >= $('body').height()){
                     if(activePanel == "popular"){
@@ -271,10 +269,14 @@
 
         function loadMorePopularPageFunction(){
             loadMorePopularPages();            
-            isLoading = false;
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
         }
         function loadMoreFeedItemFunction(){
             loadMoreFeedItems();            
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+        }
+        function doneLoad()
+        {
             isLoading = false;
         }
         
@@ -349,6 +351,7 @@
             loadMoreUpdatePages();
         }
         
+        
     </script>
 
     <apex:outputPanel id="testArea" rendered="false">
@@ -372,8 +375,8 @@
         <apex:actionFunction name="searchWikiPageFunction" action="{!searchWikiPageAction}" reRender="TheSearchSuggest,testArea" status="load">
             <apex:param assignTo="{!SearchKey}" value="" name="swpk"/>
         </apex:actionFunction>        
-        <apex:actionFunction name="loadMorePopularPages"  status="loadPage" action="{!loadMorePopularPagesAction}" reRender="popularPagePanel"/>
-        <apex:actionFunction name="loadMoreFeedItems"  status="loadItem" action="{!loadMoreFeedItemsAction}" reRender="updatePagesPanel"/>
+        <apex:actionFunction name="loadMorePopularPages"  status="loadPage" action="{!loadMorePopularPagesAction}" reRender="popularPagePanel" oncomplete="doneLoad()"/>
+        <apex:actionFunction name="loadMoreFeedItems"  status="loadItem" action="{!loadMoreFeedItemsAction}" reRender="updatePagesPanel" oncomplete="doneLoad()"/>
     </apex:form>
     <!--   Function area end -->
 
@@ -518,7 +521,6 @@
                                                     <img src="{!$Resource.loadPic}" />
                                                     Loading more pages ...
                                                 </div>
-                                                <div style="height:20px;"></div>
                                             </apex:facet>
                                             <apex:facet name="stop">
                                                 <apex:outputPanel rendered="{!Not(hasMorePageMark)}">
@@ -593,8 +595,6 @@
                                                     <img src="{!$Resource.loadPic}" />
                                                     Loading more items ...
                                                 </div>
-                                                <div style="height:20px;"></div>
-
                                             </apex:facet>
                                             <apex:facet name="stop">
                                                 <apex:outputPanel rendered="{!Not(hasMoreFeedMark)}">
@@ -618,9 +618,9 @@
                                                         <i class="glyphicon glyphicon-star icon-star bookmark" data-toggle="tooltip" data-placement="left" rel="unFavorSpace" title="Click to unfavor" onclick="favorSpace2(this)">
                                                             <input type="hidden" value="{!space.space__c}"/>
                                                         </i>
-                                                    </div                                                     
+                                                    </div>                                                    
                                                 </li>
-                                                <div class="divider"></div>                                                
+                                                <div class="divider"></div>
                                             </apex:repeat>
                                         </ul>
                                     </apex:outputPanel>
