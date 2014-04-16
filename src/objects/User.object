@@ -74,11 +74,11 @@
     </fields>
     <fields>
         <fullName>IsDeveloper__c</fullName>
-        <description>1 represents developer user, 
+        <description>1 represents developer user,
 0 represents non-developer</description>
         <externalId>false</externalId>
-        <formula>IF((IsEmployee__c == 1) &amp;&amp; 
-(UserRole.Name != &apos;Finance User&apos;) &amp;&amp; 
+        <formula>IF((IsEmployee__c == 1) &amp;&amp;
+(UserRole.Name != &apos;Finance User&apos;) &amp;&amp;
 (UserRole.Name != &apos;CEO&apos;),
 1, 0)</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
@@ -100,6 +100,7 @@
         <type>Text</type>
         <unique>false</unique>
     </fields>
+    <fields>
         <fullName>IsEmployee__c</fullName>
         <description>1 represents regular employee user,
 0 represents non-employee</description>

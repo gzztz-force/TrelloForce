@@ -45,7 +45,7 @@ public class DailyTimeCardReportController
 
             if(String.isEmpty(UserId)) return new ChartTable();
 
-            ChartTable table = generateBlankTable(userMap, UserId);
+            ChartTable table = generateBlankTable(userMap, UserId, teamUsers);
 
             // Gets user logged time cards in one week
             Map<Id, Map<Date, Decimal>> userIdToDaysHours = getUserIdToDaysHours(userMap.keySet());
@@ -105,7 +105,7 @@ public class DailyTimeCardReportController
     }
 
     // Get a table with a date header(7 days) and user name as first column of each row
-    private static ChartTable generateBlankTable(Map<Id, String> userMap, String userId)
+    private static ChartTable generateBlankTable(Map<Id, String> userMap, String userId, List<User> teamUsers)
     {
         ChartTable table = new ChartTable(true); // Cumulative table
 
@@ -117,11 +117,11 @@ public class DailyTimeCardReportController
         // Put current use as a first row
         table.addValue(userMap.get(userId), table.Columns[0], new ChartTable.CellInfo(0));
 
-        for(String uId : userMap.keySet())
+        for(User user : teamUsers)
         {
-            if(uId != userId)
+            if(user.Id != userId)
             {
-                table.addValue(userMap.get(uId), table.Columns[0], new ChartTable.CellInfo(0));
+                table.addValue(user.Name, table.Columns[0], new ChartTable.CellInfo(0));
             }
         }
 
