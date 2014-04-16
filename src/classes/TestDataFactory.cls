@@ -14,9 +14,13 @@ public class TestDataFactory
 
         for(Integer i=0; i < numberOfProjects; i++)
         {
-            MProject__c p = new MProject__c();
-            p.Name = 'ProjectA' + i;
-            projects.add(p);
+            String customerId = createCustomer();
+
+            projects.add(new MProject__c(Name = 'ProjectA' + i,
+                               Status__c = 'In Progress',
+                               Customer__c = customerId,
+                               StartDate__c = Date.today(),
+                               EndDate__c = Date.today().addYears(1)));
         }
 
         insert projects;
@@ -32,8 +36,9 @@ public class TestDataFactory
 
         for(MProject__c p : projects)
         {
-            TeamMember__c t = new TeamMember__c(Name= UserInfo.getName(), User__c = UserInfo.getUserId(), Project__c = p.Id);
-            teamMembers.add(t);
+            teamMembers.add(new TeamMember__c(Name= UserInfo.getName(),
+                                  User__c = UserInfo.getUserId(),
+                                  Project__c = p.Id));
         }
 
         insert teamMembers;
@@ -41,7 +46,7 @@ public class TestDataFactory
         return teamMembers;
     }
 
-    public static void createChanges()
+    public static List<Change__c> createChanges()
     {
         List<MProject__c> projects = createProjects();
 
@@ -51,19 +56,27 @@ public class TestDataFactory
         {
             for(Integer i=0; i < numberOfChanges; i++)
             {
-                Change__c c = new Change__c();
-                c.Project__c = project.Id;
-                c.Name = 'Change' + i;
-                changes.add(c);
+                changes.add(new Change__c(Project__c = project.Id,
+                                Name = 'Test Change' + i,
+                                Description__c = 'Test Change Details',
+                                DueDate__c = Date.today().addMonths(1),
+                                Status__c = 'Open',
+                                Priority__c = 'Low',
+                                OpenedBy__c = UserInfo.getUserId(),
+                                AssignedTo__c = UserInfo.getUserId()));
             }
         }
+        // The first chage is created without specifying the External ID.
+        changes[1].ExternalID__c = 'external id';
 
         insert changes;
+        return changes;
     }
 
     public static void createTimecards()
     {
         List<TeamMember__c> teamMembers = createTeamMembers();
+        List<Change__c> changes = createChanges();
 
         List<TimeCard__c> timecards = new List<TimeCard__c>();
 
@@ -78,15 +91,83 @@ public class TestDataFactory
         {
             for(Integer i=0; i < numberOfTimecards; i++)
             {
-                TimeCard__c tm = new TimeCard__c();
-                tm.Project__c = memberIdToProjectId.get(t.Id);
-                tm.TeamMember__c = t.Id;
-                tm.Hours__c = 8;
-                tm.Date__c = Date.today().addDays(-i);
-                timecards.add(tm);
+                timecards.add(new TimeCard__c(Project__c = memberIdToProjectId.get(t.Id),
+                                     TeamMember__c = t.Id,
+                                     Hours__c = 8,
+                                     Description__c = 'description' + i,
+                                     Date__c = Date.today().addDays(-i)));
             }
         }
 
         insert timecards;
+    }
+
+    public static void createChangesAndTimeCards()
+    {
+        List<TeamMember__c> teamMembers = createTeamMembers();
+
+        List<Change__c> changes = new List<Change__c>();
+        List<TimeCard__c> timecards = new List<TimeCard__c>();
+
+        for(Integer i=0; i<2; i++)
+        {
+            changes.add(new Change__c(Project__c = teamMembers[0].Project__c,
+                            Name = 'Test Change' + i,
+                            Description__c = 'Test Change Details',
+                            DueDate__c = Date.today().addMonths(1),
+                            Status__c = 'Open',
+                            Priority__c = 'Low',
+                            OpenedBy__c = UserInfo.getUserId(),
+                            AssignedTo__c = UserInfo.getUserId()));
+        }
+        insert changes;
+
+        for(Integer i=0; i<4; i++)
+        {
+            timecards.add(new TimeCard__c(Project__c = teamMembers[0].Project__c,
+                                     TeamMember__c = teamMembers[0].Id,
+                                     Hours__c = 8,
+                                     Description__c = 'description' + i,
+                                     Date__c = Date.today().addDays(-i)));
+        }
+        // The first TimeCard is created without specifying any Change.
+        // The second TimeCard is created with Change field populated, but the specified Change has no External ID.
+        // The thrid and fourth TimeCard are created with Change field populated, and the specified Change does have External ID.
+
+        timecards[1].Change__c = changes[0].Id;
+        timecards[2].Change__c = changes[1].Id;
+        timecards[3].Change__c = changes[1].Id;
+
+        insert timecards;
+    }
+
+    public static void createTimeCardSyncSettings()
+    {
+      TimeCardSyncSetting__c setting = new TimeCardSyncSetting__c();
+      setting.Name__c = 'Eric He';
+      setting.Email__c = 'eric.he@meginfo.com';
+      setting.Endpoint__c = 'https://inlab-developer-edition.ap1.force.com/services/apexrest/TimeCardManagment/';
+      setting.CustomerName__c = 'Touchpoint Solutions';
+      insert setting;
+    }
+
+    public static String createCustomer()
+    {
+      Customer__c newCustomer = new Customer__c(Name = 'acme customer');
+
+      insert newCustomer;
+      return newCustomer.Id;
+    }
+
+    public static void createFinanceServerCustomSetting()
+    {
+        FinanceServer__c setting = new FinanceServer__c();
+        setting.ClientId__c = 'X1g4ZCL8LMxMudc.PFIsdwEPIRM_4lEYiswlk7aUbw_8Jx5A';
+        setting.ClientSecret__c = '18233205812388';
+        setting.Endpoint__c = 'https://test.salesforce.com/services/oauth2/token';
+        setting.Username__c = 'acme@fin.meginfo.com.sandbox';
+        setting.Password__c = 'acme';
+
+        insert setting;
     }
 }
