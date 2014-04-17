@@ -447,7 +447,7 @@
                                                             <input type="hidden" value="{!space.Id}"/>
                                                         </i>
                                                         -->
-                                                        <span class="badge pull-right comment">{!space.WikiPages__r.size}</span>                                                        
+                                                        <span class="badge pull-right comment" title="{!space.WikiPages__r.size} page(s)">{!space.WikiPages__r.size}</span>                                                        
                                                     </div>
                                                 </li>
                                                 <div class="divider"></div>
@@ -509,7 +509,15 @@
                                                         </div>
                                                     </div>
                                                     <div class="pull-right comment">
-                                                        <span class="badge">{!item.FeedComment}</span>
+                                                    <apex:outputPanel rendered="{!item.FeedComment < 10}" styleClass="badge" title="{!item.FeedComment} state(s)">
+                                                            {!item.FeedComment}
+                                                        </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!(item.FeedComment > 10)&&(item.FeedComment < 50)}" styleClass="badge" style="background-color:#d7ac67;" title="{!item.FeedComment} state(s)">
+                                                            {!item.FeedComment}
+                                                        </apex:outputPanel>                                                        
+                                                        <apex:outputPanel rendered="{!item.FeedComment > 50}" styleClass="badge" style="background-color:#b1605a" title="{!item.FeedComment} state(s)">
+                                                            {!item.FeedComment}
+                                                        </apex:outputPanel>
                                                     </div>                                             
                                                 </li>
                                                 <div class="divider"></div>                                        

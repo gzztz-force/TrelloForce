@@ -1,9 +1,10 @@
-trigger AddChatterWhenInsertOrUpdate on WikiPage__c (after insert, after update) 
+trigger TrackPostOnWikiPage on WikiPage__c (after insert, after update) 
 {
-    if(Trigger.isInsert && Trigger.isAfter)
+    if(Trigger.isAfter &&Trigger.isInsert )
     {
         insertFeedItem('created this page',Trigger.newMap.keySet());        
     }
+
     else if(Trigger.isAfter && Trigger.isUpdate)
     {
         Set<Id> ids = new Set<Id>();
@@ -17,7 +18,8 @@ trigger AddChatterWhenInsertOrUpdate on WikiPage__c (after insert, after update)
         }
         insertFeedItem('edited this page',ids);
     }
-    public void insertFeedItem(String itemBody,Set<Id> ids)
+
+    private void insertFeedItem(String itemBody,Set<Id> ids)
     {
         List<FeedItem> feedItems = new List<FeedItem>();
         for(Id pageId : ids)
