@@ -41,16 +41,14 @@ public with sharing class NewTimeCardOnChangeController
 			return result;
 		}
 	}
-	
+
 	@isTest
 	static void testNewTimeCardOnChangeController()
 	{
-		MProject__c newProject = new MProject__c(Name='acme');
-		insert newProject;
-		Change__c newChange = new Change__c(Project__c=newProject.Id, Name='acme');
-		insert newChange;
-		
-		PageReference page = new PageReference('/apex/NewTimeCardOnChange?cid=' + newChange.Id);
+		List<MProject__c> projects = TestDataFactory.createProjects();
+		List<Change__c> changes = TestDataFactory.createChanges(projects);
+
+		PageReference page = new PageReference('/apex/NewTimeCardOnChange?cid=' + changes[0].Id);
 		Test.setCurrentPage(page);
 		NewTimeCardOnChangeController controller = new NewTimeCardOnChangeController();
 		System.assert(controller.redirect() != null);

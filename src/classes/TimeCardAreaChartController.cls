@@ -137,16 +137,12 @@ public class TimeCardAreaChartController
     @isTest
     static void testTimeCardAreaChartController()
     {
-        MProject__c prj = new MProject__c(Name='acme');
-        insert prj;
-        User u = [select Id, Name from User limit 1];
-        TeamMember__c tm = new TeamMember__c(Project__c=prj.Id, User__c=u.Id, Name='acme');
-        insert tm;
-        TimeCard__c tc = new TimeCard__c(TeamMember__c=tm.Id, Project__c=prj.Id, Hours__c=8, Description__c='acme', Date__c=Date.today());
-        insert tc;
-        
+        List<MProject__c> projects = TestDataFactory.createProjects();
+        List<TeamMember__c> teamMembers = TestDataFactory.createTeamMembers(projects);
+        TestDataFactory.createTimecards(teamMembers);
+
         TimeCardAreaChartController controller = new TimeCardAreaChartController();
-        controller.ProjectId = prj.Id;
+        controller.ProjectId = projects[0].Id;
         ChartTable table = controller.DailyTimeCards;
         table = controller.WeeklyTimeCards;
         table = controller.MonthlyTimeCards;

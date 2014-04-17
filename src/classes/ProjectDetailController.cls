@@ -238,14 +238,13 @@ public with sharing class ProjectDetailController
     @isTest
     static void testProjectdDtailController()
     {
-        MProject__c p = new MProject__c(Name='acme');
-        insert p;
-        TeamMember__c member = new TeamMember__c(Project__c=p.Id, User__c=UserInfo.getUserId(), Role__c='Project Manager');
+        List<MProject__c> projects = TestDataFactory.createProjects();
+        TeamMember__c member = new TeamMember__c(Project__c=projects[0].Id, User__c=UserInfo.getUserId(), Role__c='Project Manager');
         insert member;
-        Change__c chg = new Change__c(Project__c=p.Id, Status__c='Closed', DueDate__c=Date.today(), AssignedTo__c=UserInfo.getUserId());
+        Change__c chg = new Change__c(Project__c=projects[0].Id, Status__c='Closed', DueDate__c=Date.today(), AssignedTo__c=UserInfo.getUserId());
         insert chg;
 
-        ApexPages.StandardController ctrl = new ApexPages.StandardController(p);
+        ApexPages.StandardController ctrl = new ApexPages.StandardController(projects[0]);
         ProjectDetailController controller = new ProjectDetailController(ctrl);
 
         List<Change__c> changes = controller.Changes;

@@ -273,22 +273,29 @@ public class ForecastingController
         public ChartTable TimeByCustomers { get; set; }
         public String Context { get; set; }
     }
-    
+
     @isTest
     static void testForecastingController()
     {
-        MProject__c project = new MProject__c(Name='acme');
-        insert project;
-        TeamMember__c member = new TeamMember__c(Name='acme', User__c=UserInfo.getUserId(), Project__c=project.Id);
+        Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
+        UserRole r = [select Id, Name from UserRole where Name = 'Developer'];
+
+        User user = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', IsActive = true, ManagerId = UserInfo.getUserId(),
+                    UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+
+        insert user;
+
+        List<MProject__c> projects = TestDataFactory.createProjects();
+        TeamMember__c member = new TeamMember__c(Name='acme', User__c=UserInfo.getUserId(), Project__c=projects[0].Id);
         insert member;
-        TimeCard__c card = new TimeCard__c(Project__c=project.Id, TeamMember__c=member.Id, Date__c=Date.today().toStartOfWeek().addDays(-1), Hours__c=3, Description__c='acme');
+        TimeCard__c card = new TimeCard__c(Project__c=projects[0].Id, TeamMember__c=member.Id, Date__c=Date.today().toStartOfWeek().addDays(-1), Hours__c=3, Description__c='acme');
         insert card;
-        
+
         ForecastingController controller = new ForecastingController();
         controller.DateFrame = 'LastWeek';
         System.assert(controller.TeamMembers.size() > 0);
         System.assert(controller.CurrentViewingUser != null);
-        
+
         ForecastingParam param = new ForecastingParam();
         param.UserId = UserInfo.getUserId();
         param.StartDate = controller.StartDate;
