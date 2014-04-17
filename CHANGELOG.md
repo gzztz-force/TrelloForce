@@ -1,28 +1,26 @@
 #### PM v1.4.0
   - Show employee leave info in the daily timecard dashboard
   - Employee leave info is from Finance system
-  - Via email to send daily timecard dashboard
+  - Send Daily timecard dashboard to all employees via email everyday
 
 #### PM v1.3.0
-  - Log timecard in Salesforce1
-  - My timecard page
-  - Timecard Dashbaord
+  - Add TimeCard function to Salesforce1
+  - Add Log timecard action, My timecard page and Timecard Dashbaord
 
 #### PM v1.2.0
-  - Sync time entries to Touchpoint's system on daily basis.
-  - Scheduler execute every day to sync time entries to Touchpoint's system
-  - Create TimeCardSyncSetting custom setting object for integration
-  - Add ExternalID field to Change object
-  - Add IsSync field to TimeCard object
+  - Sync our time entries to Touchpoint's system on daily basis
+  - Create custom setting object 'TimeCardSyncSetting' used for integration
+  - Add field 'ExternalID' to Change object
+  - Add field 'IsSync' to TimeCard object
 
 #### PM v1.1.2
-  - Fix birthday email alert not send when timezone is not GTM+8
+  - Fix issue that birthday email alert can't be sent when timezone is not GTM+8
 
 #### PM v1.1.1
-  - Fix birthday email alert not send
+  - Fix issue that birthday email alert can't be sent
 
 #### PM v1.1.0
-  - Send a email to HR at 8:00am when a employ is birthday
+  - Send an email to HR at 8:00am when the day is some employee's birthday
   - Handle a solar/lunar(Chinese Calendar) birthday
 
 #### PM v1.0.2
