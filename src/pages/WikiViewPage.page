@@ -19,7 +19,7 @@
 
         .page-body {
             padding-bottom: 15px;
-        }
+        } 
 
         #force .page-header h1 {
             color: #5a5a5a;
@@ -130,7 +130,6 @@
             </div>
         </apex:repeat>
     </div>
-
     <pre> 
     <code> 
         public class a 
