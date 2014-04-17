@@ -1,25 +1,41 @@
 <apex:page showHeader="true" sidebar="true" controller="WiKiSearchController">
+	<script type="text/javascript">
+		function search(e){
+			var key = 0;
+          	if(window.event){
+            	key = e.keyCode;
+            }else if(e.which){
+           		key = e.which;
+          	}
+            if(key == 13){
+            	showw();
+            }
+		}
+	</script>
 	<apex:form>
 		<apex:pageBlock>
-			<apex:pageBlockButtons>
-				<apex:commandButton value="Search" action="{!search}">
-				</apex:commandButton>
-			</apex:pageBlockButtons>
+			<apex:pageBlockSection rendered="false">
+					<apex:inputText value="{!Key}" onkeypress="search(event)">
+					</apex:inputText>
+					<apex:commandButton value="Search" action="{!search}" reRender="Show">
+					</apex:commandButton>
+			</apex:pageBlockSection>
 			<apex:pageBlockSection>
-				<apex:inputText value="{!Key}">
+				<apex:inputText value="{!Key}" onkeypress="search(event)">
 				</apex:inputText>
 			</apex:pageBlockSection>
 		</apex:pageBlock>
+        <apex:actionFunction reRender="Show" action="{!search}" name="showw()"/>
 	</apex:form>
 	<apex:outputPanel id="Show">
 		<apex:repeat value="{!Versions}" var="ver">
-			<a href="#">
-				<apex:outputLabel value="{!ver.Title__c}">
-				</apex:outputLabel>
-			</a>
+			<apex:outputLink value="/apex/WiKiViewPage?id={!ver.WikiPage__c}" target="_blank" style="color:blue;font-size:20px">
+				{!ver.Title__c}
+			</apex:outputLink>
 			<br/>
 			<apex:outputText value="{!ver.Body__c}">
 			</apex:outputText>
+			<br/>
 			<br/>
 		</apex:repeat>
 		<apex:outputText value="{!Key}">
