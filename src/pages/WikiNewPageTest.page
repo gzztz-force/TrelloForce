@@ -82,9 +82,9 @@ textarea {
 
 #previewDiv {
     width: 100%;
-    padding: 0px 0px 0px 5px;
+    padding: 5px 0px 0px 0px;
     overflow: auto;
-    margin: 10px 0px;
+    margin: 0px 0px;
     float: left;
 }
 
@@ -96,34 +96,17 @@ textarea {
     font-weight:bold;
     color:rgba(149,149,149,0.5);
 }
-#mainContainer #leftMainContainer #extensionBar
-{
-	margin: 10px 0px;
-}
+
 #mainContainer #leftMainContainer #extensionBar #spaceDiv {
     display: inline-block;
     clear: both;
 }
 
-#mainContainer #leftMainContainer #extensionBar #tagDiv {
-    display: inline-block;
-    width: 80%;
+#contentSection .nav li a {
+    padding: 5px 35px;
 }
 
-#mainContainer #leftMainContainer #extensionBar input[id$="tagInput"] {
-    height: 25px;
-    width: 90%;
-    margin-left: 10px;
-    border-color: rgb(199, 198, 198);
-}
 
-#mainContainer #leftMainContainer #submitSection {
-    text-align: center;
-}
-
-#mainContainer #leftMainContainer #submitSection .btn {
-    margin: 0px 20px 0px;
-}
 
 #force #errorTip ul{
 	display: inline-block;
@@ -162,39 +145,45 @@ textarea {
                 <section id="mainContainer" class="row">
 
                     <div id="leftMainContainer" class="col-md-9">
-                        <div id="titleSection" >
+                        <div id="titleSection" class="row">
                             <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" onblur="checkValueOnblur(this)" onclick="checkValueOnclick(this)"/>
                         </div>
-                        <div id="contentSection">
-                            <div id="toolBar" class="div-border">
-                                <i class="glyphicon glyphicon-bold"></i>
-                                <i class="glyphicon glyphicon-globe"></i>
-                                <i class="glyphicon glyphicon-list"></i>
-                            </div>
-                            <div>
-                                <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" onkeyup="changeContents(this)" rows="15" />
-                                <div id="previewDiv" class="div-border">
-                                    <textarea class="preview-tips">Preview</textarea>
+                        <div id="contentSection" class="row">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#editDiv" data-toggle="tab"> Edit </a></li>
+                                <li><a href="#previewDiv" data-toggle="tab">Preview</a></li>                                
+                            </ul>
+                            <div class="tab-content">
+                                <div id="editDiv" class="tab-pane fade active in"> 
+                                    <div id="toolBar">
+                                        <i class="glyphicon glyphicon-bold"></i>
+                                        <i class="glyphicon glyphicon-globe"></i>
+                                        <i class="glyphicon glyphicon-list"></i>
+                                    </div>
+                                    <div>
+                                        <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" onkeyup="changeContents(this)" rows="30"/>
+                                    </div>
+                                </div>                                
+                                <div id="previewDiv" class="div-border tab-pane fade" style="border-top:0px;">
+                                    <span class="preview-tips">Preview</span>                                    
                                 </div>
                             </div>
-                            <div id="extensionBar" class="row">
-                                <div id="spaceDiv" class="col-md-2">
-                                    <span>Space</span>
+                        </div>
+                        <div id="extensionBar" class="row" style="margin-right:0px;">
+                            <div style="padding:20px 0px;">
+                                <div id="spaceDiv" class="col-md-8" >
+                                    <span>Space :</span>
                                     <!--<apex:selectList id="selectList" styleclass="select-style" value="{!LatestPage.WikiPage__r.WikiSpace__r.Name}" size="0">-->
                                     <apex:selectList id="selectList" styleclass="select-style" value="{!WikiSpaceId}" size="1">
                                         <apex:selectOptions value="{!SpaceOptions}"/>
                                     </apex:selectList>
                                 </div>
-                                <div id="tagDiv" class="col-md-9">
-                                    <i><strong>Tags</strong></i>
-                                    <apex:inputText id="tagInput" value="{!LatestPage.Label__c}"/>
+                                <div id="buttonDiv" class="col-md-3">
+                                    <apex:commandButton action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary" style="margin-right:40px;"/>
+                                    <apex:commandButton action="{!cancel}" value="Cancel" styleclass="btn"/>                            
                                 </div>
                             </div>
-                        </div>
-                        <div id="submitSection">
-                            <apex:commandButton action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary"/>
-                            <apex:commandButton action="{!cancel}" value="Cancel" styleclass="btn"/>
-                        </div>
+                        </div>                            
                     </div>
                     <div id="rightMainContainer" class="col-md-3 div-border">
                         <p><span class="tips-title">How to Format</span></p>
@@ -214,21 +203,24 @@ textarea {
             <script>
                 $(function(){
                     changeContents();
-                    $('[id$=contentInput]').autosize();
                 });
 
                 function changeContents()
-                {
-                    document.getElementById("recv").scrollTop = document.getElementById("recv").scrollHeight
-                    var value = $("[id$=contentInput]").val();
+                {   
+
+
+                var ds = document.getElementsByTagName("textarea");
+                    ds[0].style.height=ds[0].scrollHeight;
+
+                    var value = $("[id$='contentInput']").val();
                     if (value == '' || value == null)
                     {
                         $("#previewDiv").empty();
-                        $("<textarea class='preview-tips'>Preview</textarea>").appendTo($("#previewDiv"));
+                        $("<span class='preview-tips'>Preview</span>").appendTo($("#previewDiv"));
                     }
                     else
                     {
-                        $("#previewDiv").html(markdown.toHTML(value)).scrollTop($(this).scrollHeight);
+                        $("#previewDiv").html(markdown.toHTML(value));
                     }
                 }
 
@@ -250,6 +242,7 @@ textarea {
                 }
             </script>
         </apex:form>
+        <topics:widget entity="{!LatestPage.Id}"/>
     </apex:define>
 </apex:composition>
 </apex:page>
