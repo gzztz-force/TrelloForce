@@ -1,6 +1,6 @@
 /*
  * This Trigger can deal with all the dml operation on user object.
- * 
+ * Test method in TriggerTests class
  */
 trigger UserTrigger on User (after update, after insert, before insert, before update)
 {    

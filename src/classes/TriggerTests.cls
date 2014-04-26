@@ -195,6 +195,7 @@ private class TriggerTests
         update u;
     }
 
+    // Test method for UserTrigger.trigger
     @isTest
     public static void testUpdateWeChatIsVerified()
     {
