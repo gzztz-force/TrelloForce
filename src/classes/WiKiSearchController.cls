@@ -13,14 +13,47 @@ public with sharing class WiKiSearchController
             WikiPages = new List<WiKiPageVersion__c>();
             MyWiKiPages = new List<MyWiKiPage>();
         }
+        initPopularPage();
     } 
 
     public String Key { get; set; }
     public List<WiKiPageVersion__c> WikiPages { get; set; }
     public List<MyWiKiPage> MyWiKiPages { get; set; }
+    public List<PopularPage> PopularPages { get; set; }
     public Datetime FirstCursor { get; set; }
     public Datetime PreviousCursor { get; set; }
     public Datetime NextCursor { get; set; }
+
+    public void initPopularPage()
+    {
+        List<AggregateResult> results = [select ParentId, count(Id) FeedItems, sum(commentcount) Comments, sum(likecount) Likes from WiKiPage__Feed group by ParentId order by count(Id) desc, sum(commentcount) desc, sum(likecount) desc limit 10];
+        Set<Id> pageIds = new Set<Id>();
+        PopularPages = new List<PopularPage>();
+        for(AggregateResult result : results)
+        {
+            pageIds.add((Id)result.get('ParentId'));
+
+            PopularPage popular = new PopularPage();
+            popular.Id = (String)result.get('ParentId');
+            popular.FeedItems = Integer.valueOf(result.get('FeedItems'));
+            popular.Comments = Integer.valueOf(result.get('Comments'));
+            popular.Likes = Integer.valueOf(result.get('Likes'));
+            PopularPages.add(popular);
+        }
+        List<WiKiPage__c> Pages = [select Id, Title__c from WiKiPage__c where Id in :pageIds];
+        for(PopularPage popular : PopularPages)
+        {
+            for(WiKiPage__c page : Pages)
+            {
+                if(popular.Id == page.Id)
+                {
+                    popular.Title = page.Title__c;
+                    break;
+                }
+            }
+        }
+
+    }
 
     public void getFirstWiKiPages()
     {
@@ -99,5 +132,14 @@ public with sharing class WiKiSearchController
         public String Id { get; set; }
         public String Title { get; set; }
         public String Body { get; set; }
+    }
+
+    private class PopularPage
+    {
+        public String Id { get; set; }
+        public String Title { get; set; }
+        public Integer FeedItems { get; set; }
+        public Integer Comments { get; set; }
+        public Integer Likes { get; set; }
     }
 }
