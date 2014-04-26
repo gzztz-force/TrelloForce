@@ -194,4 +194,29 @@ private class TriggerTests
 
         update u;
     }
+
+    // Test method for UserTrigger.trigger
+    @isTest
+    public static void testUpdateWeChatIsVerified()
+    {
+        User thisUser = [select Id from User where Id = :UserInfo.getUserId()];
+        System.runAs(thisUser)
+        {
+            Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
+            UserRole r = [select Id from UserRole where Name = 'Developer'];
+            User user = new User(LastName = 'acme1', isActive = true, Alias = 'acme1', Email = 'acme1@acme1.com', UserName = 'acme1@acmemeginfo.com',
+                                CommunityNickname = 'acme1@meginfo', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8',
+                             LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
+            insert user;  
+            insert new WeChat__c(Name = '123423acmeopenid', UserId__c = user.Id, IsVerified__c = true, UserEmail__c = 'acme1@acme1.com', UserName__c = 'acme1');
+           
+            Test.startTest();            
+            user.isActive = false;          
+            update user;
+            Test.stopTest();
+            
+            WeChat__c newWeChat = WeChat__c.getValues('123423acmeopenid');
+            System.assertEquals(newWeChat.IsVerified__c, false);          
+        } 
+    } 
 }
