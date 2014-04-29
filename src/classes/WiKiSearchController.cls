@@ -1,5 +1,7 @@
-public with sharing class WiKiSearchController 
+public class WiKiSearchController 
 {
+
+    private List<WiKiPageVersion__c> wikiPages;
 
     public WiKiSearchController() 
     {
@@ -10,14 +12,13 @@ public with sharing class WiKiSearchController
         }
         else
         {
-            WikiPages = new List<WiKiPageVersion__c>();
+            wikiPages = new List<WiKiPageVersion__c>();
             MyWiKiPages = new List<MyWiKiPage>();
         }
         initPopularPage();
     } 
 
     public String Key { get; set; }
-    public List<WiKiPageVersion__c> WikiPages { get; set; }
     public List<MyWiKiPage> MyWiKiPages { get; set; }
     public List<PopularPage> PopularPages { get; set; }
     public Datetime FirstCursor { get; set; }
@@ -57,34 +58,76 @@ public with sharing class WiKiSearchController
 
     public void getFirstWiKiPages()
     {
-        WikiPages = [Find :Key+'*' In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true order by CreatedDate desc) limit 11].get(0);
+        Key = Key.trim();
+        String keyword  = getQueryKeyword();
+        wikiPages = [Find :keyword In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true order by CreatedDate desc) limit 11].get(0);
         PreviousCursor = null;
-        if(WiKiPages.size() == 11)
+        if(wikiPages.size() == 11)
         {
-            FirstCursor = WikiPages[0].CreatedDate;
-            NextCursor = WiKiPages[10].CreatedDate;
-            WiKiPages.remove(10);
+            FirstCursor = wikiPages[0].CreatedDate;
+            NextCursor = wikiPages[10].CreatedDate;
+            wikiPages.remove(10);
         }
         else
         {
             NextCursor = null;
         }
-        createMyWiKiPage(WikiPages);
+        createMyWiKiPage();
     }
 
-    public void createMyWiKiPage(List<WiKiPageVersion__c> wikiPages)
+    public String getQueryKeyword()
+    {
+        String queryKey = Key;
+        if(queryKey.contains('*'))
+        {
+            queryKey = queryKey.replaceAll('[*]', '\\\\*');
+        }
+        if(queryKey.contains('?'))
+        {
+            queryKey = queryKey.replaceAll('[?]', '\\\\?');
+        }
+        if(queryKey.containsWhitespace())
+        {
+            String[] keys = queryKey.split(' ');
+            String keyword = '\'' + keys[0] + '*';
+            for(Integer i = 1; i < keys.size(); i++)
+            {
+                keyword += ' and ' + keys[i] + '*';
+            }
+            keyword += '\'';
+            return keyword;
+        }
+        else
+        {
+            return queryKey + '*';
+        }
+    }
+
+    public void createMyWiKiPage()
     {
         MyWiKiPages = new List<MyWiKiPage>();
+        String word = Key;
+        if(Key.containsWhitespace())
+        {
+            word = Key.split(' ').get(0);
+        }
         for(WiKiPageVersion__c page : wikiPages)
         {
             MyWiKiPage mypage = new MyWiKiPage();
             mypage.Id = page.WikiPage__c;
             mypage.Title = page.Title__c;
             String content = page.Body__c;
-            Integer index = content.indexOf(Key);
-            String before = content.substringBefore(Key);
-            Integer offset = before.length() > 100 ? before.length() - 100 : 0;
-            mypage.Body = content.abbreviate(200, offset);
+            if(content.contains(word))
+            {
+                Integer index = content.indexOf(word);
+                String before = content.substringBefore(word);
+                Integer offset = before.length() > 100 ? before.length() - 100 : 0;
+                mypage.Body = content.abbreviate(200, offset);    
+            }
+            else
+            {
+                mypage.Body = content.abbreviate(200);
+            }
             MyWiKiPages.add(mypage);
         }
     }
@@ -99,32 +142,34 @@ public with sharing class WiKiSearchController
 
     public void previous()
     {
-        WikiPages = [Find :Key+'*' In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true and CreatedDate > :PreviousCursor order by CreatedDate asc) limit 10].get(0);
+        String keyword = getQueryKeyword();
+        wikiPages = [Find :keyword In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true and CreatedDate > :PreviousCursor order by CreatedDate asc) limit 10].get(0);
         NextCursor = PreviousCursor;
-        PreviousCursor = (FirstCursor == WikiPages[9].CreatedDate) ? null : WiKiPages[9].CreatedDate;
+        PreviousCursor = (FirstCursor == wikiPages[9].CreatedDate) ? null : WiKiPages[9].CreatedDate;
         for(Integer i = 0; i < 5; i++)
         {
-            WiKiPageVersion__c tempWiki = WikiPages[i];
-            WikiPages[i] =  WikiPages[9 - i];
-            WikiPages[9 - i] = tempWiki;
+            WiKiPageVersion__c tempWiki = wikiPages[i];
+            wikiPages[i] =  wikiPages[9 - i];
+            wikiPages[9 - i] = tempWiki;
         }
-        createMyWiKiPage(WikiPages);
+        createMyWiKiPage();
     }
 
     public void next()
     {
-        WikiPages = [Find :Key+'*' In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true and CreatedDate <= :NextCursor order by CreatedDate desc) limit 11].get(0);
+        String keyword = getQueryKeyword();
+        wikiPages = [Find :keyword In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true and CreatedDate <= :NextCursor order by CreatedDate desc) limit 11].get(0);
         PreviousCursor = NextCursor;
-        if(WikiPages.size() == 11)
+        if(wikiPages.size() == 11)
         {
-            NextCursor = WikiPages[10].CreatedDate;
-            WikiPages.remove(10);
+            NextCursor = wikiPages[10].CreatedDate;
+            wikiPages.remove(10);
         }
         else
         {
             NextCursor = null;
         }
-        createMyWiKiPage(WikiPages);
+        createMyWiKiPage();
     }
 
     private class MyWiKiPage

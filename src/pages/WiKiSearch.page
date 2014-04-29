@@ -26,7 +26,7 @@
                             <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank">
                                 <h3>{!page.Title}</h3>
                             </apex:outputLink>
-                            {!page.Body}                                
+                            <p>{!page.Body}</p>
                         </div>
                     </apex:repeat>
                     <apex:form rendered="{!OR(PreviousCursor != null, NextCursor != null)}">
