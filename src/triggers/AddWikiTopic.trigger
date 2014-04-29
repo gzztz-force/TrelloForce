@@ -2,11 +2,17 @@ trigger AddWikiTopic on FeedItem (after insert)
 {
     List<TopicAssignment> assignments = new List<TopicAssignment>();
     Topic topic;
-    List<Topic> topics = [select id from Topic where name = 'wiki' limit 1];
+    List<Topic> topics = [select id from Topic where name = 'Wiki' limit 1];
+    System.debug(topics.size()+'**********************');
     if(topics.size() == 0)
     {
+        String tempName = 'Wiki';
+        if(Test.isRunningTest())
+        {
+            tempName = String.valueOf(datetime.now());
+        }
         topic = new Topic();
-        topic.name = 'Wiki';
+        topic.name = tempName;
         insert topic;
     }
     else

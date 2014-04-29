@@ -1,124 +1,178 @@
 <apex:page controller="WikiSpaceController" doctype="html-5.0" sidebar="false" showheader="false" >
- 	<apex:stylesheet value="{!URLFOR($Resource.bootstrap3, 'bootstrap/css/bootstrap.css')}" />
-    <apex:includeScript value="{!URLFOR($Resource.jQueryLatest, 'jquery.min.js')}"/>
-    <script src="{!URLFOR($Resource.bootstrap3, 'bootstrap/js/bootstrap.min.js')}"></script>
-    <script src="{!URLFOR($Resource.jQueryValidation, 'jquery.validate.min.js')}"></script>
-
-    <style type="text/css">
-    	#tab1 > tbody#tbody1 > tr:nth-child(3n+1){
-			background-color: #999999;
-		}
+   <style>
+        .col-md-2
+        {
+            margin-top:20px;
+            margin-left:-30px;
+        }
+        .col-md-10
+        {
+            margin-top:30px;
+            padding-left:10px;
+        }
+        .col-md-2 ul
+        {
+            margin-top:18px;
+            padding-left:15px;
+            padding-bottom:10px;
+            border-radius:25px;
+            border:1px solid #A9A9A9;
+        }
+        .col-md-2 li
+        {
+            font-size: 20px;
+            margin-top:15px;
+            margin-left:0px;
+            list-style-type:none;
+        }
+        .col-md-2 a
+        {
+            color: #757171;
+        }
+        .col-md-2 a:hover
+        {
+            text-decoration:none;
+            color:black;
+        }
+        .col-md-10 li
+        {
+            margin-top:20px;
+            margin-right:20px;
+            padding:5px;
+            margin-left:0px;
+            position:relative;
+            list-style-type:none;
+            border-top:1px solid #E6E6E6;
+        }
     </style>
-    <div id="force">
-    <div class="container">
-	    <apex:outputPanel rendered="{!WikiPages.size > 0}">	
-			<apex:form >
-				<!--<div class="container-fluid">
-					<div class="row-fluid">
-						<div class="span2"> -->
-							<table id="tab1" class="table table-bordered">
-								<tbody id="tbody1">
-								<apex:repeat value="{!WikiPages}" var="page">
-								
-								    <tr>
-								    	<th>Page Name</th>
-								    	<th>TotalPageVersion</th>
-								    	<th>FirstPublishedDate</th>
-								    	<th>LastPublishedDate</th>
-								    </tr>
-									<tr>	
-										<td><a href="/apex/WikiViewPage?id={!page.Id}"><apex:outputfield value="{!page.Name}"/></a></td>		
-										<td><apex:outputfield value="{!page.TotalPageVersion__c}"/></td>
-										<td><apex:outputfield value="{!page.FirstPublishedDate__c}"/></td>
-										<td><apex:outputfield value="{!page.LastPublishedDate__c}"/></td>
-									</tr>
-									<tr>
-									<td colspan="4" style="vertical-align:bottom;">
 
-										<table class="table table-bordered">
-											<tr>
-										    	<th>PageVersion Name</th>
-										    	<th>Title</th>
-										    	<th>VersionNumber</th>
-										    	<th>PublishStatus</th>
-											 </tr>
-											<apex:repeat value="{!page.WikiPageVersions__r}" var="version">
-												<tr>
-													<td><apex:outputfield value="{!version.Name}"/></td>
-													<td><apex:outputfield value="{!version.Title__c}"/></td>
-													<td><apex:outputfield value="{!version.VersionNumber__c}"/></td>
-													<td><apex:outputfield value="{!version.PublishStatus__c}"/></td>
-												</tr>
-											</apex:repeat>
-										</table>
-									</td>
-								</tr>
-								
-								</apex:repeat>
-								</tbody>
-								
-								
-								<tbody>
-								<tr >
-									<td style="width:30%;border:0px;"> 
-										<a href="/apex/WikiNewPage?spaceid={!spaceID}" class="btn btn-default">Add A Page</a>			    
-									</td>
-									<td  colspan="3" style="vertical-align:bottom;border:0px;">
-											<apex:outputPanel>
-												<apex:commandLink action="{!priviousWikiPages}" value="<<<" rendered="{!HasPrevious}"/>
-												<apex:outputText value="<<<" rendered="{!not(HasPrevious)}"/>
-												&nbsp;&nbsp;&nbsp;&nbsp;
-												<apex:outputText value="{!CurrentPage}/{!PageNum}"/>
-												&nbsp;&nbsp;&nbsp;&nbsp;
+    <script>
+        var isLoading = false; // true means that it is loading
+        $(document).ready(function()
+        {
+            convertContent();
+        });
 
-												<apex:commandLink action="{!nextWikiPages}" value=">>>" rendered="{!HasNext}"/>
-												<apex:outputText value=">>>" rendered="{!not(HasNext)}"/>
+        $(window).bind('scroll',function()
+        {
+            $("#spacesDiv").stop().animate({"marginTop": ($(window).scrollTop()) + 20 + "px",  "marginLeft": -30 + "px"}, "fast" );
 
-											</apex:outputPanel>
-									</td>
-								</tr>
-			   					</tbody>
-							</table>
-						<!--</div> -->
-						<!-- <div class="span10">
-							<table class="table table-bordered">
-								<tr>
-							    	<th>Name</th>
-							    	<th>Title</th>
-							    	<th>VersionNumber</th>
-							    	<th>PublishStatus</th>
-								 </tr>
-								<apex:repeat value="{!WikiPageVersions__r}" var="version">
-									<tr>
-										<td><apex:outputfield value="{!version.Name}"/></td>
-										<td><apex:outputfield value="{!version.Title__c}"/></td>
-										<td><apex:outputfield value="{!version.VersionNumber__c}"/></td>
-										<td><apex:outputfield value="{!version.PublishStatus__c}"/></td>
-									</tr>
-								</apex:repeat>
-							</table>
-						</div> --> 
-				<!--	</div>
-				</div> -->
-			</apex:form>		
-		</apex:outputPanel>
-	    <apex:outputPanel rendered="{!WikiPages.size == 0}">
-	    	<table id="tab2" class="table table-bordered">
-	    		<tr>
-			    	<th>Name</th>
-			    	<th>TotalPageVersion</th>
-			    	<th>FirstPublishedDate</th>
-			    	<th>LastPublishedDate</th>
-			    </tr>
-			    <tr><td colspan="4" style="vertical-align:bottom;"> 
-			    <p>
-			    Opps. There is no Pages related to the space!</p>
-			    
-			    	<a href="/apex/WikiNewPage?spaceId={!spaceID}" class="btn btn-default">Add A Page</a>
-			    
-			    </td></tr>
-	    	</table>
-	    </apex:outputPanel>
-	</div>
-	</div>
+            showMore();
+        });
+
+        function showMore()
+        {
+            if(!isLoading)
+            {
+                if (($(window).height() + $(window).scrollTop()) >= $('body').height())
+                {
+                    if($('#hasMorePages').val()=='true')
+                    {
+                        setTimeout(loadMorePagesFunction,1000);
+                        isLoading = true;
+                    }
+                }
+            }
+
+        }
+
+        function loadMorePagesFunction()
+        {
+            loadMorePages();
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+        }
+
+        function doneLoad()
+        {
+            isLoading = false;
+            convertContent();
+        }
+
+        function convertContent()
+        {
+            $("[id$='showBody']").each(function()
+            {
+
+                var maxLength = 225;
+                var text = $(this).text();
+                var numWords = text.length;
+                if(numWords > maxLength)
+                {
+                    $(this).text(text.substring(0, maxLength) + '......');
+                }
+               // $(this).html(markdown.toHTML($(this).text()));
+                alert($(this).html());
+            });
+        }
+
+    </script>
+    <apex:form >
+        <apex:actionFunction name="loadMorePages" status="loadPage" action="{!loadMorePages}" reRender="pagePanel1" oncomplete="doneLoad()"/>
+    </apex:form>
+
+    <apex:composition template="WikiTemplateTest">
+        <apex:define name="body">
+        <apex:form >
+            <div class="container">
+                <div class="col-md-2" id = "spacesDiv">
+                    <h3>Wiki Spaces</h3>
+                    <ul>
+                        <apex:repeat value="{!Spaces}" var="space">
+                            <li>
+                                <a href="/apex/WikiSpace?id={!space.Id}">{!space.Name}</a>
+                            </li>
+                        </apex:repeat>
+                    </ul>
+                </div>
+                <div class="col-md-10">
+                	<apex:outputPanel id="pagePanel1">
+                    <apex:outputPanel rendered="{!WikiPages.size == 0}" style="padding-left:50px;">
+                        <h4>Sorry,there is nothing about {!SpaceName}</h4>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="pagePanel" rendered="{!WikiPages.size > 0}">
+                        <ul>
+                            <h4> Something about {!SpaceName}</h4><br/>
+                            <apex:repeat value="{!WikiPages}" var="page">
+                                <li>
+                                    <a href="/{!Page.WikiPageVersion.CreatedById}">
+                                        <span title="{!page.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto">
+                                            <img width="45" height="45" title="{!page.WikiPageVersion.CreatedBy.Name}" alt="{!page.WikiPageVersion.CreatedBy.Name}" src="{!page.WikiPageVersion.CreatedBy.FullPhotoUrl}"/>
+                                        </span>
+                                    </a>&nbsp;&nbsp;
+                                    <a href="#" onclick="window.open('/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}')">
+                                        <h4>{!page.WikiPageVersion.Title__c}</h4>
+                                    </a><br/><br/>
+                                    <span id= "showBody">
+                                        <apex:outputText value="{!page.WikiPageVersion.Body__c}" escape="true"/>
+                                    </span><br/>
+                                    <a href="/{!page.WikiPageVersion.CreatedById}">{!page.WikiPageVersion.CreatedBy.Name}</a>&nbsp;&nbsp;
+                                    <apex:outputText value="{0, date, MM-dd-yyyy}">
+                                    <apex:param value="{!page.WikiPageVersion.LastPublishedDate__c}"/>
+                                    </apex:outputText>
+                                </li>
+                            </apex:repeat>
+                        </ul>
+                        <apex:actionStatus id="loadPage" >
+                            <apex:facet name="start">
+                                <div>
+                                    <img src="{!$Resource.loadPic}" />
+                                    Loading more pages ...
+                                </div>
+                            </apex:facet>
+                            <apex:facet name="stop">
+                                <apex:outputPanel rendered="{!Not(hasMorePages)}">
+                                    <div class="well">
+                                        There is no more pages
+                                    </div>
+                                </apex:outputPanel>
+                            </apex:facet>
+                        </apex:actionStatus>
+                        <input type="hidden" value="{!hasMorePages}" id="hasMorePages"/>
+                    </apex:outputPanel>
+                    </apex:outputPanel>
+                </div>
+            </div>
+        </apex:form>
+        </apex:define>
+    </apex:composition>
 </apex:page>
