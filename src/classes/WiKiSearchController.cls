@@ -10,6 +10,6 @@ public with sharing class WiKiSearchController
 
 	public void search()
 	{
-		Versions = [Find :Key+'*' In All Fields Returning WiKiPageVersion__c(Title__c, Body__c Where IsLatestVersion__c = true)].get(0);
+		Versions = [Find :Key+'*' In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c Where IsLatestVersion__c = true)].get(0);
 	}
 }

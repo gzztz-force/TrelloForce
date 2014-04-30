@@ -1,14 +1,11 @@
-<apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false" controller="WikiViewPageController">
+<apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false" controller="WikiViewPageController" title="Wiki View Page">
 <link rel="stylesheet" type="text/css" href="{!UrlFor($resource.HighLight,'HighLight/styles/default.css')}"/>
+<title>Wiki View Page</title>
     <style>
-        alldiv
-        {
-           
-        }
         .content {
             padding: 0 25px;
             margin: 0 auto;
-            width: 940px;
+            width: 960px;
             border: 0;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 14px;
@@ -31,9 +28,49 @@
             padding-left: 10px;
             padding-top: 12px;
         }
-        #force pre,#force code
+        .feedpage .feedrightbar{margin-right: 0px;}
+        .btn-default1{
+            color: #333333;
+            background-color: #fdfdfd;
+            border-color: #cccccc;
+            display: inline-block;
+            padding: 6px 12px;
+            margin-bottom: 0;
+             font-size: 14px;
+            font-weight: normal;
+            line-height: 1.428571429;
+            text-align: center;
+             white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid #cbcbcb;
+            border-radius: 4px;
+            -webkit-user-select: none;
+        }
+        .btn-primary1{
+            color: #ffffff;
+            background-color: #4eaddf;
+            border-color: #357ebd;
+            
+            display: inline-block;
+            padding: 6px 12px;
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.428571429;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid #cbcbcb;
+            border-radius: 4px;            
+        }
+        .publishercontainer .bottomBar
         {
-            font-family: "Menlo";
+            padding: 5px;
+            height: 40px;
         }
 
     </style>
@@ -42,6 +79,14 @@
         $(document).ready(function($) {
             new Editor($("#text-input"), $("#page-body"));
             $("pre,code").css("font-family","Menlo");
+            $("#editid").bind('mouseenter', function(event) {
+                $(this).removeClass().addClass("btn-primary1 pull-right").css("background-color","#428bca").css("text-decoration","none");
+            });
+            $("#editid").bind('mouseout', function(event) {        
+                $(this).removeClass().addClass("btn-default1 pull-right").css("background-color","#fdfdfd");
+            });
+            $(".glyphicon-pencil").bind('mouseenter', function() {$("#editid").mouseenter();});
+            $(".glyphicon-pencil").bind('mouseout', function() {});
         });
 
 
@@ -53,27 +98,14 @@
             input.editor = this;
             this.update();
         }
-        /*
-        function DrawMainChart()
-            {
-                var ca = document.getElementById("cvs");
-                var data = [likeVar,unlikeVar];
-                var labels = ['like','unlike'];
-                RGraph.Reset(ca);
-                var bar = new RGraph.Bar('cvs', data)
-                    .Set('labels', labels)
-                    .Set('bevel', true)
-                    .Set('title', 'Vote Result')
-                    .Set('background.grid.autofit.numvlines', data.length)
-                    .Draw();
-            }*/
+       
     </script>
     <apex:form>
         <apex:actionFunction name="vote" action="{!vote}" reRender="voteArea">
             <apex:param assignTo="{!VoteParam}" name="vote1" value=""/>
         </apex:actionFunction>
     </apex:form>
-    <apex:composition template="WikiTemplate"><!--WikiTemplateWithBootstrap3-->
+    <apex:composition template="WikiTemplateWithBootstrap3"><!--WikiTemplateWithBootstrap3-->
         <apex:define name="body" >
             <div class="content" style=" background-color: f9f9f9;">
                 <div id="force" >
@@ -89,10 +121,10 @@
                         </ul>
                     </div>
                     <div class="page-header">
-                        <h1>{!PubPage.WikiPageVersion.Title__c}</h1>
+                        <h1>{!PubPage.WikiPageVersion.Title__c}</h1><a id="editid" href='/apex/WikiNewPage?id={!PubPage.WikiPage.Id}' type="button" class="btn-default1 pull-right"><span class="glyphicon glyphicon-pencil"></span> &nbsp;&nbsp;Edit</a>
                         <div class="page-metadata muted">
                             Added by
-                            <a href="    /display/~vidya
+                            <a href="/display/~vidya
                             " class="url fn confluence-userlink userlink-0" data-username="vidya" title="" data-user-hover-bound="true">
                                 <apex:outputField value="{!PubPage.WikiPage.CreatedById}"/>
                             </a>,
@@ -108,8 +140,7 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='/apex/WikiNewPage?id={!PubPage.WikiPage.Id}'">Edit Page</button><br/><br/>  
-                    <hr/>                  
+                                     <hr/>                  
                     <div id="page-body" class="page-body"></div>                
                     <hr/>
                 </div>            
@@ -123,25 +154,9 @@
     <textarea id="text-input" rows="6" cols="60" style="display:none">
         <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false"/>
     </textarea>
-    <div style="display:none;" id="voteDataDiv">
-        <apex:repeat value="{!VoteData}" var="item">
-            <div class="voteItem">
-                <span class="span1">{!item.VersionNumber__c}</span><span class="span2"> {!item.LikeVotes__c}</span><span class="span3">{!item.UnlikeVotes__c}</span>
-            </div>
-        </apex:repeat>
-    </div>
-    <pre> 
-    <code> 
-        public class a 
-        {
-            String a = 'chenyuncai';
-        }
-    </code>
-    </pre>
     <script type="text/javascript" src="{!UrlFor($resource.HighLight,'HighLight/highlight.pack.js')}"></script>
     <script >
        // $("pre code *").removeClass();
         hljs.initHighlightingOnLoad();
-        $("code .hljs-keyword").css("font-family","Menlo");
     </script> 
 </apex:page>

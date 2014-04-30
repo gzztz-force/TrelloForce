@@ -49,17 +49,32 @@ public class WikiNewPageController
     }    
 
     public List<SelectOption> SpaceOptions
-    {
-        get
+    {        
+       get
         {
             List<SelectOption> options = new List<SelectOption>();
             options.add(new SelectOption('', '--None--'));
-            for(WikiSpace__c s : [select Id, Name from WikiSpace__c])
+
+            List<WikiSpace__c> spaces = [select Id, Name from WikiSpace__c];
+            if(spaces.size() <= 0)
             {
-                options.add(new SelectOption(s.Id, s.Name));
+                WikiSpace__c space =  new WikiSpace__c(Name = 'Other');
+                insert space;
+                options.add(new SelectOption(space.Id, space.Name));
             }
-            return options;
-        }
+            else
+            {
+                for(WikiSpace__c s : spaces)
+                {
+                    options.add(new SelectOption(s.Id, s.Name));
+                }
+                if(String.isBlank(WikiSpaceId))
+                {
+                    WikiSpaceId = options[1].getValue();
+                }
+            }
+            return options; 
+        }       
     }
 
     public PageReference save()
@@ -95,38 +110,10 @@ public class WikiNewPageController
 
     public PageReference cancel()
     {
-        return new PageReference('/apex/WikiHome');
-    }
-
-    @isTest
-    static void testNewPage()
-    {
-        ApexPages.currentPage().getParameters().put('type', 'new');
-        WikiNewPageController controller = new WikiNewPageController();
-        controller.LatestPage.Title__c = 'test';
-        controller.LatestPage.Body__c = 'test';
-        controller.save();
-
-        WikiPage__c newPage = new WikiPage__c();
-        insert newPage;
-        WikiPageVersion__c newPageVersion = new WikiPageVersion__c(WikiPage__c=newPage.Id, Title__c='title', Body__c='body');
-        insert newPageVersion;
-        ApexPages.currentPage().getParameters().put('id', newPage.Id);
-        ApexPages.currentPage().getParameters().put('type', 'edit');
-        WikiNewPageController controller2 = new WikiNewPageController();
-        controller2.LatestPage.Title__c = 'title1';
-        controller2.LatestPage.Body__c = 'body1';
-        controller2.save();
-        for (WikiPageVersion__c version : [select Title__c, WikiPage__c from WikiPageVersion__c where WikiPage__c= :newPage.Id] )
+        if(!isNew)
         {
-            if (version.IsLatestVersion__c)
-            {
-                system.assertEquals('title1', version.Title__c);
-            }
-            else
-            {
-                system.assertEquals('title', version.Title__c);
-            }
+            return new PageReference('/apex/WikiViewPage?id='+parentPage.Id);
         }
+        return new PageReference('/apex/WikiHome');        
     }
 }

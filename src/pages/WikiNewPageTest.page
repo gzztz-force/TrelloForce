@@ -1,4 +1,4 @@
-<apex:page controller="WikiNewPageController" docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false">
+<apex:page controller="WikiNewPageController" docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" title="Wiki New Page">
 <apex:includeScript value="{!$Resource.JQuery161}"/>
 <!--<apex:includeScript value="{!$Resource.Markdown}"/>-->
 <apex:includeScript value="{!$Resource.JQueryAutoSize}"/>
@@ -34,7 +34,7 @@ textarea {
 
 .select-style {
     height: 30px;
-    max-width: 80px;
+    width: 220px;
 }
 
 .nav-header {
@@ -43,11 +43,11 @@ textarea {
 
 #force {
     height:500px;
-    width:95%;
+    width:97%;
     margin-left:auto;
     margin-right:auto;
 }
-#mainContainer #leftMainContainer input[id$="titleInput"] {
+#leftMainContainer input[id$="titleInput"] {
     width: 100%;
     height: 40px;
     margin: 0px;
@@ -82,9 +82,9 @@ textarea {
 
 #previewDiv {
     width: 100%;
-    padding: 0px 0px 0px 5px;
+    padding: 5px 0px 0px 0px;
     overflow: auto;
-    margin: 10px 0px;
+    margin: 0px 0px;
     float: left;
 }
 
@@ -96,35 +96,16 @@ textarea {
     font-weight:bold;
     color:rgba(149,149,149,0.5);
 }
-#mainContainer #leftMainContainer #extensionBar
-{
-	margin: 10px 0px;
-}
+
 #mainContainer #leftMainContainer #extensionBar #spaceDiv {
     display: inline-block;
     clear: both;
 }
 
-#mainContainer #leftMainContainer #extensionBar #tagDiv {
-    display: inline-block;
-    width: 80%;
+#contentSection .nav li a {
+    padding: 5px 35px;
 }
-
-#mainContainer #leftMainContainer #extensionBar input[id$="tagInput"] {
-    height: 25px;
-    width: 90%;
-    margin-left: 10px;
-    border-color: rgb(199, 198, 198);
-}
-
-#mainContainer #leftMainContainer #submitSection {
-    text-align: center;
-}
-
-#mainContainer #leftMainContainer #submitSection .btn {
-    margin: 0px 20px 0px;
-}
-
+#leftMainContainer{padding-right: 35px;}
 #force #errorTip ul{
 	display: inline-block;
     margin: 0px 0px 9px;
@@ -132,18 +113,27 @@ textarea {
 
 #rightMainContainer {
     background-color: #f5f5f5;
-    height: 440px;
+    font-size: 12px;
 }
-#rightMainContainer p
+#rightMainContainer table
 {
 	position: relative;
-	left: -5px;
+	left: 5px;
+    top: 5px;
 }
+#rightMainContainer table code
+{
+    color: rgb(107,103,109);
+}
+
 .tips-title {
+    display: block;
+    width:100%;
     font-size: 20px;
     padding: 10px 0px 10px 10px;
     color: rgb(0,0,0);
     font-weight: bold;
+    border-bottom: 1px solid rgb(203,203,203);
 }
 </style>
 
@@ -162,51 +152,114 @@ textarea {
                 <section id="mainContainer" class="row">
 
                     <div id="leftMainContainer" class="col-md-9">
-                        <div id="titleSection" >
+                        <div id="titleSection" class="row">
                             <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" onblur="checkValueOnblur(this)" onclick="checkValueOnclick(this)"/>
                         </div>
-                        <div id="contentSection">
-                            <div id="toolBar" class="div-border">
-                                <i class="glyphicon glyphicon-bold"></i>
-                                <i class="glyphicon glyphicon-globe"></i>
-                                <i class="glyphicon glyphicon-list"></i>
+                        <div class="row">
+                            <div id="spaceDiv" class="col-md-8" >
+                                    <span style="width:60px;float:left;">Space :</span>
+                                    <apex:selectList id="selectList1" styleclass="select-style" value="{!WikiSpaceId}" size="1">
+                                        <apex:selectOptions value="{!SpaceOptions}"/>
+                                    </apex:selectList>
                             </div>
-                            <div>
-                                <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" onkeyup="changeContents(this)" rows="15" />
-                                <div id="previewDiv" class="div-border">
-                                    <textarea class="preview-tips">Preview</textarea>
+                        </div>
+                        <div id="contentSection" class="row">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#editDiv" data-toggle="tab"> Edit </a></li>
+                                <li><a href="#previewDiv" data-toggle="tab">Preview</a></li>                                
+                            </ul>
+                            <div class="tab-content">
+                                <div id="editDiv" class="tab-pane fade active in"> 
+                                    <div id="toolBar">
+                                        <i class="glyphicon glyphicon-bold" rel=" **** " ></i>                        
+                                        <i class="glyphicon glyphicon-italic" rel=" __ "></i>
+                                        <div class="btn-group">
+                                            <i class="dropdown-toggle glyphicon glyphicon-header" data-toggle="dropdown">
+                                                <span class="caret" style="position:relative;left:-5px;"></span>
+                                            </i>
+                                            <ul class="dropdown-menu" style="width:40px;min-width:40px;top:92%;border-top:0px;background-color: #f5f5f5;border-radius:0px;">
+                                                <i class="glyphicon glyphicon-header" rel="#">1</i>
+                                                <i class="glyphicon glyphicon-header" rel="##">2</i>
+                                                <i class="glyphicon glyphicon-header" rel="###">3</i><br/>
+                                                <i class="glyphicon glyphicon-header" rel="####">4</i><br/>
+                                                <i class="glyphicon glyphicon-header" rel="#####">5</i><br/>
+                                                <i class="glyphicon glyphicon-header" rel="######">6</i>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" onkeyup="changeContents(this)" rows="30"/>
+                                    </div>
+                                </div>                                
+                                <div id="previewDiv" class="div-border tab-pane fade" style="border-top:0px;">
+                                    <span class="preview-tips">Preview</span>                                    
                                 </div>
                             </div>
-                            <div id="extensionBar" class="row">
-                                <div id="spaceDiv" class="col-md-2">
-                                    <span>Space</span>
-                                    <!--<apex:selectList id="selectList" styleclass="select-style" value="{!LatestPage.WikiPage__r.WikiSpace__r.Name}" size="0">-->
-                                    <apex:selectList id="selectList" styleclass="select-style" value="{!WikiSpaceId}" size="1">
+                        </div>
+                        <div id="extensionBar" class="row">
+                            <div style="padding-top:20px;">
+                                <div id="spaceDiv" class="col-md-8" >
+                                    <span style="width:60px;float:left;">Space :</span>
+                                    <apex:selectList id="selectList" styleclass="select-style form-control" value="{!WikiSpaceId}" size="1">
                                         <apex:selectOptions value="{!SpaceOptions}"/>
                                     </apex:selectList>
                                 </div>
-                                <div id="tagDiv" class="col-md-9">
-                                    <i><strong>Tags</strong></i>
-                                    <apex:inputText id="tagInput" value="{!LatestPage.Label__c}"/>
+                                <div id="buttonDiv" class="col-md-3">
+                                    <apex:commandButton action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary" style="margin-right:40px;"/>
+                                    <apex:commandButton action="{!cancel}" value="Cancel" styleclass="btn btn-default"/>                            
                                 </div>
                             </div>
-                        </div>
-                        <div id="submitSection">
-                            <apex:commandButton action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary"/>
-                            <apex:commandButton action="{!cancel}" value="Cancel" styleclass="btn"/>
-                        </div>
+                        </div>                            
                     </div>
                     <div id="rightMainContainer" class="col-md-3 div-border">
-                        <p><span class="tips-title">How to Format</span></p>
-                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;put returns between paragraphs</p>
-                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;for linebreak add 2 spaces at end</p>
-                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;_italic_ or **bold**</p>
-                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;indent code by 4 spaces</p>
-                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;backtick escapes `like _so_`</p>
-                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;quote by placing > at start of line</p>
-                        <p><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;to make links:[foo](http://foo.com)</p>
-                        
-                        <p><i class="icon-chevron-right"></i>formatting help <a href="http://wowubuntu.com/markdown/" target="blank">»》》</a></p>
+                        <p><span class="tips-title">Help Tips</span></p>
+                        <dl>
+                            <dt> Text Formatting </dt>
+                            <table width="100%" >
+                                <tr><td width="30%"> <code>*italic* or _italic_</code></td> <td><em>italic</em></td> </tr>                                
+                                <tr><td> <code>**bold** or __bold__</code></td> <td><strong>bold</strong></td> </tr>
+                                <tr><td> <code>`code`</code></td> <td><code>code</code></td> </tr>    
+                                <tr><td> <code>\* \\</code></td> <td>* \</td> </tr>
+                            </table>
+                            <br/>
+                            <dt>Lists</dt>
+                            <table>
+                                <tr><td>Start with a '*','+',or '-' </td><td>Unorder list</td></tr>
+                                <tr><td>Start with a number dot </td><td>Order list</td></tr>
+                            </table>
+                            <br/>
+                            <dt>Headings</dt>
+                            <table> 
+                                <tr><td>#text</td><td>H1 heading</td></tr>
+                                <tr><td>##text</td><td>H2 heading</td></tr>
+                                <tr><td>###text</td><td>H3 heading</td></tr>
+                                <tr><td>####text</td><td>H4 heading</td></tr>
+                                <tr><td>#####text</td><td>H5 heading</td></tr>
+                                <tr><td>######text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>H6 heading</td></tr>
+                            </table>
+                            <br/>
+                            <dt>Links</dt>
+                            <table>
+                                <tr><td><code>[linkText](linkUrl “title”)</code>inline link</td></tr>
+                                <tr><td><code>[linkId]: linkUrl “title”</code>define a linkId</td></tr>
+                                <tr><td><code>[linkText][linkId]</code>reference link</td></tr>
+                                <tr><td><code>[linkId][]</code>reference link</td></tr>
+                                <tr><td><code>![altText](ImgUrl "Title")</code>image link</td></tr>
+                            </table>
+                            <br/>
+                            <dt>Others</dt>
+                            <table> 
+                            <tr><td>Put return with two blanks to go to next row.</td></tr>
+                            <tr><td>Put ‘>’ to get a BlockQuotes.</td></tr>
+                            <tr><td>Put more ‘>’ to get a nest BlockQuotes.</td></tr>
+                            <tr><td>Start with four blanks to get a code block.</td></tr>
+                            <tr><td>Put three more '*','-' or '_' in a blank to get a horizontal line</td></tr>
+                            </table>
+                            <table> 
+                                <tr><td></td><td></td></tr>
+                            </table>
+                        </dl>                        
+                        <p><i class="icon-chevron-right"></i>Formatting help <a href="http://wowubuntu.com/markdown/" target="blank">»»»</a></p>
                     </div>
                 </section>
             </div>
@@ -214,21 +267,26 @@ textarea {
             <script>
                 $(function(){
                     changeContents();
-                    $('[id$=contentInput]').autosize();
+                    $("#toolBar i").bind('click',function(event) {
+                       var value =  $(this).attr('rel');
+                       setValue(value);
+                    });
                 });
 
                 function changeContents()
                 {
-                    document.getElementById("recv").scrollTop = document.getElementById("recv").scrollHeight
-                    var value = $("[id$=contentInput]").val();
+                    var ds = document.getElementsByTagName("textarea");
+                    ds[0].style.height=ds[0].scrollHeight;
+
+                    var value = $("[id$='contentInput']").val();
                     if (value == '' || value == null)
                     {
                         $("#previewDiv").empty();
-                        $("<textarea class='preview-tips'>Preview</textarea>").appendTo($("#previewDiv"));
+                        $("<span class='preview-tips'>Preview</span>").appendTo($("#previewDiv"));
                     }
                     else
                     {
-                        $("#previewDiv").html(markdown.toHTML(value)).scrollTop($(this).scrollHeight);
+                        $("#previewDiv").html(markdown.toHTML(value));
                     }
                 }
 
@@ -248,8 +306,59 @@ textarea {
                         obj.style.color = 'rgb(163, 163, 163)';
                     }
                 }
+                function setValue(str)
+                {
+                    if(str == '' || str == null || str == 'undefine')
+                    {
+                        return;
+                    }
+                    var focusOff = str.length/2;
+                    if(str.indexOf('#') == 0)
+                    {
+                        focusOff = str.length+1;
+                        str = '\r\n'+str+'\r\n';
+                    }
+                    
+                    var myField = document.getElementsByTagName("textarea")[0];
+                    //IE浏览器
+                    if (document.selection) 
+                    {
+                        myField.focus();
+                        sel = document.selection.createRange();
+                        sel.text = str;
+                        sel.select();
+                    }
+
+                    //火狐/网景 浏览器
+                    else if (myField.selectionStart || myField.selectionStart == 0)
+                    {
+                        //得到光标前的位置
+                        var startPos = myField.selectionStart;
+                        //得到光标后的位置
+                        var endPos = myField.selectionEnd;
+                        // 在加入数据之前获得滚动条的高度
+                        var restoreTop = myField.scrollTop;
+                        myField.value = myField.value.substring(0, startPos) + str + myField.value.substring(endPos, myField.value.length);
+                        //如果滚动条高度大于0
+                        if (restoreTop > 0) 
+                        {
+                            // 返回
+                            myField.scrollTop = restoreTop;
+                        }
+                        myField.focus();
+                        myField.selectionStart = startPos + focusOff;
+                        myField.selectionEnd = startPos + focusOff;
+                    }
+                    else
+                    {
+                        myField.value += str;
+                        myField.focus();
+                    }
+                    changeContents();
+                }
             </script>
         </apex:form>
+        <topics:widget entity="{!LatestPage.Id}"/>
     </apex:define>
 </apex:composition>
 </apex:page>

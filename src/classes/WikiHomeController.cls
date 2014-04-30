@@ -12,7 +12,7 @@ public with sharing class WikiHomeController
     public WikiSpace__c NewSpace { get; set; }
     public Boolean HasError { get; set; }
     public Id FavorSpaceId { get; set; }
-    public List<PopularWikiPage> MyPopularPages { get; set; }    
+    private List<PopularWikiPage> MyPopularPages; 
     public Boolean HasMorePageMark { get; set; }
     public List<WikiPageVersion__c> PagesForSearch { get; set;}
     public String SearchKey { get; set; }
@@ -33,7 +33,7 @@ public with sharing class WikiHomeController
 
     public List<WikiSpace__c> getMySpaces()
     {
-        return [select Name, Summary__c, (select Id from WikiPages__r), (select id from BookMarks__r where CreatedById = :UserInfo.getUserId()) from WikiSpace__c order by CreatedDate desc];
+        return [select Name, Summary__c, (select Id from WikiPages__r) from WikiSpace__c order by CreatedDate desc];
     }
 
     public List<WikiPageVersion__c> getMyPages()
@@ -44,7 +44,7 @@ public with sharing class WikiHomeController
     private void initPopularPages()
     {           
         popularPagesSet = new ApexPages.StandardSetController([select id ,(SELECT Id, Title__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, wikipage__r.LastPublishedDate__c FROM WikiPageVersions__r WHERE IsLatestVersion__c = true),
-                                    (select Id,CommentCount from feeds) from WikiPage__c order by LastPublishedDate__c desc]);
+                                    (select Id,CommentCount, LikeCount from feeds) from WikiPage__c order by LastPublishedDate__c desc]);
         popularPagesSet.setPageSize(10);
         List<WikiPage__c> pages = (List<WikiPage__c>)popularPagesSet.getRecords();
         MyPopularPages = new List<PopularWikiPage>();
@@ -53,7 +53,7 @@ public with sharing class WikiHomeController
             Integer i = 0;
             for(WikiPage__Feed wikiPageFeed : page.feeds)
             {
-                i += wikiPageFeed.CommentCount + 1;
+                i += wikiPageFeed.CommentCount + wikiPageFeed.LikeCount + 1;
             }
             MyPopularPages.add(new PopularWikiPage(page.WikiPageVersions__r[0],i));
         }
@@ -62,46 +62,30 @@ public with sharing class WikiHomeController
 
     public void getUpdateInfo()
     {        
-        feedPageSize = 8;
+        feedPageSize = 10;
         feedPageNum = 1;
         FeedItems = new List<WikiPage__Feed>();
         IdUserMap = new Map<Id,User>();
         loadMoreFeedItemsAction();
-        /*
-        
-        List<Topic> topics = [select Id from Topic where name = 'Wiki' limit 1];
-        if(topics.size() > 0)
-        {
-           Set<Id> feedItemIds = new Set<Id>();
-           List<TopicAssignment> topicAssignments = [select EntityId from TopicAssignment where TopicId =:topics[0].Id Limit 100];
-           for(TopicAssignment topicAssignment : topicAssignments)
-           {
-               feedItemIds.add(topicAssignment.EntityId);
-           }
-           feedItemSet = new ApexPages.StandardSetController([select Id, Body, Type, CreatedDate, CreatedByid, CreatedBy.Name, Parent.Name, ParentId, Parent.Title__c, 
-                     (select FieldName, Oldvalue, Newvalue from FeedTrackedChanges) from WikiPage__Feed where Id in :feedItemIds order by CreatedDate desc]);
-           feedItemSet.setPageSize(5);
-
-           FeedItems = (List<WikiPage__Feed>)feedItemSet.getRecords();
-           HasMoreFeedMark = feedItemSet.getHasNext();
-
-           Set<Id> userIds = new Set<Id>();
-           
-           for(WikiPage__Feed feedItem : FeedItems)
-           {
-               userIds.add(feedItem.CreatedByid);
-           }
-           
-           IdUserMap = new Map<Id,User>([select Id,FullPhotoUrl from User where Id in :userIds]);
-        }
-       else
-       {
-           Topic topic = new Topic();
-           topic.Name = 'wiki';
-           insert topic;
-       }*/       
     } 
 
+    public List<PopularWikiPage> getMyPopularPages()
+    {
+        Integer count = MyPopularPages.size();
+        for(Integer i = 0; i < count - 1; i++)
+        {
+            for(Integer j = 0; j < count-i-1; j++)
+            {
+                if(MyPopularPages[j].FeedComment < MyPopularPages[j+1].FeedComment)
+                {
+                    PopularWikiPage temp = MyPopularPages[j];
+                    MyPopularPages[j] = MyPopularPages[j+1];
+                    MyPopularPages[j+1] = temp;
+                }
+            }
+        }
+        return MyPopularPages;
+    }
     
     public void loadMorePopularPagesAction()
     {        
@@ -115,7 +99,7 @@ public with sharing class WikiHomeController
                 Integer i = 0;
                 for(WikiPage__Feed wikiPageFeed : page.feeds)
                 {
-                    i += wikiPageFeed.CommentCount + 1;
+                    i += wikiPageFeed.CommentCount + wikiPageFeed.LikeCount + 1;
                 }
                 MyPopularPages.add(new PopularWikiPage(page.WikiPageVersions__r[0],i));
             }
@@ -125,9 +109,8 @@ public with sharing class WikiHomeController
     public void loadMoreFeedItemsAction()
     {
         Integer offset = feedPageSize * (feedPageNum -1); 
-        HasMoreFeedMark = feedPageNum < ((feedItemCount-1)/feedPageSize + 1);
-        if(HasMoreFeedMark)
-        {
+        if(FeedItems.size() < feedItemCount)
+        {        
             List<WikiPage__Feed> feeds = [select Id, Body, Type, CreatedDate, CreatedByid, CreatedBy.Name, Parent.Name, ParentId, Parent.Title__c, 
                      (select FieldName, Oldvalue, Newvalue from FeedTrackedChanges) from WikiPage__Feed where Type in ('TrackedChange','TextPost') order by CreatedDate desc  limit :feedPageSize offset :offset];
             FeedItems.addAll(feeds);
@@ -138,37 +121,8 @@ public with sharing class WikiHomeController
                 userIds.add(feed.CreatedByid);
             }           
             IdUserMap.putAll(new Map<Id,User>([select Id,FullPhotoUrl from User where Id in :userIds])); 
+            HasMoreFeedMark = FeedItems.size() < feedItemCount;
             feedPageNum += 1; 
-        }
-    }
-
-    public void favorSpace()
-    {
-        for(WikiSpace__c space : getMySpaces())
-        {
-            if(FavorSpaceId == space.Id)
-            {
-                if(space.BookMarks__r.size() == 0)
-                {
-                    insert new BookMark__c(Space__c = space.Id,WhatId__c = 'whatid',ParentSobjectType__c='ParentSobjectType_');
-                }
-                break;
-            }
-        }
-    }
-
-    public void unFavorSpace()
-    {
-        for(WikiSpace__c space : getMySpaces())
-        {
-            if(FavorSpaceId == space.Id)
-            {
-                if(space.BookMarks__r.size() > 0)
-                {
-                    delete space.BookMarks__r[0];
-                }
-                break;
-            }
         }
     }
 
@@ -185,31 +139,6 @@ public with sharing class WikiHomeController
             HasError = true;
             ApexPages.addMessages(ex);
         }
-    }
-    public List<BookMark__c> getFavoriteSpaces()
-    {
-        return [select id,Space__c, space__r.Name,space__r.Summary__c from BookMark__c where CreatedBy.Id = :UserInfo.getUserId() order by CreatedDate desc];
-    }
-
-    //added by ray: search wikipage
-    public void searchWikiPageAction()
-    {
-        if(String.isNotBlank(SearchKey))
-        {
-            String searchKeyTemp = '%' + SearchKey + '%';
-
-            PagesForSearch = [select Id, Title__c, WikiPage__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, WikiPage__r.LastPublishedDate__c   
-                                                               from WikiPageVersion__c where IsLatestVersion__c = true and (Title__c like :searchKeyTemp or Tag__c like :searchKeyTemp) order by WikiPage__r.LastPublishedDate__c desc limit 100];
-        }
-        else
-        {
-            PagesForSearch = new List<WikiPageVersion__c>();
-        }
-    }
-
-    public void testStrMethod()
-    {
-        testStr = 'testStr init';
     }
 
     public class PopularWikiPage
