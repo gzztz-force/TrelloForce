@@ -31,19 +31,20 @@
             list-style-type:none;
         }
 
-        .col-md-2 a
-        {
-            color: #999999;
-        }
-
         .col-md-2 a:hover
         {
-            text-decoration:underline;
+            color:black;
+            text-decoration: none;
         }
 
-        .col-md-2 a:visited
+        .color1
         {
             color:black;
+        }
+
+        .color2
+        {
+            color:#999999;
         }
 
         .col-md-10 li
@@ -103,11 +104,11 @@
         <apex:form >
             <div class="container">
                 <div class="col-md-2" data-spy="affix">
-                    <h5>Wiki Spaces</h5>
+                    <span style="font-size:16px;">Wiki Spaces</span>
                     <ul>
                         <apex:repeat value="{!Spaces}" var="space">
-                            <li >
-                                <a href="/apex/WikiSpace?id={!space.Id}">{!space.Name}</a>
+                            <li>
+                                <a href="/apex/WikiSpace?id={!space.Id}" class="{!IF(space.Name == SpaceName, 'color1', 'color2')}">{!space.Name}</a>
                             </li>
                         </apex:repeat>
                     </ul>
