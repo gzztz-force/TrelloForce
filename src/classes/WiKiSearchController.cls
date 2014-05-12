@@ -1,7 +1,7 @@
 public class WiKiSearchController 
 {
-
     private List<WiKiPageVersion__c> wikiPages;
+    private ApexPages.StandardSetController standardSetController;
 
     public WiKiSearchController() 
     {
@@ -12,22 +12,25 @@ public class WiKiSearchController
         }
         else
         {
+            PageNumber = 0;
+            Results = 0;
             wikiPages = new List<WiKiPageVersion__c>();
             MyWiKiPages = new List<MyWiKiPage>();
         }
-        initPopularPage();
+        initPopularPage();       
     } 
 
     public String Key { get; set; }
     public List<MyWiKiPage> MyWiKiPages { get; set; }
     public List<PopularPage> PopularPages { get; set; }
-    public Datetime FirstCursor { get; set; }
-    public Datetime PreviousCursor { get; set; }
-    public Datetime NextCursor { get; set; }
+    public List<Integer> Links { get; set; }
+    public Integer PageNumber { get; set; }
+    public Integer Results { get; set; }
 
     public void initPopularPage()
     {
-        List<AggregateResult> results = [select ParentId, count(Id) FeedItems, sum(commentcount) Comments, sum(likecount) Likes from WiKiPage__Feed group by ParentId order by count(Id) desc, sum(commentcount) desc, sum(likecount) desc limit 10];
+        List<AggregateResult> results = [select ParentId, count(Id) FeedItems, sum(commentcount) Comments, sum(likecount) Likes 
+            from WiKiPage__Feed group by ParentId order by count(Id) desc, sum(commentcount) desc, sum(likecount) desc limit 10];
         Set<Id> pageIds = new Set<Id>();
         PopularPages = new List<PopularPage>();
         for(AggregateResult result : results)
@@ -60,19 +63,73 @@ public class WiKiSearchController
     {
         Key = Key.trim();
         String keyword  = getQueryKeyword();
-        wikiPages = [Find :keyword In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true order by CreatedDate desc) limit 11].get(0);
-        PreviousCursor = null;
-        if(wikiPages.size() == 11)
-        {
-            FirstCursor = wikiPages[0].CreatedDate;
-            NextCursor = wikiPages[10].CreatedDate;
-            wikiPages.remove(10);
-        }
-        else
-        {
-            NextCursor = null;
-        }
+        standardSetController = new ApexPages.StandardSetController(
+                [Find :keyword In All Fields Returning WiKiPageVersion__c
+                    (WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true order by CreatedDate desc)].get(0));
+        PageNumber = 1;
+        Results = standardSetController.getResultSize();
+        standardSetController.setPageSize(10);
+        standardSetController.first();
+        wikiPages = standardSetController.getRecords();
         createMyWiKiPage();
+        setLinks();
+    }
+
+    public void setLinks()
+    {
+        Links = new List<Integer>();
+        for(Integer i = 1; i <= Math.ceil((Decimal)Results / 10); i++)
+        {
+            Links.add(i);
+            if(i == 10)
+            {
+                break;
+            }
+        }    
+    }
+
+    public void resetLinks()
+    {
+        if(Results > 100)
+        {
+            Links = new List<Integer>();
+            if(PageNumber <= 5)
+            {
+                setLinks();
+            }
+            else if((PageNumber * 10 + 30) >= Results)
+            {
+                Integer diffValue = Results - PageNumber * 10;
+                if(diffValue > 0 && diffValue <= 10)
+                {
+                    for(Integer i = PageNumber - 9; i < PageNumber + 1; i++)
+                    {
+                        Links.add(i);
+                    }
+                }
+                else if(diffValue > 10 && diffValue <= 20)
+                {
+                    for(Integer i = PageNumber - 8; i < PageNumber + 2; i++)
+                    {
+                        Links.add(i);
+                    }
+                }
+                else
+                {
+                    for(Integer i = PageNumber - 7; i < PageNumber + 3; i++)
+                    {
+                        Links.add(i);
+                    }
+                }
+            }
+            else
+            {
+                for(Integer i = PageNumber - 5; i < PageNumber + 4; i++)
+                {
+                    Links.add(i);
+                }
+            }
+        }
     }
 
     public String getQueryKeyword()
@@ -117,16 +174,19 @@ public class WiKiSearchController
             mypage.Id = page.WikiPage__c;
             mypage.Title = page.Title__c;
             String content = page.Body__c;
-            if(content.contains(word))
+            if(content != null)
             {
-                Integer index = content.indexOf(word);
-                String before = content.substringBefore(word);
-                Integer offset = before.length() > 100 ? before.length() - 100 : 0;
-                mypage.Body = content.abbreviate(200, offset);    
-            }
-            else
-            {
-                mypage.Body = content.abbreviate(200);
+                if(content.contains(word))
+                {
+                    Integer index = content.indexOf(word);
+                    String before = content.substringBefore(word);
+                    Integer offset = before.length() > 100 ? before.length() - 100 : 0;
+                    mypage.Body = content.abbreviate(200, offset);    
+                }
+                else
+                {
+                    mypage.Body = content.abbreviate(200);
+                }
             }
             MyWiKiPages.add(mypage);
         }
@@ -140,36 +200,36 @@ public class WiKiSearchController
         }
     }
 
+    public void paging()
+    {
+        standardSetController.setPageNumber(PageNumber);
+        wikiPages = standardSetController.getRecords();
+        createMyWiKiPage();
+        resetLinks();
+    }
+
     public void previous()
     {
-        String keyword = getQueryKeyword();
-        wikiPages = [Find :keyword In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true and CreatedDate > :PreviousCursor order by CreatedDate asc) limit 10].get(0);
-        NextCursor = PreviousCursor;
-        PreviousCursor = (FirstCursor == wikiPages[9].CreatedDate) ? null : WiKiPages[9].CreatedDate;
-        for(Integer i = 0; i < 5; i++)
+        if(standardSetController.getHasPrevious())
         {
-            WiKiPageVersion__c tempWiki = wikiPages[i];
-            wikiPages[i] =  wikiPages[9 - i];
-            wikiPages[9 - i] = tempWiki;
+            PageNumber--;
+            standardSetController.previous();
+            wikiPages = standardSetController.getRecords();
+            createMyWiKiPage();
+            resetLinks();
         }
-        createMyWiKiPage();
     }
 
     public void next()
     {
-        String keyword = getQueryKeyword();
-        wikiPages = [Find :keyword In All Fields Returning WiKiPageVersion__c(WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true and CreatedDate <= :NextCursor order by CreatedDate desc) limit 11].get(0);
-        PreviousCursor = NextCursor;
-        if(wikiPages.size() == 11)
+        if(standardSetController.getHasNext())
         {
-            NextCursor = wikiPages[10].CreatedDate;
-            wikiPages.remove(10);
+            PageNumber++;
+            standardSetController.next();
+            wikiPages = standardSetController.getRecords();
+            createMyWiKiPage();
+            resetLinks();
         }
-        else
-        {
-            NextCursor = null;
-        }
-        createMyWiKiPage();
     }
 
     private class MyWiKiPage

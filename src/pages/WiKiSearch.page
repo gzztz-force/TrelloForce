@@ -1,79 +1,97 @@
- <apex:page controller="WiKiSearchController" doctype="html-5.0" sidebar="false" showheader="false" standardStylesheets="false">
-    <apex:composition template="WikiTemplateWithBootstrap3">
-        <apex:define name="body">
-            <div class="container">
-                <div class="col-md-8">
-                    <div class="page-header">
-                      <h2>WiKi Search <small>please input search key</small></h2>
-                    </div>
-                    <div class="row">
-                        <apex:form >
-                            <div class="col-sm-10">
-                                <apex:inputText value="{!Key}" styleClass="form-control" html-placeholder="Search"/>
-                            </div>
-                            <div class="col-sm-2">
-                                <apex:commandButton action="{!search}" value="Search" styleClass="btn btn-default"/>
-                            </div>
-                        </apex:form>
-                    </div>
-                    <apex:outputPanel id="warning"  rendered="{!AND(Key != null, LEN(Key) < 2)}">
-                        <div class="alert alert-warning">
-                            <p>The key must be more than two characters.</p>
+ <apex:page controller="WiKiSearchController" doctype="html-5.0" sidebar="false" showheader="true" standardStylesheets="false">
+    <style type="text/css">
+        body{
+            background: #F9F9F9;
+            font-size: 12px;
+        }
+        #force .list-group-item{
+            margin-left: 0px;
+        }
+        #force .alert{
+            font-size: 14px;
+        }
+    </style>
+    <apex:stylesheet value="{!URLFOR($Resource.BootStrap3_1_1, 'bootstrap3.1.1/css/bootstrap.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQueryLatest, 'jquery.min.js')}"/>
+    <script src="{!URLFOR($Resource.bootstrap3, 'bootstrap/js/bootstrap.min.js')}"></script>
+    <div id="force">
+        <div class="container">
+            <div class="col-md-8">
+                <div class="page-header">
+                  <h2>WiKi Search <small>please input search key</small></h2>
+                </div>
+                <div class="row">
+                    <apex:form >
+                        <div class="col-sm-10">
+                            <apex:inputText value="{!Key}" styleClass="form-control" html-placeholder="Search"/>
                         </div>
-                    </apex:outputPanel>
-                    <apex:repeat value="{!MyWiKiPages}" var="page" rendered="{!MyWiKiPages.size > 0}">
-                        <div class=".navbar-left">
-                            <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank">
-                                <h3>{!page.Title}</h3>
-                            </apex:outputLink>
-                            <p>{!page.Body}</p>
-                        </div>
-                    </apex:repeat>
-                    <apex:form rendered="{!OR(PreviousCursor != null, NextCursor != null)}">
-                        <div class="row">
-                            <ul class="pager">
-                              <li>
-                                  <apex:commandButton value="Previous" action="{!previous}" disabled="{!PreviousCursor == null}" styleClass="btn btn-default" style="color: #538BCA">
-                                  </apex:commandButton>
-                              </li>
-                              <li>
-                                  <apex:commandButton value="Next" action="{!next}" disabled="{!NextCursor == null}" styleClass="btn btn-default" style="color: #538BCA">
-                                  </apex:commandButton>
-                              </li>
-                            </ul>
+                        <div class="col-sm-2">
+                            <apex:commandButton action="{!search}" value="Search" styleClass="btn btn-default"/>
                         </div>
                     </apex:form>
-                    <apex:outputPanel rendered="{!AND(MyWiKiPages.size == 0, LEN(Key) > 1)}">
-                        <div class="alert alert-info">
-                            <p>There are no result of searching..., try to input another key</p>
-                        </div>
-                    </apex:outputPanel>
                 </div>
-                <div class="col-md-4">
-                    <div class="page-header">
-                        <h3>Top Popular Page <span class="label label-info">{!PopularPages.size}</span></h3>
+                <apex:outputPanel id="warning"  rendered="{!AND(Key != null, LEN(Key) < 2)}">
+                    <div class="alert alert-warning">
+                        <p>The key must be more than two characters.</p>
                     </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">Mostly popular</h4>
-                        </div>
-                        <div class="panel-body">
-                            <apex:variable value="1" var="top"/>
-                            <ul class="list-group">
-                                <apex:repeat value="{!PopularPages}" var="page">
-                                    <li class="list-group-item">
-                                        <span class="badge" style="background:{!CASE(top, TEXT(1), 'red', TEXT(2), 'green', TEXT(3), 'blue', 'grey')}">{!page.FeedItems}</span>
-                                        <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank">
-                                            {!page.Title}
-                                        </apex:outputLink>
-                                    </li>
-                                    <apex:variable value="{!TEXT(VALUE(top) + 1)}" var="top"/>
-                                </apex:repeat>
-                            </ul>
-                        </div>
+                </apex:outputPanel>
+                <apex:repeat value="{!MyWiKiPages}" var="page" rendered="{!MyWiKiPages.size > 0}">
+                    <div class=".navbar-left" style="padding:5px 0px;">
+                        <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank">
+                            <h3>{!page.Title}</h3>
+                        </apex:outputLink>
+                        <p>{!page.Body}</p>
+                    </div>
+                </apex:repeat>
+                <apex:form rendered="{!Results > 10}">
+                    <ul class="pagination">
+                        <li class="{!IF(PageNumber == 1, 'disabled', '')}">
+                            <apex:commandLink value="<<" action="{!previous}" rendered="{!PageNumber != 1}" />
+                            <a href="javascript:void(0)" style="display:{!IF(PageNumber == 1, 'block', 'none')}">&lt;&lt;</a>
+                        </li>
+                        <apex:repeat value="{!Links}" var="link">
+                            <li class="{!IF(link == PageNumber, 'active', '')}">
+                                <apex:commandLink value="{!link}" action="{!paging}">
+                                    <apex:param value="{!link}" name="PageNumber" assignTo="{!PageNumber}" />
+                                </apex:commandLink>
+                            </li>
+                        </apex:repeat>
+                        <li class="{!IF(PageNumber * 10 >= Results, 'disabled', '')}">
+                            <apex:commandLink value=">>" action="{!next}" rendered="{!PageNumber * 10 < Results}" />
+                            <a href="javascript:void(0)" style="display:{!IF(PageNumber * 10 >= Results, 'block', 'none')}">&gt;&gt;</a>
+                        </li>
+                    </ul>
+                </apex:form>
+                <apex:outputPanel rendered="{!AND(MyWiKiPages.size == 0, LEN(Key) > 1)}">
+                    <div class="alert alert-info">
+                        <p>There are no result of searching..., try to input another key</p>
+                    </div>
+                </apex:outputPanel>
+            </div>
+            <div class="col-md-4">
+                <div class="page-header">
+                    <h3>Top Popular Page <span class="label label-info">{!PopularPages.size}</span></h3>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Mostly popular</h4>
+                    </div>
+                    <div class="panel-body">
+                        <apex:variable value="1" var="top"/>
+                        <ul class="list-group">
+                            <apex:repeat value="{!PopularPages}" var="page">
+                                <li class="list-group-item">
+                                    <span class="badge" style="background:{!CASE(top, TEXT(1), 'red', TEXT(2), 'green', TEXT(3), 'blue', 'grey')}">{!page.FeedItems}</span>
+                                    <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank" style="font-size:14px;">
+                                        {!page.Title}
+                                    </apex:outputLink>
+                                </li>
+                                <apex:variable value="{!TEXT(VALUE(top) + 1)}" var="top"/>
+                            </apex:repeat>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </apex:define>
-    </apex:composition>
+        </div>
+    </div>
 </apex:page>
