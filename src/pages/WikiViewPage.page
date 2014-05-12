@@ -1,7 +1,9 @@
 <apex:page docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false" controller="WikiViewPageController" title="Wiki View Page">
 <link rel="stylesheet" type="text/css" href="{!UrlFor($resource.HighLight,'HighLight/styles/default.css')}"/>
-<title>Wiki View Page</title>
     <style>
+        body{
+            font-size: 12px;
+        }
         .content {
             padding: 0 25px;
             margin: 0 auto;
@@ -51,8 +53,7 @@
         .btn-primary1{
             color: #ffffff;
             background-color: #4eaddf;
-            border-color: #357ebd;
-            
+            border-color: #357ebd;            
             display: inline-block;
             padding: 6px 12px;
             margin-bottom: 0;
@@ -100,15 +101,10 @@
         }
        
     </script>
-    <apex:form>
-        <apex:actionFunction name="vote" action="{!vote}" reRender="voteArea">
-            <apex:param assignTo="{!VoteParam}" name="vote1" value=""/>
-        </apex:actionFunction>
-    </apex:form>
-    <apex:composition template="WikiTemplateWithBootstrap3"><!--WikiTemplateWithBootstrap3-->
+    <apex:composition template="WikiTemplate"><!--WikiTemplateWithBootstrap3-->
         <apex:define name="body" >
             <div class="content" style=" background-color: f9f9f9;">
-                <div id="force" >
+                <div id="force">                
                     <div class="navbar ">
                         <ul class="breadcrumb">
                             <li>
@@ -124,13 +120,11 @@
                         <h1>{!PubPage.WikiPageVersion.Title__c}</h1><a id="editid" href='/apex/WikiNewPage?id={!PubPage.WikiPage.Id}' type="button" class="btn-default1 pull-right"><span class="glyphicon glyphicon-pencil"></span> &nbsp;&nbsp;Edit</a>
                         <div class="page-metadata muted">
                             Added by
-                            <a href="/display/~vidya
-                            " class="url fn confluence-userlink userlink-0" data-username="vidya" title="" data-user-hover-bound="true">
+                            <a href="/display/~vidya" class="url fn confluence-userlink userlink-0" data-username="vidya" title="" data-user-hover-bound="true"  style="color:#428bca">
                                 <apex:outputField value="{!PubPage.WikiPage.CreatedById}"/>
                             </a>,
                             last edited by
-                            <a href="    /display/~rrobins
-                            " class="url fn confluence-userlink userlink-1" data-username="rrobins" title="" data-user-hover-bound="true">
+                            <a href="/display/~rrobins" class="url fn confluence-userlink userlink-1" data-username="rrobins" title="" data-user-hover-bound="true"  style="color:#428bca">
                                 <apex:outputField value="{!PubPage.WikiPage.LastModifiedById}"/>
                             </a>
                             on
@@ -138,12 +132,11 @@
                                <apex:param value="{!PubPage.WikiPage.LastPublishedDate__c}" />
                            </apex:outputText>
                         </div>
-                    </div>
-
-                                     <hr/>                  
+                    </div><hr/>                  
                     <div id="page-body" class="page-body"></div>                
                     <hr/>
-                </div>            
+                </div>          
+                <topics:widget entity="{!PubPage.WikiPage.Id}" />  
                 <!-- Chatter -->
                 <chatter:feedWithFollowers entityId="{!PubPage.WikiPage.Id}"/>
             </div>            

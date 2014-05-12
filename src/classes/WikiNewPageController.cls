@@ -12,7 +12,6 @@ public class WikiNewPageController
     public Boolean IsValid { get; set; }
     public WikiPageVersion__c LatestPage { get; set; }
 
-    public String Test { get; set; }
 
     public WikiNewPageController()
     {
@@ -27,7 +26,6 @@ public class WikiNewPageController
         {
             parentPage = new WikiPage__c();
             LatestPage = new WikiPageVersion__c();
-            LatestPage.Title__c = 'Type your title';
             LatestPage.VersionNumber__c = 0;
         }
         else
@@ -48,6 +46,10 @@ public class WikiNewPageController
         }
     }    
 
+    public User getUserInfo()
+    {
+        return [select Id, Name, SmallPhotoUrl from User where Id = :UserInfo.getUserId()];
+    }
     public List<SelectOption> SpaceOptions
     {        
        get

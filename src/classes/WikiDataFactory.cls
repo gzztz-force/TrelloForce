@@ -1,5 +1,5 @@
 /*
- * To create data for WikiNewPageControllerTest and WikiHomeControllerTest class
+ * To create data for WikiNewPageControllerTest, WikiHomeControllerTest and WikiViewPageControllerTest class
  */
 @isTest
 public class WikiDataFactory

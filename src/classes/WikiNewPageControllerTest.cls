@@ -12,7 +12,6 @@ public class WikiNewPageControllerTest
 		System.assertEquals([select id from WikiPage__c].size(),1);
 		controller.LatestPage = null;
 		controller.save();
-
 	}
 
 	@isTest
