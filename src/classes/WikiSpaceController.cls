@@ -1,12 +1,20 @@
+/*
+ * Controller for WikiSpace page to get spaces and related pages.
+ */
 public class WikiSpaceController
 {
-	private String spaceId;
-    private ApexPages.StandardSetController wikiPagesSet;
+	private @TestVisible String spaceId;
 
     public WikiSpaceController()
     {
-        spaceId = ApexPages.CurrentPage().getParameters().get('Id');
         initSpaces();
+
+        spaceId = ApexPages.CurrentPage().getParameters().get('Id');
+        if(String.isBlank(spaceId) && Spaces.size() > 0)
+        {
+            spaceId = Spaces[0].Id;
+        }
+
         initWikiPages();
     }
 
@@ -20,7 +28,6 @@ public class WikiSpaceController
 
     public List<WikiSpace__c> Spaces { get; set ; }
     public List<WikiPage> WikiPages { get; set; }
-    public Boolean HasMorePages { get; set; }
 
     private void initSpaces()
     {
@@ -29,31 +36,13 @@ public class WikiSpaceController
 
     private void initWikiPages()
     {
-        wikiPagesSet = new ApexPages.StandardSetController(
-                                [select Id, Name, WikiSpace__c, TotalPageVersion__c, LastPublishedDate__c,
-                                    (select Id, Name, Body__c, Title__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, LastPublishedDate__c, VersionNumber__c, WikiPage__c
-                                        from WikiPageVersions__r where IsLatestVersion__c = true) from WikiPage__c where WikiSpace__c = :spaceId]);
-        wikiPagesSet.setPageSize(2);
-        List<WikiPage__c> pages = (List<WikiPage__c>)wikiPagesSet.getRecords();
+        List<WikiPage__c> pages = [select Id, Name, (select Id, Name, Body__c, Title__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl,
+                LastPublishedDate__c, WikiPage__c from WikiPageVersions__r where IsLatestVersion__c = true) from WikiPage__c where WikiSpace__c = :spaceId];
+
         WikiPages = new List<WikiPage>();
         for(WikiPage__c page : pages)
         {
             WikiPages.add(new WikiPage(page.WikiPageVersions__r[0]));
-        }
-        HasMorePages = wikiPagesSet.getHasNext();
-    }
-
-    public void loadMorePages()
-    {
-        if(HasMorePages)
-        {
-            wikiPagesSet.next();
-            HasMorePages = wikiPagesSet.getHasNext();
-            List<WikiPage__c> pages = (List<WikiPage__c>)wikiPagesSet.getRecords();
-            for(WikiPage__c page : pages)
-            {
-               WikiPages.add(new WikiPage(page.WikiPageVersions__r[0]));
-            }
         }
     }
 

@@ -1,98 +1,91 @@
 <apex:page controller="WikiSpaceController" doctype="html-5.0" sidebar="false" showheader="false" >
    <style>
+        div, ul, li, a
+        {
+            margin:0px;
+            padding:0px;
+        }
         .col-md-2
         {
-            margin-top:20px;
-            margin-left:-30px;
+            margin-top:30px;
+            margin-bottom:10px;
         }
+
         .col-md-10
         {
-            margin-top:30px;
-            padding-left:10px;
+            margin-top:20px;
+            padding-right:20px;
+            margin-left:200px;
         }
+
         .col-md-2 ul
         {
-            margin-top:18px;
-            padding-left:15px;
+            margin-top:10px;
             padding-bottom:10px;
-            border-radius:25px;
-            border:1px solid #A9A9A9;
         }
+
         .col-md-2 li
         {
-            font-size: 20px;
-            margin-top:15px;
-            margin-left:0px;
+            font-size: 15px;
+            margin-top:10px;
             list-style-type:none;
         }
-        .col-md-2 a
-        {
-            color: #757171;
-        }
+
         .col-md-2 a:hover
         {
-            text-decoration:none;
+            color:black;
+            text-decoration: none;
+        }
+
+        .color1
+        {
             color:black;
         }
+
+        .color2
+        {
+            color:#999999;
+        }
+
         .col-md-10 li
         {
             margin-top:20px;
             margin-right:20px;
-            padding:5px;
             margin-left:0px;
-            position:relative;
             list-style-type:none;
             border-top:1px solid #E6E6E6;
+        }
+
+        .col-md-10 #div1
+        {
+            font-size:20px;
+            background-color:#F2DEDE;
+            height:50px;
+            padding-left:20px;
+            padding-top:10px;
+            border-radius:10px;
+        }
+
+        .col-md-10 #div2
+        {
+            font-size:20px;
+            background-color:#D9EDF7;
+            height:50px;
+            padding-left:20px;
+            padding-top:10px;
+            border-radius:10px;
         }
     </style>
 
     <script>
-        var isLoading = false; // true means that it is loading
-        $(document).ready(function()
-        {
+        $(document).ready(function(){
             convertContent();
         });
-
-        $(window).bind('scroll',function()
-        {
-            $("#spacesDiv").stop().animate({"marginTop": ($(window).scrollTop()) + 20 + "px",  "marginLeft": -30 + "px"}, "fast" );
-
-            showMore();
-        });
-
-        function showMore()
-        {
-            if(!isLoading)
-            {
-                if (($(window).height() + $(window).scrollTop()) >= $('body').height())
-                {
-                    if($('#hasMorePages').val()=='true')
-                    {
-                        setTimeout(loadMorePagesFunction,1000);
-                        isLoading = true;
-                    }
-                }
-            }
-
-        }
-
-        function loadMorePagesFunction()
-        {
-            loadMorePages();
-            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
-        }
-
-        function doneLoad()
-        {
-            isLoading = false;
-            convertContent();
-        }
 
         function convertContent()
         {
             $("[id$='showBody']").each(function()
             {
-
                 var maxLength = 225;
                 var text = $(this).text();
                 var numWords = text.length;
@@ -100,38 +93,37 @@
                 {
                     $(this).text(text.substring(0, maxLength) + '......');
                 }
-               // $(this).html(markdown.toHTML($(this).text()));
-                alert($(this).html());
+                $(this).html(markdown.toHTML($(this).text()));
             });
         }
 
     </script>
-    <apex:form >
-        <apex:actionFunction name="loadMorePages" status="loadPage" action="{!loadMorePages}" reRender="pagePanel1" oncomplete="doneLoad()"/>
-    </apex:form>
 
     <apex:composition template="WikiTemplateTest">
         <apex:define name="body">
         <apex:form >
             <div class="container">
-                <div class="col-md-2" id = "spacesDiv">
-                    <h3>Wiki Spaces</h3>
+                <div class="col-md-2" data-spy="affix">
+                    <span style="font-size:16px;">Wiki Spaces</span>
                     <ul>
                         <apex:repeat value="{!Spaces}" var="space">
                             <li>
-                                <a href="/apex/WikiSpace?id={!space.Id}">{!space.Name}</a>
+                                <a href="/apex/WikiSpace?id={!space.Id}" class="{!IF(space.Name == SpaceName, 'color1', 'color2')}">{!space.Name}</a>
                             </li>
                         </apex:repeat>
                     </ul>
                 </div>
                 <div class="col-md-10">
-                	<apex:outputPanel id="pagePanel1">
-                    <apex:outputPanel rendered="{!WikiPages.size == 0}" style="padding-left:50px;">
-                        <h4>Sorry,there is nothing about {!SpaceName}</h4>
+                    <apex:outputPanel rendered="{!WikiPages.size == 0}">
+                       <div id="div1">
+                            Sorry,there is no pages about {!SpaceName}
+                       </div>
                     </apex:outputPanel>
                     <apex:outputPanel id="pagePanel" rendered="{!WikiPages.size > 0}">
                         <ul>
-                            <h4> Something about {!SpaceName}</h4><br/>
+                            <div id="div2">
+                                Pages about {!SpaceName}
+                            </div>
                             <apex:repeat value="{!WikiPages}" var="page">
                                 <li>
                                     <a href="/{!Page.WikiPageVersion.CreatedById}">
@@ -142,8 +134,8 @@
                                     <a href="#" onclick="window.open('/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}')">
                                         <h4>{!page.WikiPageVersion.Title__c}</h4>
                                     </a><br/><br/>
-                                    <span id= "showBody">
-                                        <apex:outputText value="{!page.WikiPageVersion.Body__c}" escape="true"/>
+                                    <span id="showBody">
+                                        <apex:outputText value="{!page.WikiPageVersion.Body__c}" escape="false"/>
                                     </span><br/>
                                     <a href="/{!page.WikiPageVersion.CreatedById}">{!page.WikiPageVersion.CreatedBy.Name}</a>&nbsp;&nbsp;
                                     <apex:outputText value="{0, date, MM-dd-yyyy}">
@@ -152,23 +144,6 @@
                                 </li>
                             </apex:repeat>
                         </ul>
-                        <apex:actionStatus id="loadPage" >
-                            <apex:facet name="start">
-                                <div>
-                                    <img src="{!$Resource.loadPic}" />
-                                    Loading more pages ...
-                                </div>
-                            </apex:facet>
-                            <apex:facet name="stop">
-                                <apex:outputPanel rendered="{!Not(hasMorePages)}">
-                                    <div class="well">
-                                        There is no more pages
-                                    </div>
-                                </apex:outputPanel>
-                            </apex:facet>
-                        </apex:actionStatus>
-                        <input type="hidden" value="{!hasMorePages}" id="hasMorePages"/>
-                    </apex:outputPanel>
                     </apex:outputPanel>
                 </div>
             </div>
