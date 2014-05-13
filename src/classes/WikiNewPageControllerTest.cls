@@ -7,7 +7,6 @@ public class WikiNewPageControllerTest
 		WikiNewPageController controller = new WikiNewPageController();
 		controller.cancel();
 		controller.LatestPage.Body__c = 'test';
-		controller.LatestPage.Label__c = 'test';
 		controller.save();
 		System.assertEquals([select id from WikiPage__c].size(),1);
 		controller.LatestPage = null;
@@ -28,7 +27,6 @@ public class WikiNewPageControllerTest
 		WikiNewPageController controller = new WikiNewPageController();		
 		controller.WikiSpaceId = [select Id from Wikispace__c limit 1][0].Id;
 		controller.LatestPage.Body__c = 'test';
-		controller.LatestPage.Label__c = 'test';
 		controller.save();
 		System.assertEquals([select id from WikiPageVersion__c].size(),16);
 		controller.LatestPage = null;

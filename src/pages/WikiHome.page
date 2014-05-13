@@ -49,7 +49,7 @@
             background-position: 0 0;
             height: 16px;
             width: 16px;
-            margin: 2px 0 0 3px;
+            margin: 2px 15px 0 3px;
             float: left;
         }
 
@@ -308,7 +308,7 @@
                         </div>
                         <div class="add-btns col-md-3">
                             <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
-                            <a href="/apex/WikiNewPageTest" target="blank" class="btn btn-default">Add Page</a>
+                            <a href="/apex/WikiNewPage" target="blank" class="btn btn-default">Add Page</a>
                         </div>
                         <div class="col-md-3">
                             <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search in Wiki" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
@@ -354,7 +354,7 @@
                                         <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!MySpaces}" var="space">
                                                 <li>
-                                                    <!--i class="fav glyphicon glyphicon-star-empty"></i-->
+                                                    <span class="fav glyphicon glyphicon-globe"></span>
                                                     <div>
                                                         <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a> 
                                                         <span class="badge pull-right comment" title="{!space.WikiPages__r.size} page(s)">{!space.WikiPages__r.size}</span>
@@ -369,8 +369,9 @@
                                         <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!MyPages}" var="page">
                                                 <li>
+                                                    <span class="fav glyphicon glyphicon-globe"></span>
                                                     <div>
-                                                        <a href="/apex/WikiViewPage?id={!page.WikiPage__c}" >{!page.Title__c}</a>
+                                                        <a href="#" onclick="window.open('/apex/WikiViewPage?id={!page.WikiPage__c}')">{!page.Title__c}</a>
                                                     </div>
                                                 </li>  
                                                 <div class="divider"></div>

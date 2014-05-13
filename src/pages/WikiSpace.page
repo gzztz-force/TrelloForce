@@ -1,5 +1,6 @@
-<apex:page controller="WikiSpaceController" doctype="html-5.0" sidebar="false" showheader="false" >
+<apex:page controller="WikiSpaceController" doctype="html-5.0" sidebar="false" showheader="true" >
    <style>
+   body{font-size:12px;}
         div, ul, li, a
         {
             margin:0px;
@@ -11,11 +12,10 @@
             margin-bottom:10px;
         }
 
-        .col-md-10
+        .col-md-9
         {
             margin-top:20px;
-            padding-right:20px;
-            margin-left:200px;
+            padding-right:20px;            
         }
 
         .col-md-2 ul
@@ -47,7 +47,7 @@
             color:#999999;
         }
 
-        .col-md-10 li
+        .col-md-9 li
         {
             margin-top:20px;
             margin-right:20px;
@@ -56,7 +56,7 @@
             border-top:1px solid #E6E6E6;
         }
 
-        .col-md-10 #div1
+        #div1
         {
             font-size:20px;
             background-color:#F2DEDE;
@@ -66,7 +66,7 @@
             border-radius:10px;
         }
 
-        .col-md-10 #div2
+        #div2
         {
             font-size:20px;
             background-color:#D9EDF7;
@@ -99,11 +99,13 @@
 
     </script>
 
-    <apex:composition template="WikiTemplateTest">
+    <apex:composition template="WikiTemplate">
         <apex:define name="body">
         <apex:form >
+        <div id="force">
             <div class="container">
-                <div class="col-md-2" data-spy="affix">
+            <div class="row">
+                <div class="col-md-2">
                     <span style="font-size:16px;">Wiki Spaces</span>
                     <ul>
                         <apex:repeat value="{!Spaces}" var="space">
@@ -113,7 +115,7 @@
                         </apex:repeat>
                     </ul>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-9">
                     <apex:outputPanel rendered="{!WikiPages.size == 0}">
                        <div id="div1">
                             Sorry,there is no pages about {!SpaceName}
@@ -146,6 +148,8 @@
                         </ul>
                     </apex:outputPanel>
                 </div>
+                </div>
+            </div>
             </div>
         </apex:form>
         </apex:define>
