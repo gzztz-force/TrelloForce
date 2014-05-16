@@ -1,7 +1,8 @@
-<apex:page controller="WikiHomeController" docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki Home">
+<apex:page controller="WikiHomeController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki Home">
 <head>
+    <script type="text/javascript" src="{!URLFOR($Resource.WayPoint)}"></script>
     <style>
-        body{
+        body {
             background-color: f9f9f9;
             font-size: 12px;
         }
@@ -22,7 +23,6 @@
         }
 
         .new-page h2 {
-
             border-bottom: 1px solid #bbb;
             display: block;
         }
@@ -53,13 +53,6 @@
             float: left;
         }
 
-        .spaces-list .bookmark {
-            margin: 2px 10px 0 3px;
-            position: absolute;
-            right: 10px;
-            top: 2px;
-        }
-
         .divider {
             height: 1px;
             margin: 9px 0px;
@@ -69,10 +62,6 @@
             padding: 0px;
         }
 
-        .popular-list {
-
-        }
-
         .popular-list a {
             margin-right: 10px;
         }
@@ -80,10 +69,6 @@
         .popular-list .media {
             width: 75%;
             margin-top: 0px;
-        }
-
-        .popular-list .media-body {
-            /*width: 70%;*/
         }
 
         .popular-list .comment {
@@ -100,28 +85,7 @@
             margin-top: 0px;
         }
 
-    /* space pop-up style, created by allen */
-        .new-Space #force textarea {
-            width: 98%;
-            max-width: 98%;
-        }
-
-        .new-Space {
-            top: 0px;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.3);
-            display: none;
-            position: absolute;
-        }
-
-        #new-Space ul[id$=errorTip] {
-            white-space: normal;
-            margin: 0px;
-            width: 90%;
-        }
-
-        .myAutoComplete {
+        .search-result-dropdown {
             width:90%;
             float: left;
             position: absolute;
@@ -130,13 +94,13 @@
             z-index:20;
             border:1px solid gray;
             background-color:#EAEAEA;
-            display: none;            
+            display: none;
             filter:alpha(Opacity=80);
             -moz-opacity:0.5;
-            opacity: 0.9;            
+            opacity: 0.9;
         }
 
-        .myAutoComplete li{
+        .search-result-dropdown li{
             list-style: none;
             line-height:20px;
             position:relative;
@@ -152,20 +116,17 @@
 
         $(function () {
 
-            showToolTip();
-
             $('#addSpaceBtn').click(function () {
-                $('#addSpaceModal input').prop('required', true).prop('placeholder', 'Apex, html5, etc.');
                 $('#addSpaceAlert').hide();
             });
 
             $('.tabmark').click(function() {
                 if(this.rel != null && this.rel != '') {
-                    activePanel = this.rel    
+                    activePanel = this.rel
                 }
             });
 
-            $(window).bind('scroll',function(){show()});
+            $(window).bind('scroll',function(){$('#load-location').waypoint('enable');});
 
             $('#searchWikiId').bind('input propertychange', function() {
                     if(!isSearchWikiPage) {
@@ -188,52 +149,33 @@
                 pageArr.push(new pageClass($(this).find('a').attr('href'),$(this).find('a').text()));
                 $(this).remove();
              });
+
+            $('#load-location').waypoint(
+                function(direction){
+                    if('down' == direction) {
+                        if(!isLoading){
+                            if(activePanel == "popular") {
+                                if('down' == direction) {
+                                    if($('#HasNextPopularPages').val()=='true') {
+                                    loadMorePopularPages();
+                                    isLoading = true;
+                                    }
+                                }
+                            } 
+                            else if(activePanel == 'update') {
+                                if($('#hasMoreFeedMark').val()=='true') {
+                                    loadMoreFeedItems();
+                                    isLoading = true;
+                                }
+                            }
+                        }
+                    }
+                }, {continuous: true,offset: 'bottom-in-view',enabled: true});
         });
-        
-        function deleteLastDivider() {
-            $.each($(".update-track-change-div"), function(index, val) {
-                 $(this).find(".divider:last").remove();
-            });
-        }
-
-        function showToolTip() {
-            $('i[data-toggle=tooltip]').mouseover(function() {
-                $(this).tooltip('show');
-            });
-        }
-
-        function show(){
-            if(!isLoading){
-                if (($(window).height() + $(window).scrollTop()) >= $('body').height()) {
-                    if(activePanel == "popular") {
-                        if($('#hasMorePageMark').val()=='true') {
-                            setTimeout(loadMorePopularPageFunction,1000);
-                            isLoading = true;
-                        } 
-                    }
-                    else if(activePanel == "update") {
-                        if($('#hasMoreFeedMark').val()=='true') { 
-                            setTimeout(loadMoreFeedItemFunction,1000);
-                            isLoading = true;
-                        } 
-                    }
-                }
-            }
-        }
-
-        function loadMorePopularPageFunction() {
-            loadMorePopularPages();            
-            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
-        }
-
-        function loadMoreFeedItemFunction() {
-            loadMoreFeedItems();            
-            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
-        }
 
         function doneLoad() {
             isLoading = false;
-            deleteLastDivider();
+            $('#load-location').waypoint('enable');
         }
 
         function addNewSpace() {
@@ -271,7 +213,7 @@
                 var j = 0;
                 for(var i = 0; i < pageArr.length; i++) {
                     if(pageArr[i].title__c.indexOf(searchKey) > -1) {
-                        $('#theSearchSpanId').append($("<a class='list-group-item' href='"+pageArr[i].href__c+"' target='_blank'>"+pageArr[i].title__c+"</a>")); 
+                        $('#theSearchSpanId').append($("<a class='list-group-item' href='"+pageArr[i].href__c+"' target='_blank'>"+pageArr[i].title__c+"</a>"));
                         j++;
                     }
                     if(j > 15) {
@@ -283,36 +225,33 @@
                 }
             }
         }
-        //search js with cache
+        //js cache search page 
         function pageClass(href,title) {
             this.title__c = title;
             this.href__c = href;
         }
     </script>
 </head>
-    <!--   Function area start -->
-    <apex:form>     
+    <apex:form >
         <apex:actionFunction name="loadMorePopularPages"  status="loadPage" action="{!loadMorePopularPagesAction}" reRender="popularPagePanel" oncomplete="doneLoad()"/>
         <apex:actionFunction name="loadMoreFeedItems"  status="loadItem" action="{!loadMoreFeedItemsAction}" reRender="updatePagesPanel" oncomplete="doneLoad()"/>
     </apex:form>
-    <!--   Function area end -->
     <apex:composition template="WikiTemplate">
         <apex:define name="body">
         <div id="force">
             <apex:form onsubmit="return false">
                 <div class="container-custom">
-                    <!--the first row : wikihome buttons search input-->
                     <div class="row nav-wiki">
                         <div class="col-md-6">
                             <h1 class="h1">Wiki Home</h1>
                         </div>
                         <div class="add-btns col-md-3">
                             <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
-                            <a href="/apex/WikiNewPage" target="blank" class="btn btn-default">Add Page</a>
+                            <a href="/apex/WikiNewPage" target="blank" class="btn btn-primary">Add Page</a>
                         </div>
                         <div class="col-md-3">
                             <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search in Wiki" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
-                            <div id="theSearchSpanId" class="myAutoComplete list-group">
+                            <div id="theSearchSpanId" class="search-result-dropdown list-group">
                                 <apex:outputPanel id="TheSearchSuggest" rendered="{!PagesForSearch.size > 0}">
                                     <ul>
                                         <apex:repeat value="{!PagesForSearch}" var="item">
@@ -321,11 +260,10 @@
                                             </li>
                                         </apex:repeat>
                                     </ul>
-                                </apex:outputPanel>  
+                                </apex:outputPanel>
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-4">
                             <div class="well new-page">
@@ -350,13 +288,13 @@
                                 </ul>
                                 <div class="tab-content">
                                     <div id="mySpace" class="tab-pane fade active in">
-                                        <apex:outputPanel id="allSpaces"> 
+                                        <apex:outputPanel id="allSpaces">
                                         <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!MySpaces}" var="space">
                                                 <li>
                                                     <span class="fav glyphicon glyphicon-globe"></span>
                                                     <div>
-                                                        <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a> 
+                                                        <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a>
                                                         <span class="badge pull-right comment" title="{!space.WikiPages__r.size} page(s)">{!space.WikiPages__r.size}</span>
                                                     </div>
                                                 </li>
@@ -373,7 +311,7 @@
                                                     <div>
                                                         <a href="#" onclick="window.open('/apex/WikiViewPage?id={!page.WikiPage__c}')">{!page.Title__c}</a>
                                                     </div>
-                                                </li>  
+                                                </li>
                                                 <div class="divider"></div>
                                             </apex:repeat>
                                           </ul>
@@ -394,9 +332,9 @@
                                 <div id="popularDiv" class="tab-pane fade active in">
                                     <apex:outputPanel id="popularPagePanel">
                                         <ul class="list-unstyled popular-list">
-                                            <apex:repeat value="{!MyPopularPages}" var="item">
+                                            <apex:repeat value="{!PopularPages}" var="item">
                                                 <li class="popular-page">
-                                                    <a href="/{!item.WikiPageVersion.CreatedById}" class="pull-left"><!--/_ui/core/userprofile/UserProfilePage-->
+                                                    <a href="/{!item.WikiPageVersion.CreatedById}" class="pull-left">
                                                         <span title="{!item.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
                                                             <img width="45" height="45" title="{!item.WikiPageVersion.CreatedBy.Name}" class="avatar-photo" alt="{!item.WikiPageVersion.CreatedBy.Name}" src="{!item.WikiPageVersion.CreatedBy.FullPhotoUrl}" />
                                                         </span>
@@ -431,27 +369,25 @@
                                         </ul>
                                         <apex:actionStatus id="loadPage" >
                                             <apex:facet name="start">
-                                                <div> 
+                                                <div>
                                                     <img src="{!$Resource.loadPic}" />
                                                     Loading more pages ...
                                                 </div>
                                             </apex:facet>
                                             <apex:facet name="stop">
-                                                <apex:outputPanel rendered="{!Not(hasMorePageMark)}">
-                                                    <div class="well">
-                                                        There is no more pages
-                                                    </div>
-                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!Not(HasNextPopularPages)}" style="display:block;" styleClass="well well-sm alert alert-danger">
+                                                    Sorry, there is no more page ...
+                                                </apex:outputPanel>                                                
                                             </apex:facet>
                                         </apex:actionStatus>
-                                        <input type="hidden" value="{!hasMorePageMark}" id="hasMorePageMark"/>
+                                        <input type="hidden" value="{!HasNextPopularPages}" id="HasNextPopularPages"/>
                                     </apex:outputPanel>
                                 </div>
                                 <div id="allUpdateDiv" class="tab-pane fade">
                                     <apex:outputPanel id="updatePagesPanel">
                                         <div>
-                                            <ul class="list-unstyled popular-list">  
-                                               <apex:repeat value="{!FeedItems}" var="item">
+                                            <ul class="list-unstyled popular-list">
+                                                <apex:repeat value="{!FeedItems}" var="item">
                                                     <li>
                                                         <a href="/{!item.CreatedById}" class="pull-left">
                                                             <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
@@ -472,7 +408,7 @@
                                                                             </div>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!item.Type == 'TrackedChange'}"> 
+                                                                    <apex:outputPanel rendered="{!item.Type == 'TrackedChange'}">
                                                                         <div class="page-author">
                                                                             <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a> <br/>
                                                                             <div style="margin-top:3px;">At &nbsp;&nbsp;
@@ -487,12 +423,12 @@
                                                                                         {!item.CreatedBy.Name} changed the {!changeItem.FieldName} from {!if(isBlank(changeItem.OldValue),'blank',changeItem.OldValue)} to {!changeItem.Newvalue}
                                                                                         </li>
                                                                                     </apex:repeat>
-                                                                                </ul> 
+                                                                                </ul>
                                                                             </div>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!item.Type == 'PollPost'}"> 
-                                                                    </apex:outputPanel>  
+                                                                    <apex:outputPanel rendered="{!item.Type == 'PollPost'}">
+                                                                    </apex:outputPanel>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -503,74 +439,68 @@
                                        </div>
                                         <apex:actionStatus id="loadItem" >
                                             <apex:facet name="start">
-                                                <div> 
+                                                <div>
                                                     <img src="{!$Resource.loadPic}" />
                                                     Loading more items ...
                                                 </div>
                                             </apex:facet>
                                             <apex:facet name="stop">
-                                                <apex:outputPanel rendered="{!Not(hasMoreFeedMark)}">
-                                                    <div class="well">
-                                                        There is no more item...
-                                                    </div>
-                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!Not(hasMoreFeedMark)}" style="display:block;" styleClass="well well-sm alert alert-danger">
+                                                    Sorry, there is no more item ...
+                                                </apex:outputPanel>  
                                             </apex:facet>
                                         </apex:actionStatus>
                                         <input type="hidden" value="{!HasMoreFeedMark}" id="hasMoreFeedMark"/>
-                                    </apex:outputPanel> 
+                                    </apex:outputPanel>
                                 </div>
                             </div>
+                            <span id="load-location"></span>
                         </div>
                     </div>
                 </div>
             </apex:form>
-
             <!-- Add space modal
                 ================================ -->
-            <div class="modal fade" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false" role="dialog">
-            <div class="modal-dialog">
-            <div class="modal-content"> 
-
-                <apex:form id="addSpaceForm">
-                    <div class="modal-header">
-                        
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">&times;</button>
-                        <h3 class="modal-title">New Space</h3>
-                    </div>
-                    <div class="modal-body">
-
-                        <!-- Error Messages -->
-                        <div id="addSpaceAlert" class="alert alert-danger" style="display:{!IF(HasError, '', 'none')}">
-                            <button type="button" class="close" data-dismiss="alert" data-loading-text="&times;">
-                                <i class="icon-remove"></i>
-                            </button>
-                            <apex:messages layout="table" />
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label" for="inputName">Name</label>
-                            <div>
-                                <apex:inputField value="{!NewSpace.Name}" style="width:300px" styleClass="form-control"/>
+            <div class="modal" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <apex:form id="addSpaceForm">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-loading-text="&times;">&times;</button>
+                                <h3 class="modal-title">New Space</h3>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Description</label>
-                            <div >
-                              <apex:inputTextarea value="{!NewSpace.Summary__c}" style="width:511px; height:100px" styleClass="form-control"/>
+                            <div class="modal-body">
+                                <!-- Error Messages -->
+                                <div id="addSpaceAlert" class="alert alert-danger" style="display:{!IF(HasError, '', 'none')}">
+                                    <button type="button" class="close" data-dismiss="alert" data-loading-text="&times;">
+                                        &times;
+                                    </button>
+                                    <apex:messages layout="table" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="inputName">Name</label>
+                                    <div>
+                                        <apex:inputText value="{!NewSpace.Name}" style="width:300px" styleClass="form-control" html-placeholder="Apex, HTML5, etc."/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Description</label>
+                                    <div >
+                                      <apex:inputTextarea value="{!NewSpace.Summary__c}" style="width:511px; height:100px" styleClass="form-control"/>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">Close</button>
+                                <button type="button" onclick="addNewSpace(); " class="btn btn-primary" data-loading-text="Saving...">Save</button>
+                                <apex:actionFunction name="newSpace" action="{!createNewSpace}" rerender="allSpaces, addSpaceForm" status=""
+                                 oncomplete="addSpaceOnComplete({!NOT(HasError)});"/>
+                            </div>
+                        </apex:form>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">Close</button>
-                        <button type="button" onclick="addNewSpace(); " class="btn btn-primary" data-loading-text="Saving...">Save</button>
-                        <apex:actionFunction name="newSpace" action="{!createNewSpace}" rerender="allSpaces, addSpaceForm" status=""
-                         oncomplete="addSpaceOnComplete({!NOT(HasError)});"/>
-                    </div>
-                </apex:form>
                 </div>
-            </div>
             </div>
         </div>
         </apex:define>
     </apex:composition>
-    
 </apex:page>

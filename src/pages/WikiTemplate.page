@@ -1,7 +1,7 @@
 <apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Bootstrap css -->
-    <apex:stylesheet value="{!URLFOR($Resource.bootstrap, 'css/bootstrap.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.bootstrap3_2, 'css/bootstrap.css')}" />
     <!-- <link href="{!URLFOR($Resource.bootstrapvf)}" rel="stylesheet" media="screen" /> -->
     <apex:includeScript value="{!URLFOR($Resource.jQueryLatest, 'jquery.min.js')}"/>
     <script src="{!URLFOR($Resource.MarkdownJS, 'lib/markdown.js')}"></script>
@@ -9,7 +9,7 @@
     <apex:insert name="body"/>
 
     <!-- Bootstrap js -->
-    <script src="{!URLFOR($Resource.bootstrap, 'js/bootstrap.min.js')}"></script>
+    <script src="{!URLFOR($Resource.bootstrap3_2, 'js/bootstrap.min.js')}"></script>
     <!-- A JQuery validation framework for bootstrap forms -->
     <script src="{!URLFOR($Resource.jQueryValidation, 'jquery.validate.min.js')}"></script>
 </apex:page>
