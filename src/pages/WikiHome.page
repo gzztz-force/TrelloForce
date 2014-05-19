@@ -108,7 +108,12 @@
         }
     </style>
     <script type="text/javascript">
-
+    
+        //js cache search page 
+        function pageClass(href,title) {
+            this.title__c = title;
+            this.href__c = href;
+        }
         var activePanel = "popular"; //true means that the AllUpdatePanel is the current panel
         var isLoading = false; // true means that it is loading
         var isSearchWikiPage = false;
@@ -213,7 +218,9 @@
                 var j = 0;
                 for(var i = 0; i < pageArr.length; i++) {
                     if(pageArr[i].title__c.indexOf(searchKey) > -1) {
-                        $('#theSearchSpanId').append($("<a class='list-group-item' href='"+pageArr[i].href__c+"' target='_blank'>"+pageArr[i].title__c+"</a>"));
+                        $('#theSearchSpanId').append(
+                            $("<a class='list-group-item' href='#'>"+pageArr[i].title__c+"</a>").bind('click', function() {window.open(pageArr[i].href__c);})
+                            );
                         j++;
                     }
                     if(j > 15) {
@@ -225,11 +232,7 @@
                 }
             }
         }
-        //js cache search page 
-        function pageClass(href,title) {
-            this.title__c = title;
-            this.href__c = href;
-        }
+        
     </script>
 </head>
     <apex:form >
@@ -385,6 +388,7 @@
                                 </div>
                                 <div id="allUpdateDiv" class="tab-pane fade">
                                     <apex:outputPanel id="updatePagesPanel">
+                                        <apex:variable var="WikiPageFieldLabelMap" value="{!WikiPageFieldLabelMap}" />
                                         <div>
                                             <ul class="list-unstyled popular-list">
                                                 <apex:repeat value="{!FeedItems}" var="item">
@@ -410,20 +414,20 @@
                                                                     </apex:outputPanel>
                                                                     <apex:outputPanel rendered="{!item.Type == 'TrackedChange'}">
                                                                         <div class="page-author">
-                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a> <br/>
-                                                                            <div style="margin-top:3px;">At &nbsp;&nbsp;
-                                                                            <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                                <apex:param value="{!item.CreatedDate}"/>
-                                                                            </apex:outputText>
-                                                                            </div>
+                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a> <br/>                                                                            
                                                                             <div class="update-track-change-div">
                                                                                 <ul>
                                                                                     <apex:repeat value="{!item.FeedTrackedChanges}" var="changeItem">
                                                                                         <li class="page-author">
-                                                                                        {!item.CreatedBy.Name} changed the {!changeItem.FieldName} from {!if(isBlank(changeItem.OldValue),'blank',changeItem.OldValue)} to {!changeItem.Newvalue}
+                                                                                        {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from "{!if(isBlank(changeItem.OldValue),'blank', changeItem.OldValue)}" to "{!changeItem.Newvalue}"
                                                                                         </li>
                                                                                     </apex:repeat>
                                                                                 </ul>
+                                                                            </div>
+                                                                            <div style="margin-top:3px;">At &nbsp;&nbsp;
+                                                                                <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                    <apex:param value="{!item.CreatedDate}"/>
+                                                                                </apex:outputText>
                                                                             </div>
                                                                         </div>
                                                                     </apex:outputPanel>
@@ -437,7 +441,7 @@
                                                 </apex:repeat>
                                             </ul>
                                        </div>
-                                        <apex:actionStatus id="loadItem" >
+                                        <apex:actionStatus id="loadItem">
                                             <apex:facet name="start">
                                                 <div>
                                                     <img src="{!$Resource.loadPic}" />

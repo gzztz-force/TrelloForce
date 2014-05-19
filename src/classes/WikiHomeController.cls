@@ -135,6 +135,16 @@ public with sharing class WikiHomeController
         }
         return popularWikiPages;
     }
+    public Map<String,String> getWikiPageFieldLabelMap()
+    {
+        Map<String, String> tempMap= new Map<String, String>();
+        List<FieldSetMember> members = SObjectType.WikiPage__c.fieldSets.WikiPageTrack.getFields();
+        for(FieldSetmember member : members)
+        {
+            tempMap.put('WikiPage__c.'+member.getfieldPath(), member.getLabel());
+        }
+        return tempMap;
+    }
 
     public class PopularWikiPage implements Comparable
     {
