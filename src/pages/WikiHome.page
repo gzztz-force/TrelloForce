@@ -419,7 +419,20 @@
                                                                                 <ul>
                                                                                     <apex:repeat value="{!item.FeedTrackedChanges}" var="changeItem">
                                                                                         <li class="page-author">
-                                                                                        {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from "{!if(isBlank(changeItem.OldValue),'blank', changeItem.OldValue)}" to "{!changeItem.Newvalue}"
+                                                                                            {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from 
+                                                                                            <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] != 'DATETIME') && (WikiPageField2Type[changeItem.FieldName] != 'DATE') && (WikiPageField2Type[changeItem.FieldName] != 'TIME')}">         
+                                                                                                "{!if(isBlank(changeItem.OldValue),'blank', changeItem.OldValue)}" to "{!changeItem.Newvalue}"
+                                                                                            </apex:outputPanel>
+
+                                                                                            <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] == 'DATETIME') || (WikiPageField2Type[changeItem.FieldName] == 'DATE') || (WikiPageField2Type[changeItem.FieldName] == 'TIME')}">
+                                                                                                "<apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                                    <apex:param value="{!changeItem.OldValue}"/>
+                                                                                                </apex:outputText>"
+                                                                                                 to 
+                                                                                                "<apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                                    <apex:param value="{!changeItem.Newvalue}"/>
+                                                                                                </apex:outputText>"
+                                                                                            </apex:outputPanel>
                                                                                         </li>
                                                                                     </apex:repeat>
                                                                                 </ul>

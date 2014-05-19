@@ -8,7 +8,7 @@ public with sharing class WikiHomeController
     private Integer feedItemCount;
     private Integer feedPageSize;
     private Integer feedPageNum;
-    private List<PopularWikiPage> popularPages ;
+    private List<PopularWikiPage> popularPages;
 
     public WikiHomeController()
     {
@@ -30,6 +30,7 @@ public with sharing class WikiHomeController
     public List<WikiPage__Feed> FeedItems { get; set;}
     public Boolean HasMoreFeedMark { get; set; }
     public Map<Id,User> IdUserMap { get; set; }
+    public Map<String, String> WikiPageField2Type { get; private set;}
 
     public Boolean HasNextPopularPages
     {
@@ -137,11 +138,16 @@ public with sharing class WikiHomeController
     }
     public Map<String,String> getWikiPageFieldLabelMap()
     {
+        if(WikiPageField2Type == null)
+        {
+            WikiPageField2Type = new Map<String, String>();
+        }
         Map<String, String> tempMap= new Map<String, String>();
         List<FieldSetMember> members = SObjectType.WikiPage__c.fieldSets.WikiPageTrack.getFields();
         for(FieldSetmember member : members)
         {
             tempMap.put('WikiPage__c.'+member.getfieldPath(), member.getLabel());
+            WikiPageField2Type.put('WikiPage__c.'+member.getfieldPath(), String.valueOf(member.getType()));
         }
         return tempMap;
     }
