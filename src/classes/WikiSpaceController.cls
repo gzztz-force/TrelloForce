@@ -1,80 +1,58 @@
-public with sharing class WikiSpaceController
+/*
+ * Controller for WikiSpace page to get spaces and related pages.
+ */
+public class WikiSpaceController
 {
-	private String spaceID;
-	private String pageID;
+	private @TestVisible String spaceId;
 
-	public List<WikiPage__c> WikiPages { get; set; }
-	//public List<WikiPageVersion__c> wikiVersion;
-	public List<WikiSpace__c> space;
+    public WikiSpaceController()
+    {
+        initSpaces();
 
-	private ApexPages.StandardSetController wikiPageSet;
-	public Boolean HasNext { get; set; }
-	public Boolean HasPrevious { get; set; }
-	public Integer CurrentPage { get; set; }
-	public Integer PageSize { get; set; }
-	public Integer PageNum { get; set; }
+        spaceId = ApexPages.CurrentPage().getParameters().get('Id');
+        if(String.isBlank(spaceId) && Spaces.size() > 0)
+        {
+            spaceId = Spaces[0].Id;
+        }
 
-	public WikiSpaceController()
-	{
-		//WikiPage = new WikiPage__c();
-		//pages = new LIst<WikiPage__c>();
-		spaceID = ApexPages.CurrentPage().getParameters().get('Id');
-		initSpaceSet();
-		
-	}
+        initWikiPages();
+    }
 
-	public WikiPage__c WikiPage { get; set; }
-	public WikiPageVersion__c WikiPageVersion { get; set; }
+    public String SpaceName
+    {
+        get
+        {
+           return [select Id, Name from WikiSpace__c where Id = :spaceId][0].Name;
+        }
+    }
 
-	public List<WikiSpace__c> getSpace()
-	{
-		space =	[select Id, Name, Name__c, Summary__c from WikiSpace__c 
-		where  Id = :spaceID];
-		return space;
-	}
-	public String getSpaceId()
-	{
-		return spaceID;
-	}
+    public List<WikiSpace__c> Spaces { get; set ; }
+    public List<WikiPage> WikiPages { get; set; }
 
-	
-	public void nextWikiPages()
-	{
-		wikiPageSet.next();
-		WikiPages = (List<WikiPage__c>) wikiPageSet.getRecords();
+    private void initSpaces()
+    {
+        Spaces = [select Id, Name from WikiSpace__c];
+    }
 
-		HasPrevious = wikiPageSet.getHasPrevious();
-		HasNext = wikiPageSet.getHasNext();
-		CurrentPage = wikiPageSet.getPageNumber();
-	}
+    private void initWikiPages()
+    {
+        List<WikiPage__c> pages = [select Id, Name, (select Id, Name, Body__c, Title__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl,
+                LastPublishedDate__c, WikiPage__c from WikiPageVersions__r where IsLatestVersion__c = true) from WikiPage__c where WikiSpace__c = :spaceId];
 
-	
-	public void priviousWikiPages()
-	{
-		wikiPageSet.previous();
-		WikiPages = (List<WikiPage__c>) wikiPageSet.getRecords();
+        WikiPages = new List<WikiPage>();
+        for(WikiPage__c page : pages)
+        {
+            WikiPages.add(new WikiPage(page.WikiPageVersions__r[0]));
+        }
+    }
 
-		HasPrevious = wikiPageSet.getHasPrevious();
-		HasNext = wikiPageSet.getHasNext();
-		CurrentPage = wikiPageSet.getPageNumber();
-	}
+    public class WikiPage
+    {
+        public WikiPage(WikiPageVersion__c version)
+        {
+            this.WikiPageVersion = version;
+        }
 
-	private void initSpaceSet()
-	{
-		PageSize = 4;
-		wikiPageSet = new ApexPages.StandardSetController([select Id, Name, WikiSpace__c, TotalPageVersion__c,
-		LastPublishedDate__c,FirstPublishedDate__c, (select Id, Name, Body__c, FirstPublishedDate__c, 
-	    IsLatestVersion__c, Label__c, LastPublishedDate__c, PublishStatus__c,
-	    Title__c, VersionNumber__c, WikiPage__c from WikiPageVersions__r order by VersionNumber__c desc limit 4) from WikiPage__c 
-		where WikiSpace__c = :spaceID]);
-		wikiPageSet.setPageSize(pageSize);
-		WikiPages = (List<WikiPage__c>) wikiPageSet.getRecords();
-
-		HasPrevious = wikiPageSet.getHasPrevious();
-		HasNext = wikiPageSet.getHasNext();
-		CurrentPage = wikiPageSet.getPageNumber();
-
-		PageNum = (Integer)(Math.round(wikiPageSet.getResultSize()/wikiPageSet.getPageSize())+1);
-	}
-
+        public WikiPageVersion__c WikiPageVersion { get; set; }
+    }
 }

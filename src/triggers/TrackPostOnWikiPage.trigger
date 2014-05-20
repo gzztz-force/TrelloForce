@@ -1,33 +1,18 @@
-trigger TrackPostOnWikiPage on WikiPage__c (after insert, after update) 
+trigger TrackPostOnWikiPage on WikiPage__c (after insert) 
 {
-    if(Trigger.isAfter &&Trigger.isInsert )
+    if(Trigger.isAfter && Trigger.isInsert )
     {
-        insertFeedItem('created this page',Trigger.newMap.keySet());        
+        insertFeedItemForWikiPage(Trigger.New);        
     }
-
-    else if(Trigger.isAfter && Trigger.isUpdate)
-    {
-        Set<Id> ids = new Set<Id>();
-        for(WikiPage__c page : Trigger.New)
-        {
-            WikiPage__c oldPage = Trigger.oldMap.get(page.Id);
-            if(page.TotalPageVersion__c == oldPage.TotalPageVersion__c)
-            {
-                ids.add(page.Id);
-            }
-        }
-        insertFeedItem('edited this page',ids);
-    }
-
-    private void insertFeedItem(String itemBody,Set<Id> ids)
+    private void insertFeedItemForWikiPage(List<WikiPage__c> pages)
     {
         List<FeedItem> feedItems = new List<FeedItem>();
-        for(Id pageId : ids)
+        for(WikiPage__c page : pages)
         {
             FeedItem feed = new FeedItem();
-            feed.Body = itemBody;
+            feed.Body = 'created this page : '+page.title__c;
             feed.Type = 'TextPost';
-            feed.ParentId = pageId;
+            feed.ParentId = page.Id;
             feedItems.add(feed);
         }  
         insert feedItems;

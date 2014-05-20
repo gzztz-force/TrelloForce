@@ -1,4 +1,4 @@
- <apex:page controller="WiKiSearchController" doctype="html-5.0" sidebar="false" showheader="true" standardStylesheets="false">
+<apex:page controller="WiKiSearchController" doctype="html-5.0" sidebar="false" showheader="true" standardStylesheets="false" title="Wiki Search">
     <style type="text/css">
         body{
             background: #F9F9F9;

@@ -1,15 +1,24 @@
-<apex:page controller="WikiHomeController" docType="html-5.0" showHeader="true" sidebar="false" standardStylesheets="false">
+<apex:page controller="WikiHomeController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki Home">
+<head>
+    <script type="text/javascript" src="{!URLFOR($Resource.WayPoint)}"></script>
     <style>
-        .container-custom {
-            padding: 5px 20px;
+        body {
+            background-color: f9f9f9;
+            font-size: 12px;
         }
 
+        .container-custom {
+            padding: 5px 20px;
+            width: 100%;
+            margin: auto 0px;
+          }
+
         .nav-wiki {
-            padding: 10px 0px 20px;
+            padding: 10px 0px;
         }
 
         .new-page {
-            padding-top: 5px;
+            padding-top: 25px;
             background-color: #EEEEEE;
         }
 
@@ -24,7 +33,7 @@
         }
 
         .spaces-list li>div {
-            margin-left: 30px;
+            margin-left: 5px;
             position: relative;
         }
 
@@ -40,28 +49,17 @@
             background-position: 0 0;
             height: 16px;
             width: 16px;
-            margin: 2px 0 0 3px;
+            margin: 2px 15px 0 3px;
             float: left;
         }
 
-        .spaces-list .bookmark {
-            margin: 2px 10px 0 3px;
-            position: absolute;
-            right: 10px;
-            top: 2px;
-        }
-
-        .spaces-list .divider, .popular-list .divider {
+        .divider {
             height: 1px;
-            margin: 9px 1px;
+            margin: 9px 0px;
             overflow: hidden;
             background-color: #e5e5e5;
-            border-bottom: 1px solid #fff;
+            border-bottom: 1px solid #dfdfdf;
             padding: 0px;
-        }
-
-        .popular-list {
-
         }
 
         .popular-list a {
@@ -70,10 +68,7 @@
 
         .popular-list .media {
             width: 75%;
-        }
-
-        .popular-list .media-body {
-            /*width: 70%;*/
+            margin-top: 0px;
         }
 
         .popular-list .comment {
@@ -82,113 +77,113 @@
 
         .popular-list .page-author {
             font-size: 12px;
-            padding-left: 5px;
+            padding-left: 0px;
             padding-top: 5px;
         }
 
         .add-btns {
-            margin-top: 6px;
+            margin-top: 0px;
         }
 
-        .search-form {
-            /*padding-left: 10px;*/
-        }
-
-    /* space pop-up style, created by allen */
-        .new-Space #force textarea {
-            width: 90%;
-            max-width: 90%;
-        }
-
-        .new-Space {
-            top: 0px;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.3);
-            display: none;
+        .search-result-dropdown {
+            width:90%;
+            float: left;
             position: absolute;
+            top:35px;
+            font-size:14px;
+            z-index:20;
+            border:1px solid gray;
+            background-color:#EAEAEA;
+            display: none;
+            filter:alpha(Opacity=80);
+            -moz-opacity:0.5;
+            opacity: 0.9;
         }
-        #new-Space ul[id$=errorTip] {
-            white-space: normal;
-            margin: 0px;
-            width: 90%;
+
+        .search-result-dropdown li{
+            list-style: none;
+            line-height:20px;
+            position:relative;
+            text-indent: -0.5cm;
         }
-       
-    /******************************************/
     </style>
     <script type="text/javascript">
-
-        /* Add new space
-         * ====================== */
-        var AllUpdateFlag = false; //true means that the AllUpdatePanel is the current panel 
+    
+        //js cache search page 
+        function pageClass(href,title) {
+            this.title__c = title;
+            this.href__c = href;
+        }
+        var activePanel = "popular"; //true means that the AllUpdatePanel is the current panel
         var isLoading = false; // true means that it is loading
+        var isSearchWikiPage = false;
+        var pageArr = new Array();
 
         $(function () {
 
             $('#addSpaceBtn').click(function () {
-                $('#addSpaceModal .control-group input').prop('required', true)
-                                                        .prop('placeholder', 'Apex, html5, etc.');
                 $('#addSpaceAlert').hide();
             });
-            $('.tabmark').click(function(){
-                if(this.rel=="a2")
-                    AllUpdateFlag = true;
-                else
-                    AllUpdateFlag = false;
+
+            $('.tabmark').click(function() {
+                if(this.rel != null && this.rel != '') {
+                    activePanel = this.rel
+                }
             });
-            $(window).bind('scroll',function(){show()});
- 
-            function show()
-            {
-                if(!isLoading){
-                    if(AllUpdateFlag){
-                        if($('#hasNextMark').val()=='true'){  
-                               // if($(window).scrollTop()+$(window).height()>=$('#scrollid').offset().top){  
-                               if (($(window).height() + $(window).scrollTop()) >= $('body').height()) { 
-                                    setTimeout(loadMoreUpdateFunction,1000);                                                 
+
+            $(window).bind('scroll',function(){$('#load-location').waypoint('enable');});
+
+            $('#searchWikiId').bind('input propertychange', function() {
+                    if(!isSearchWikiPage) {
+                        setTimeout(searchWikiPage,200);
+                        isSearchWikiPage = true;
+                    }
+                });
+
+            $('#searchWikiId').bind('blur',function() {
+                    $('#theSearchSpanId').fadeOut(100);
+                });
+
+            $('#searchWikiId').bind('focus',function() {
+                    searchWikiPage();
+                });
+
+            $('#theSearchSpanId').hide();
+
+            $.each($('#theSearchSpanId span ul').children('li'), function(index, val) {
+                pageArr.push(new pageClass($(this).find('a').attr('href'),$(this).find('a').text()));
+                $(this).remove();
+             });
+
+            $('#load-location').waypoint(
+                function(direction){
+                    if('down' == direction) {
+                        if(!isLoading){
+                            if(activePanel == "popular") {
+                                if('down' == direction) {
+                                    if($('#HasNextPopularPages').val()=='true') {
+                                    loadMorePopularPages();
+                                    isLoading = true;
+                                    }
+                                }
+                            } 
+                            else if(activePanel == 'update') {
+                                if($('#hasMoreFeedMark').val()=='true') {
+                                    loadMoreFeedItems();
                                     isLoading = true;
                                 }
-                           }  
+                            }
                         }
-                    else{
-                        eval("$(window).bind('scroll',function(){})");
                     }
-                }
-            }
-
-            function loadMoreUpdateFunction()
-            {
-                loadMoreUpdate();
-                isLoading = false;
-            }
-            
-            $("[class='icon-star bookmark']").click(function(){
-
-               //alert($(this).attr('rel')+$(this).find('input').val());
-                
-                if($(this).attr('rel')=='space'){
-                    favorSpace($(this).find('input').val());
-                    }
-                else if($(this).attr('rel')=='page'){
-                    
-                    }                
-                
-            });
-
-            
-            
-            
+                }, {continuous: true,offset: 'bottom-in-view',enabled: true});
         });
-        
-        function favorSpace2(srcNode){
-            //alert(srcNode);
-            //alert($(srcNode).find('input').val());
-            unFavorSpace($(srcNode).find('input').val());
 
+        function doneLoad() {
+            isLoading = false;
+            $('#load-location').waypoint('enable');
         }
 
-        function addNewSpace() {        
-        
+        function addNewSpace() {
             $('#addSpaceModal button').button('loading');
             newSpace();
         }
@@ -196,35 +191,86 @@
         function addSpaceOnComplete(isSuccess) {
             if(isSuccess) {
                 $('#addSpaceModal').modal('hide');
-
                 $('#addSpaceModal button').button('reset');
             }
         }
-    </script>
-    <apex:composition template="WikiTemplate">
-        <apex:define name="body" >
-        <div id="force">
 
-            <apex:form >
-                <div class="container-fluid container-custom">
-                    <div class="row-fluid nav-wiki">
-                        <div class="span6">
-                            <h1>Wiki Home</h1>
+        function enterPress(e) {
+            var e = e || window.event;
+            if(e.keyCode == 13) {
+                var searchkey = $.trim($('#searchWikiId').val());
+                if(searchkey != null && searchkey != '') {
+                    window.open("/apex/wikisearch?key="+$("#searchWikiId").val());
+                }
+            }
+        }
+
+        function searchWikiPage() {
+            var searchKey = $.trim($('#searchWikiId').val());
+            searchWikiPageInJsArray(searchKey);
+            isSearchWikiPage = false;
+        }
+
+        function searchWikiPageInJsArray(searchKey) {
+            $('#theSearchSpanId').empty();
+            $('#theSearchSpanId').hide();
+            if(searchKey != null && searchKey != '') {
+                var j = 0;
+                for(var i = 0; i < pageArr.length; i++) {
+                    if(pageArr[i].title__c.indexOf(searchKey) > -1) {
+                        $('#theSearchSpanId').append(
+                            $("<a class='list-group-item' href='#'>"+pageArr[i].title__c+"</a>").bind('click', function() {window.open(pageArr[i].href__c);})
+                            );
+                        j++;
+                    }
+                    if(j > 15) {
+                        break;
+                    }
+                }
+                if(j > 0) {
+                    $('#theSearchSpanId').show();
+                }
+            }
+        }
+        
+    </script>
+</head>
+    <apex:form >
+        <apex:actionFunction name="loadMorePopularPages"  status="loadPage" action="{!loadMorePopularPagesAction}" reRender="popularPagePanel" oncomplete="doneLoad()"/>
+        <apex:actionFunction name="loadMoreFeedItems"  status="loadItem" action="{!loadMoreFeedItemsAction}" reRender="updatePagesPanel" oncomplete="doneLoad()"/>
+    </apex:form>
+    <apex:composition template="WikiTemplate">
+        <apex:define name="body">
+        <div id="force">
+            <apex:form onsubmit="return false">
+                <div class="container-custom">
+                    <div class="row nav-wiki">
+                        <div class="col-md-6">
+                            <h1 class="h1">Wiki Home</h1>
                         </div>
-                        <div class="add-btns span3">
-                            <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn" data-toggle="modal">Add Space</a>
-                            <a href="/apex/WikiNewPage" class="btn">Add Page</a>
+                        <div class="add-btns col-md-3">
+                            <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
+                            <a href="/apex/WikiNewPage" target="blank" class="btn btn-primary">Add Page</a>
                         </div>
-                        <div class="span3 search-form">
-                            <form class="navbar-search pull-left" action="">
-                                <input type="text" class="search-query span2" placeholder="Search in Wiki" />
-                            </form>
+                        <div class="col-md-3">
+                            <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search in Wiki" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
+                            <div id="theSearchSpanId" class="search-result-dropdown list-group">
+                                <apex:outputPanel id="TheSearchSuggest" rendered="{!PagesForSearch.size > 0}">
+                                    <ul>
+                                        <apex:repeat value="{!PagesForSearch}" var="item">
+                                            <li>
+                                                <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
+                                            </li>
+                                        </apex:repeat>
+                                    </ul>
+                                </apex:outputPanel>
+                            </div>
                         </div>
                     </div>
-                    <div class="row-fluid">
-                        <div class="span4">
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="well new-page">
-                                <h2>Hello, world!</h2>
+                                <h2 >Hello, world!</h2>
                                 <ul> Wiki Version 1 Function：
                                     <li> Article Version Control</li>
                                     <li> Comment (Chatter)</li>
@@ -239,207 +285,239 @@
                                     <li class="active">
                                         <a href="#mySpace" data-toggle="tab">Spaces</a>
                                     </li>
-                                    <li><a href="#myPages" data-toggle="tab">My Pages</a></li>
+                                    <li>
+                                        <a href="#myPages" data-toggle="tab">My Pages</a>
+                                    </li>
                                 </ul>
                                 <div class="tab-content">
                                     <div id="mySpace" class="tab-pane fade active in">
-                                        <apex:outputPanel id="allSpaces"> <!-- For action function -->
-                                        <ul class="unstyled spaces-list">
+                                        <apex:outputPanel id="allSpaces">
+                                        <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!MySpaces}" var="space">
                                                 <li>
-                                                    <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                    <span class="fav glyphicon glyphicon-globe"></span>
                                                     <div>
                                                         <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a>
-                                                        <i class="icon-star bookmark" rel="space" title="Click to favor">
-                                                            <input type="hidden" value="{!space.Id}"/>
-                                                        </i>
+                                                        <span class="badge pull-right comment" title="{!space.WikiPages__r.size} page(s)">{!space.WikiPages__r.size}</span>
                                                     </div>
-                                                    <div class="divider"></div>
                                                 </li>
-                                                
+                                                <div class="divider"></div>
                                             </apex:repeat>
                                         </ul>
                                         </apex:outputPanel>
                                     </div>
                                     <div id="myPages" class="tab-pane fade">
-                                        <ul class="unstyled spaces-list">
+                                        <ul class="list-unstyled spaces-list">
                                             <apex:repeat value="{!MyPages}" var="page">
                                                 <li>
-                                                    <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
+                                                    <span class="fav glyphicon glyphicon-globe"></span>
                                                     <div>
-                                                    <a href="/apex/WikiViewPage?id={!page.WikiPage__c}" >{!page.Title__c}</a>
-                                                        <i class="icon-star bookmark" rel="page" title="Click to favor"></i>
+                                                        <a href="#" onclick="window.open('/apex/WikiViewPage?id={!page.WikiPage__c}')">{!page.Title__c}</a>
                                                     </div>
-
-                                                    <div class="divider"></div>
                                                 </li>
-                                                
+                                                <div class="divider"></div>
                                             </apex:repeat>
                                           </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="span8">
+                        <div class="col-md-8">
                             <ul class="nav nav-tabs" id="popularul">
                                 <li class="active">
-                                    <a href="#popularDiv" data-toggle="tab" class="tabmark" rel='a1'>Popular</a>
+                                    <a href="#popularDiv" data-toggle="tab" class="tabmark" rel='popular'>Popular</a>
                                 </li>
-                                <li><a href="#allUpdateDiv" data-toggle="tab" class="tabmark" rel="a2">All Update</a></li>
-                                <li><a href="#favoriteSpaceDiv" data-toggle="tab" class="tabmark" rel="a3">Favorite Spaces</a></li>
+                                <li>
+                                    <a href="#allUpdateDiv" data-toggle="tab" class="tabmark" rel="update">All Update</a>
+                                </li>
                             </ul>
                             <div class="tab-content">
                                 <div id="popularDiv" class="tab-pane fade active in">
-                                    <ul class="unstyled popular-list">
-                                        <apex:repeat value="{!PopularPages}" var="item">
-                                        <li class="popular-page">
-                                            <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                    <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
-                                                </span>
-                                            </a>
-                                            <div class="media pull-left" style="margin-left:20px;">
-                                                <div class="media-body">
-                                                    <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
-                                                    <div class="page-author">
-                                                        <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>
-                                                        <span>
-                                                            <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
-                                                            </apex:outputText>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="pull-right comment">
-                                                <span class="badge">1</span>
-                                            </div>
-                                        </li>
-                                        <li class="divider"></li>
-                                        </apex:repeat>
-                                    </ul>
-                                </div>
-                                <div id="allUpdateDiv" class="tab-pane fade">
-                                    <ul class="unstyled popular-list">
-                                        <apex:outputPanel id="popularPagesPanel">
-                                           <apex:repeat value="{!PopularPages}" var="item">
-                                                <li>
-                                                    <a href="/_ui/core/userprofile/UserProfilePage" class="pull-left">
-                                                        <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                            <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
+                                    <apex:outputPanel id="popularPagePanel">
+                                        <ul class="list-unstyled popular-list">
+                                            <apex:repeat value="{!PopularPages}" var="item">
+                                                <li class="popular-page">
+                                                    <a href="/{!item.WikiPageVersion.CreatedById}" class="pull-left">
+                                                        <span title="{!item.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                            <img width="45" height="45" title="{!item.WikiPageVersion.CreatedBy.Name}" class="avatar-photo" alt="{!item.WikiPageVersion.CreatedBy.Name}" src="{!item.WikiPageVersion.CreatedBy.FullPhotoUrl}" />
                                                         </span>
                                                     </a>
-                                                    <div class="media pull-left" style="margin-left:20px;">
+                                                    <div class="media pull-left" style="margin-left:20px;margin-top:0px;">
                                                         <div class="media-body">
-                                                            <div>
-                                                                <img width="14" height="14" class="avatar-photo" alt="None" src="https://plus.google.com/_/favicon?domain=blog.carbonfive.com"/>
-                                                                <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
-                                                                <div class="page-author">
-                                                                    <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>
+                                                            <a href="/apex/WikiViewPage?id={!item.WikiPageVersion.WikiPage__c}" target="_blank">{!item.WikiPageVersion.Title__c}</a>
+                                                            <div class="page-author">
+                                                                <a href="/{!item.WikiPageVersion.CreatedById}">{!item.WikiPageVersion.CreatedBy.Name}</a>
                                                                 <span>
                                                                     <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                        <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
+                                                                        <apex:param value="{!item.WikiPageVersion.WikiPage__r.LastPublishedDate__c}"/>
                                                                     </apex:outputText>
                                                                 </span>
-                                                                </div>
-                                                            </div>                                                               
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </li>
-                                                <li class="divider"></li>
-                                            </apex:repeat>
-                                            <li>
-                                                <apex:actionStatus id="load" >
-                                                    <apex:facet name="start">
-                                                        <div> 
-                                                        <img src="{!$Resource.loadPic}" />
-                                                        Loading more pages ...</div>
-                                                    </apex:facet>
-                                                    <apex:facet name="stop">
-                                                        <apex:outputPanel rendered="{!Not(HasNext)}"> There is no more pages</apex:outputPanel>
-                                                    </apex:facet>
-                                                </apex:actionStatus>                                                
-                                            </li>
-                                            <input type="hidden" value="{!HasNext}" id="hasNextMark"/>
-                                            <apex:actionFunction name="loadMoreUpdate"  status="load" action="{!loadMorePopularPages}" reRender="popularPagesPanel" rendered="{!HasNext}"/>
-                                            
-                                        </apex:outputPanel>                                       
-                                    </ul>
-                                </div>
-
-                                <div id="favoriteSpaceDiv" class="tab-pane fade">
-                                    <apex:outputPanel id="popularFavoriteSpacesPanel"> <!-- For action function -->
-                                        <ul class="unstyled spaces-list">
-                                            <apex:repeat value="{!FavoriteSpaces}" var="space">
-                                                <li>
-                                                    <i class="fav" style="background-image:url('https://www.google.com/s2/u/0/favicons?domain=blog.carbonfive.com');"></i>
-                                                    <div>
-                                                        <a href="#" onclick="window.open('/apex/wikispace?id={!space.Space__c}')" >{!space.space__r.Name}</a>
-                                                        <i class="icon-star bookmark" rel="unFavorSpace" title="Click to unfavor" onclick="favorSpace2(this)">
-                                                            <input type="hidden" value="{!space.space__c}"/>
-                                                        </i>
+                                                    <div class="pull-right comment">
+                                                    <apex:outputPanel rendered="{!item.FeedComment < 10}" styleClass="badge" title="{!item.FeedComment} state(s)">
+                                                            {!item.FeedComment}
+                                                        </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!(item.FeedComment > 10)&&(item.FeedComment < 50)}" styleClass="badge" style="background-color:#d7ac67;" title="{!item.FeedComment} state(s)">
+                                                            {!item.FeedComment}
+                                                        </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!item.FeedComment > 50}" styleClass="badge" style="background-color:#b1605a" title="{!item.FeedComment} state(s)">
+                                                            {!item.FeedComment}
+                                                        </apex:outputPanel>
                                                     </div>
                                                 </li>
-                                                <li class="divider"></li>
+                                                <div class="divider"></div>
                                             </apex:repeat>
                                         </ul>
-                                        </apex:outputPanel>
+                                        <apex:actionStatus id="loadPage" >
+                                            <apex:facet name="start">
+                                                <div>
+                                                    <img src="{!$Resource.loadPic}" />
+                                                    Loading more pages ...
+                                                </div>
+                                            </apex:facet>
+                                            <apex:facet name="stop">
+                                                <apex:outputPanel rendered="{!Not(HasNextPopularPages)}" style="display:block;" styleClass="well well-sm alert alert-danger">
+                                                    Sorry, there is no more page ...
+                                                </apex:outputPanel>                                                
+                                            </apex:facet>
+                                        </apex:actionStatus>
+                                        <input type="hidden" value="{!HasNextPopularPages}" id="HasNextPopularPages"/>
+                                    </apex:outputPanel>
                                 </div>
-                                
+                                <div id="allUpdateDiv" class="tab-pane fade">
+                                    <apex:outputPanel id="updatePagesPanel">
+                                        <apex:variable var="WikiPageFieldLabelMap" value="{!WikiPageFieldLabelMap}" />
+                                        <div>
+                                            <ul class="list-unstyled popular-list">
+                                                <apex:repeat value="{!FeedItems}" var="item">
+                                                    <li>
+                                                        <a href="/{!item.CreatedById}" class="pull-left">
+                                                            <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                                <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!IdUserMap[item.CreatedById].FullPhotoUrl}" />
+                                                            </span>
+                                                        </a>
+                                                        <div class="media pull-left" style="margin-left:20px;margin-top:0px;">
+                                                            <div class="media-body">
+                                                                <div>
+                                                                    <apex:outputPanel rendered="{!item.Type == 'TextPost'}">
+                                                                        <div class="page-author">
+                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>post a text on the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a>
+                                                                            <div style="margin-top:3px;">{!item.Body}</div>
+                                                                            <div style="margin-top:3px;">At &nbsp;&nbsp;
+                                                                                <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                    <apex:param value="{!item.CreatedDate}"/>
+                                                                                </apex:outputText>
+                                                                            </div>
+                                                                        </div>
+                                                                    </apex:outputPanel>
+                                                                    <apex:outputPanel rendered="{!item.Type == 'TrackedChange'}">
+                                                                        <div class="page-author">
+                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a> <br/>                                                                            
+                                                                            <div class="update-track-change-div">
+                                                                                <ul>
+                                                                                    <apex:repeat value="{!item.FeedTrackedChanges}" var="changeItem">
+                                                                                        <li class="page-author">
+                                                                                            {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from 
+                                                                                            <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] != 'DATETIME') && (WikiPageField2Type[changeItem.FieldName] != 'DATE') && (WikiPageField2Type[changeItem.FieldName] != 'TIME')}">         
+                                                                                                "{!if(isBlank(changeItem.OldValue),'blank', changeItem.OldValue)}" to "{!changeItem.Newvalue}"
+                                                                                            </apex:outputPanel>
+
+                                                                                            <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] == 'DATETIME') || (WikiPageField2Type[changeItem.FieldName] == 'DATE') || (WikiPageField2Type[changeItem.FieldName] == 'TIME')}">
+                                                                                                "<apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                                    <apex:param value="{!changeItem.OldValue}"/>
+                                                                                                </apex:outputText>"
+                                                                                                 to 
+                                                                                                "<apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                                    <apex:param value="{!changeItem.Newvalue}"/>
+                                                                                                </apex:outputText>"
+                                                                                            </apex:outputPanel>
+                                                                                        </li>
+                                                                                    </apex:repeat>
+                                                                                </ul>
+                                                                            </div>
+                                                                            <div style="margin-top:3px;">At &nbsp;&nbsp;
+                                                                                <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                    <apex:param value="{!item.CreatedDate}"/>
+                                                                                </apex:outputText>
+                                                                            </div>
+                                                                        </div>
+                                                                    </apex:outputPanel>
+                                                                    <apex:outputPanel rendered="{!item.Type == 'PollPost'}">
+                                                                    </apex:outputPanel>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <div class="divider"></div>
+                                                </apex:repeat>
+                                            </ul>
+                                       </div>
+                                        <apex:actionStatus id="loadItem">
+                                            <apex:facet name="start">
+                                                <div>
+                                                    <img src="{!$Resource.loadPic}" />
+                                                    Loading more items ...
+                                                </div>
+                                            </apex:facet>
+                                            <apex:facet name="stop">
+                                                <apex:outputPanel rendered="{!Not(hasMoreFeedMark)}" style="display:block;" styleClass="well well-sm alert alert-danger">
+                                                    Sorry, there is no more item ...
+                                                </apex:outputPanel>  
+                                            </apex:facet>
+                                        </apex:actionStatus>
+                                        <input type="hidden" value="{!HasMoreFeedMark}" id="hasMoreFeedMark"/>
+                                    </apex:outputPanel>
+                                </div>
                             </div>
+                            <span id="load-location"></span>
                         </div>
                     </div>
                 </div>
-                <apex:actionFunction name="favorSpace" action="{!favorSpace}" reRender="popularFavoriteSpacesPanel">
-                    <apex:param assignTo="{!FavorSpaceId}" value="" name="favorspace"/>
-                </apex:actionFunction>
-                <apex:actionFunction name="unFavorSpace" action="{!unFavorSpace}" reRender="popularFavoriteSpacesPanel">
-                    <apex:param assignTo="{!FavorSpaceId}" value="" name="favorspace2"/>
-                </apex:actionFunction>
             </apex:form>
-
             <!-- Add space modal
                 ================================ -->
-            <div class="modal hide" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false">
-                <apex:form id="addSpaceForm">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-loading-text="&times;">
-                            <i class="icon-remove"></i>
-                        </button>
-                        <h3>New Space</h3>
-                    </div>
-                    <div class="modal-body">
-
-                        <!-- Error Messages -->
-                        <div id="addSpaceAlert" class="alert alert-error" style="display:{!IF(HasError, '', 'none')}">
-                            <button type="button" class="close" data-dismiss="alert" data-loading-text="&times;">
-                                <i class="icon-remove"></i>
-                            </button>
-                            <apex:messages layout="table" />
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="inputName">Name</label>
-                            <div class="controls">
-                                <apex:inputField value="{!NewSpace.Name}" style="width:300px"/>
+            <div class="modal" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <apex:form id="addSpaceForm">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-loading-text="&times;">&times;</button>
+                                <h3 class="modal-title">New Space</h3>
                             </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Description</label>
-                            <div class="controls">
-                              <apex:inputTextarea value="{!NewSpace.Summary__c}" style="width:511px; heigh:80px"/>
+                            <div class="modal-body">
+                                <!-- Error Messages -->
+                                <div id="addSpaceAlert" class="alert alert-danger" style="display:{!IF(HasError, '', 'none')}">
+                                    <button type="button" class="close" data-dismiss="alert" data-loading-text="&times;">
+                                        &times;
+                                    </button>
+                                    <apex:messages layout="table" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="inputName">Name</label>
+                                    <div>
+                                        <apex:inputText value="{!NewSpace.Name}" style="width:300px" styleClass="form-control" html-placeholder="Apex, HTML5, etc."/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Description</label>
+                                    <div >
+                                      <apex:inputTextarea value="{!NewSpace.Summary__c}" style="width:511px; height:100px" styleClass="form-control"/>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">Close</button>
+                                <button type="button" onclick="addNewSpace(); " class="btn btn-primary" data-loading-text="Saving...">Save</button>
+                                <apex:actionFunction name="newSpace" action="{!createNewSpace}" rerender="allSpaces, addSpaceForm" status=""
+                                 oncomplete="addSpaceOnComplete({!NOT(HasError)});"/>
+                            </div>
+                        </apex:form>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">Close</button>
-                        <button type="button" onclick="addNewSpace(); " class="btn btn-primary" data-loading-text="Saving...">Save</button>
-                        <apex:actionFunction name="newSpace" action="{!createNewSpace}" rerender="allSpaces, addSpaceForm" status=""
-                         oncomplete="addSpaceOnComplete({!NOT(HasError)});"/>
-                    </div>
-                </apex:form>
+                </div>
             </div>
         </div>
         </apex:define>
     </apex:composition>
-    
 </apex:page>
