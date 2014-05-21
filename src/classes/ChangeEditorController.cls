@@ -245,22 +245,19 @@ public class ChangeEditorController
         u.UserPreferencesDisableAutoSubForFeeds = false;
         system.runAs(u)
         {
-            MProject__c project = new MProject__c();
-            insert project;
-            TeamMember__c member = new TeamMember__c(Project__c = project.Id, User__c = UserInfo.getUserId());
+            List<MProject__c> projects = TestDataFactory.createProjects();
+            TeamMember__c member = new TeamMember__c(Project__c = projects[0].Id, User__c = UserInfo.getUserId());
             insert member;
-            MProject__c projectWithoutMember = new MProject__c();
-            insert projectWithoutMember;
 
             PageReference newChangePage = Page.ChangeEditor;
             Test.setCurrentPage(newChangePage);
-            ChangeEditorController controller = new ChangeEditorController(new ApexPages.Standardcontroller(new Change__c()));
+            ChangeEditorController controller = new ChangeEditorController(new ApexPages.Standardcontroller(new Change__c(Project__c = projects[0].Id)));
 
-            controller.Change.Project__c = projectWithoutMember.Id;
+            controller.Change.Project__c = projects[1].Id;
             controller.refreshFollowers();
             system.assertEquals(0, controller.Followers.size());
 
-            controller.Change.Project__c = project.Id;
+            controller.Change.Project__c = projects[0].Id;
             controller.refreshFollowers();
             system.assertEquals(1, controller.Followers.size());
 
@@ -286,17 +283,16 @@ public class ChangeEditorController
         u.UserPreferencesDisableAutoSubForFeeds = false;
         system.runAs(u)
         {
-            MProject__c project = new MProject__c();
-            insert project;
+            List<MProject__c> projects = TestDataFactory.createProjects();
+
             for(User user : [select Id from User where Id != :UserInfo.getUserId() and IsActive = true limit 3])
             {
-                TeamMember__c member = new TeamMember__c(Project__c = project.Id, User__c = user.Id);
+                TeamMember__c member = new TeamMember__c(Project__c = projects[0].Id, User__c = user.Id);
                 insert member;
             }
-
             PageReference newChangePage = Page.ChangeEditor;
             Test.setCurrentPage(newChangePage);
-            ChangeEditorController controller = new ChangeEditorController(new ApexPages.Standardcontroller(new Change__c(Project__c=project.Id)));
+            ChangeEditorController controller = new ChangeEditorController(new ApexPages.Standardcontroller(new Change__c(Project__c = projects[0].Id)));
 
             system.assertEquals(3, controller.Followers.size());
 
@@ -324,14 +320,13 @@ public class ChangeEditorController
         u.UserPreferencesDisableAutoSubForFeeds = false;
         system.runAs(u)
         {
-            MProject__c project = new MProject__c();
-            insert project;
+            List<MProject__c> projects = TestDataFactory.createProjects();
             for(User user : [select Id from User where Id != :UserInfo.getUserId() and IsActive = true limit 2])
             {
-                TeamMember__c member = new TeamMember__c(Project__c = project.Id, User__c = user.Id);
+                TeamMember__c member = new TeamMember__c(Project__c = projects[0].Id, User__c = user.Id);
                 insert member;
             }
-            Change__c change = new Change__c(Project__c = project.Id, AssignedTo__c = UserInfo.getUserId(), OpenedBy__c = UserInfo.getUserId(), Description__c = 'this is a test');
+            Change__c change = new Change__c(Project__c = projects[0].Id, AssignedTo__c = UserInfo.getUserId(), OpenedBy__c = UserInfo.getUserId(), Description__c = 'this is a test');
             insert change;
 
             PageReference newChangePage = Page.ChangeEditor;

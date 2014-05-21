@@ -238,14 +238,8 @@ public abstract class MobileNotificationService
     static void testMaps()
     {
         List<User> users = [select Id, Name from User where IsEmployee__c = 1 and IsActive = true and Id != :UserInfo.getUserId() limit 2];
-        MProject__c project = new MProject__c(Name = 'acme');
-        insert project;
-        List<Change__c> changes = new List<Change__c>();
-        changes.add(new Change__c(Name = 'acme1', Project__c = project.Id, AssignedTo__c = users[0].Id, Type__c = 'Change', Priority__c = 'Low',
-                                  Status__c = 'Open', DueDate__c = System.today(), Description__c = 'luffy1'));
-        changes.add(new Change__c(Name = 'acme2', Project__c = project.Id, AssignedTo__c = users[1].Id, Type__c = 'Task', Priority__c = 'High',
-                                  Status__c = 'Reopen', DueDate__c = System.today(), Description__c = 'luffy2'));
-        insert changes;
+        List<MProject__c> projects = TestDataFactory.createProjects();
+        List<Change__c> changes = TestDataFactory.createChanges(projects);
         Set<Id> changeIds = new Set<Id>();
         for(Change__c change : changes)
         {
@@ -299,7 +293,7 @@ public abstract class MobileNotificationService
         }
 
         Map<Id, Change__c> changeId2Change = getChangeId2Change(changes);
-        System.assertEquals(2, changeId2Change.size());
+        System.assertEquals(50, changeId2Change.size());
         System.assertEquals(changes[0].Id, changeId2Change.get(changes[0].Id).Id);
 
         Test.stopTest();
@@ -308,22 +302,15 @@ public abstract class MobileNotificationService
     @isTest
     static void testComposeMessage()
     {
-        List<User> users = [select Id, Name from User where IsEmployee__c = 1 and IsActive = true limit 2];
-        MProject__c project = new MProject__c(Name = 'acme');
-        insert project;
-        List<Change__c> changes = new List<Change__c>();
-        changes.add(new Change__c(Name = 'acme1', Project__c = project.Id, AssignedTo__c = users[0].Id, Type__c = 'Change', Priority__c = 'Low',
-                                  Status__c = 'Open', DueDate__c = System.today(), Description__c = 'luffy'));
-        changes.add(new Change__c(Name = 'acme2', Project__c = project.Id, AssignedTo__c = users[1].Id, Type__c = 'Task', Priority__c = 'Low',
-                                  Status__c = 'Open', DueDate__c = System.today(), Description__c = 'luffy'));
-        insert changes;
+        List<MProject__c> projects = TestDataFactory.createProjects();
+        List<Change__c> changes = TestDataFactory.createChanges(projects);
 
         Test.startTest();
 
         System.assertEquals(true, valueIsChanged(changes[0], changes[1], 'Name'));
         System.assertEquals(false, valueIsChanged(changes[0], changes[1], 'Priority__c'));
 
-        String prefixOfChangeMessage = 'Change: \"' + 'acme1' + '\" in Project: \"' + 'acme' + '\"';
+        String prefixOfChangeMessage = 'Change: \"' + 'Change0' + '\" in Project: \"' + 'ProjectA0' + '\"';
         System.assertEquals(prefixOfChangeMessage, composePrefixOfChangeMessage(changes[0]));
 
         String changeMessage = prefixOfChangeMessage + ' has been changed with following field(s): { ' + 'Subject, Owner, Type' + ' }.';
