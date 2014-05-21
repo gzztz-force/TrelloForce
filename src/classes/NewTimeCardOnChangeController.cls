@@ -3,9 +3,10 @@
  * Navigates the user to the standard New TimeCard page with additional parameters
  * The page is used on the button "New Time Card" on the time card list of Change detail page.
  */
-public with sharing class NewTimeCardOnChangeController 
+public with sharing class NewTimeCardOnChangeController
 {
 	private Change__c change;
+
 	public NewTimeCardOnChangeController()
 	{
 		String changeId = ApexPages.currentPage().getParameters().get('cid');
@@ -15,7 +16,7 @@ public with sharing class NewTimeCardOnChangeController
 			change = changes[0];
 		}
 	}
-	
+
 	public PageReference redirect()
 	{
 		if(change == null)
@@ -41,16 +42,17 @@ public with sharing class NewTimeCardOnChangeController
 			return result;
 		}
 	}
-	
+
 	@isTest
 	static void testNewTimeCardOnChangeController()
 	{
-		MProject__c newProject = new MProject__c(Name='acme');
-		insert newProject;
-		Change__c newChange = new Change__c(Project__c=newProject.Id, Name='acme');
-		insert newChange;
-		
-		PageReference page = new PageReference('/apex/NewTimeCardOnChange?cid=' + newChange.Id);
+		MProject__c project = TestDataFactory.generateSampleActiveProject('acme');
+        insert project;
+
+	    Change__c change = TestDataFactory.generateSampleChange(project.Id, 'new change');
+        insert change;
+
+		PageReference page = new PageReference('/apex/NewTimeCardOnChange?cid=' + change.Id);
 		Test.setCurrentPage(page);
 		NewTimeCardOnChangeController controller = new NewTimeCardOnChangeController();
 		System.assert(controller.redirect() != null);

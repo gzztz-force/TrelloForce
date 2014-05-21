@@ -7,20 +7,60 @@ public class TestDataFactory
     public static Integer numberOfChanges = 5;
     public static Integer numberOfTimecards = 10;
 
+    public static MProject__c generateSampleProject(String name)
+    {
+        MProject__c pro = new MProject__c();
+        pro.Name = name + ''+ Datetime.now().getTime();
+        return pro;
+    }
+
+    public static MProject__c generateSampleActiveProject(String name)
+    {
+        MProject__c pro = TestDataFactory.generateSampleProject(name);
+        pro.Status__c = 'In Progress';
+        pro.StartDate__c = Date.today();
+        pro.EndDate__c = Date.today().addYears(1);
+        return pro;
+    }
+
+    public static MProject__c generateActiveProjectForCustomer(String name, Id customerId)
+    {
+        MProject__c pro = TestDataFactory.generateSampleActiveProject(name);
+        pro.Customer__c = customerId;
+        return pro;
+    }
+
+    public static Change__c generateSampleChange(Id projectId, String name)
+    {
+        Change__c change = new Change__c(Project__c = projectId,
+                                Name = name,
+                                Description__c = 'Test Change Details',
+                                DueDate__c = Date.today().addMonths(1),
+                                Status__c = 'Open',
+                                Priority__c = 'Low',
+                                OpenedBy__c = UserInfo.getUserId(),
+                                AssignedTo__c = UserInfo.getUserId());
+        return change;
+    }
+
+    public static TeamMember__c generateSampleTeamMember(MProject__c pro)
+    {
+        TeamMember__c member = new TeamMember__c(User__c=UserInfo.getUserId(), Project__c=pro.Id);
+        member.Name = 'acme' + Datetime.now().getTime();
+
+        return member;
+    }
+
     public static List<MProject__c> createProjects()
     {
         // Create Test data
         List<MProject__c> projects = new List<MProject__c>();
 
+        String customerId = createCustomer();
+
         for(Integer i=0; i < numberOfProjects; i++)
         {
-            String customerId = createCustomer();
-
-            projects.add(new MProject__c(Name = 'ProjectA' + i,
-                               Status__c = 'In Progress',
-                               Customer__c = customerId,
-                               StartDate__c = Date.today(),
-                               EndDate__c = Date.today().addYears(1)));
+            projects.add(TestDataFactory.generateActiveProjectForCustomer('ProjectA' + i, customerId));
         }
 
         insert projects;
@@ -28,10 +68,8 @@ public class TestDataFactory
         return projects;
     }
 
-    public static List<TeamMember__c> createTeamMembers()
+    public static List<TeamMember__c> createTeamMembers(List<MProject__c> projects)
     {
-        List<MProject__c> projects = createProjects();
-
         List<TeamMember__c> teamMembers = new List<TeamMember__c>();
 
         for(MProject__c p : projects)
@@ -46,24 +84,15 @@ public class TestDataFactory
         return teamMembers;
     }
 
-    public static List<Change__c> createChanges()
+    public static List<Change__c> createChanges(List<MProject__c> projects)
     {
-        List<MProject__c> projects = createProjects();
-
         List<Change__c> changes = new List<Change__c>();
 
         for(MProject__c project : projects)
         {
             for(Integer i=0; i < numberOfChanges; i++)
             {
-                changes.add(new Change__c(Project__c = project.Id,
-                                Name = 'Test Change' + i,
-                                Description__c = 'Test Change Details',
-                                DueDate__c = Date.today().addMonths(1),
-                                Status__c = 'Open',
-                                Priority__c = 'Low',
-                                OpenedBy__c = UserInfo.getUserId(),
-                                AssignedTo__c = UserInfo.getUserId()));
+                changes.add(TestDataFactory.generateSampleChange(project.Id, 'Change' + i));
             }
         }
         // The first chage is created without specifying the External ID.
@@ -73,25 +102,15 @@ public class TestDataFactory
         return changes;
     }
 
-    public static void createTimecards()
+    public static void createTimecards(List<TeamMember__c> teamMembers)
     {
-        List<TeamMember__c> teamMembers = createTeamMembers();
-        List<Change__c> changes = createChanges();
-
         List<TimeCard__c> timecards = new List<TimeCard__c>();
-
-        Map<Id, Id> memberIdToProjectId = new Map<Id, Id>();
-
-        for(TeamMember__c tm : [select Id, Project__c from TeamMember__c where Id in :teamMembers])
-        {
-            memberIdToProjectId.put(tm.Id, tm.Project__c);
-        }
 
         for(TeamMember__c t : teamMembers)
         {
             for(Integer i=0; i < numberOfTimecards; i++)
             {
-                timecards.add(new TimeCard__c(Project__c = memberIdToProjectId.get(t.Id),
+                timecards.add(new TimeCard__c(Project__c = t.Project__c,
                                      TeamMember__c = t.Id,
                                      Hours__c = 8,
                                      Description__c = 'description' + i,
@@ -102,61 +121,23 @@ public class TestDataFactory
         insert timecards;
     }
 
-    public static void createChangesAndTimeCards()
+    public static String createCustomer()
     {
-        List<TeamMember__c> teamMembers = createTeamMembers();
+        Customer__c newCustomer = new Customer__c(Name = 'acme customer');
 
-        List<Change__c> changes = new List<Change__c>();
-        List<TimeCard__c> timecards = new List<TimeCard__c>();
-
-        for(Integer i=0; i<2; i++)
-        {
-            changes.add(new Change__c(Project__c = teamMembers[0].Project__c,
-                            Name = 'Test Change' + i,
-                            Description__c = 'Test Change Details',
-                            DueDate__c = Date.today().addMonths(1),
-                            Status__c = 'Open',
-                            Priority__c = 'Low',
-                            OpenedBy__c = UserInfo.getUserId(),
-                            AssignedTo__c = UserInfo.getUserId()));
-        }
-        insert changes;
-
-        for(Integer i=0; i<4; i++)
-        {
-            timecards.add(new TimeCard__c(Project__c = teamMembers[0].Project__c,
-                                     TeamMember__c = teamMembers[0].Id,
-                                     Hours__c = 8,
-                                     Description__c = 'description' + i,
-                                     Date__c = Date.today().addDays(-i)));
-        }
-        // The first TimeCard is created without specifying any Change.
-        // The second TimeCard is created with Change field populated, but the specified Change has no External ID.
-        // The thrid and fourth TimeCard are created with Change field populated, and the specified Change does have External ID.
-
-        timecards[1].Change__c = changes[0].Id;
-        timecards[2].Change__c = changes[1].Id;
-        timecards[3].Change__c = changes[1].Id;
-
-        insert timecards;
+        insert newCustomer;
+        return newCustomer.Id;
     }
 
     public static void createTimeCardSyncSettings()
     {
-      TimeCardSyncSetting__c setting = new TimeCardSyncSetting__c();
-      setting.Name__c = 'Eric He';
-      setting.Email__c = 'eric.he@meginfo.com';
-      setting.Endpoint__c = 'https://inlab-developer-edition.ap1.force.com/services/apexrest/TimeCardManagment/';
-      setting.CustomerName__c = 'Touchpoint Solutions';
-      insert setting;
-    }
+        TimeCardSyncSetting__c setting = new TimeCardSyncSetting__c();
+        setting.Name__c = 'Eric He';
+        setting.Email__c = 'eric.he@meginfo.com';
+        setting.Endpoint__c = 'https://inlab-developer-edition.ap1.force.com/services/apexrest/TimeCardManagment/';
+        setting.CustomerName__c = 'Touchpoint Solutions';
 
-    public static String createCustomer()
-    {
-      Customer__c newCustomer = new Customer__c(Name = 'acme customer');
-
-      insert newCustomer;
-      return newCustomer.Id;
+        insert setting;
     }
 
     public static void createFinanceServerCustomSetting()
@@ -169,5 +150,26 @@ public class TestDataFactory
         setting.Password__c = 'acme';
 
         insert setting;
+    }
+
+    public static User newUser(Id profileId, Id roleId)
+    {
+        String ret = 'user' + Math.rint(Math.random() * 100000);
+
+        User testUser = new User();
+        testUser.Email = 'test@test.com';
+        testUser.Username = ret + '@testuser.com';
+        testUser.LastName = 'test';
+        testUser.Alias = 'test';
+        testUser.LanguageLocaleKey = 'en_US';
+        testUser.LocaleSidKey = 'en_US';
+        testUser.TimeZoneSidKey = 'America/Chicago';
+        testUser.EmailEncodingKey = 'UTF-8';
+
+        testUser.UserRoleId = roleId;
+        testUser.ProfileId = profileId;
+        testUser.ManagerId = UserInfo.getUserId();
+
+        return testUser;
     }
 }
