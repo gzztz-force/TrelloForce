@@ -9,8 +9,7 @@ public class TestDataFactory
 
     public static MProject__c generateSampleProject(String name)
     {
-        MProject__c pro = new MProject__c();
-        pro.Name = name + ''+ Datetime.now().getTime();
+        MProject__c pro = new MProject__c(Name=name);
         return pro;
     }
 
