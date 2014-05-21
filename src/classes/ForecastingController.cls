@@ -1,7 +1,7 @@
 /*
  * Controller of page Forecasting
  */
-public class ForecastingController 
+public class ForecastingController
 {
     public ForecastingController()
     {
@@ -19,7 +19,7 @@ public class ForecastingController
         buildNavigation(uid);
         buildTeamMembers(uid);
     }
-    
+
     public List<User> TeamMembers { get; set; }
     public String DateFrame { get; set; }
     public List<User> Navigations { get; set; }
@@ -64,7 +64,7 @@ public class ForecastingController
             }
         }
     }
-    
+
     public Date EndDate
     {
         get
@@ -99,7 +99,7 @@ public class ForecastingController
             }
         }
     }
-    
+
     @ReadOnly
     @RemoteAction
     public static ForecastingResult getUserForecasting(ForecastingParam param)
@@ -114,7 +114,7 @@ public class ForecastingController
         forecasting.Context = param.Context;
         return forecasting;
     }
-    
+
     private static ChartTable getTimeByCustomer(List<Id> userIds, Date startDate, Date endDate)
     {
         ChartTable table = new ChartTable();
@@ -128,13 +128,13 @@ public class ForecastingController
         }
         return table;
     }
-    
+
     private static ChartTable getTimeByProject(List<Id> userIds, Date startDate, Date endDate)
     {
         ChartTable table = new ChartTable();
         for(AggregateResult aggregation : [select sum(Hours__c) h, Project__r.Name p from TimeCard__c where Date__c>=:startDate and Date__c<=:endDate and TeamMember__r.User__c in :userIds group by Project__r.Name order by Project__r.Name])
         {
-            
+
             String project = (String)aggregation.get('p');
             Decimal hours = (Decimal)aggregation.get('h');
             hours = (hours == null) ? 0 : hours;
@@ -143,20 +143,20 @@ public class ForecastingController
         }
         return table;
     }
-    
+
     private static Integer getChangesInvolved(List<Id> userIds, Date startDate, Date endDate)
     {
         Integer count = [select count() from Change__c where Id in (select Change__c from TimeCard__c where Date__c>=:startDate and Date__c<=:endDate and TeamMember__r.User__c in :userIds)];
         return count;
     }
-    
+
     private static Decimal getHoursLogged(List<Id> userIds, Date startDate, Date endDate)
     {
         List<AggregateResult> aggregate = [select sum(Hours__c) h from TimeCard__c where TeamMember__r.User__c in :userIds and Date__c>=:startDate and Date__c<=:endDate];
         Decimal result = (aggregate.size() > 0) ? (Decimal)aggregate[0].get('h') : 0;
         return (result == null) ? 0 : result;
     }
-    
+
     public static List<Id> getTeamMemberIds(Id managerId)
     {
         Set<Id> userIds = new Set<Id>();
@@ -188,7 +188,7 @@ public class ForecastingController
         result.addAll(userIds);
         return result;
     }
-    
+
     private void buildNavigation(String uid)
     {
         List<User> temp = new List<User>();
@@ -226,7 +226,7 @@ public class ForecastingController
             Navigations.add(temp[i]);
         }
     }
-    
+
     private void buildTeamMembers(String uid)
     {
         if(uid == null || uid == '')
@@ -243,7 +243,7 @@ public class ForecastingController
         userIds.remove(null);
         TeamMembers = [select Id, Name from User where ManagerId in :userIds and Id not in :userIds and IsEmployee__c=1 and IsActive=true order by FirstName];
     }
-    
+
     public class ForecastingParam
     {
         public Id UserId { get; set; }
@@ -252,7 +252,7 @@ public class ForecastingController
         public Boolean RollupSummary { get; set; }
         public String Context { get; set; }
     }
-    
+
     public class ForecastingResult
     {
         public ForecastingResult(Id userId, Date startDate, Date endDate, Boolean rollupSummary)
@@ -262,7 +262,7 @@ public class ForecastingController
             this.EndDate = endDate;
             this.RollupSummary = rollupSummary;
         }
-        
+
         public Id UserId { get; set; }
         public Date StartDate { get; set; }
         public Date EndDate { get; set; }
@@ -280,15 +280,16 @@ public class ForecastingController
         Profile p = [select Id from Profile where Name = 'Force.com - Developer'];
         UserRole r = [select Id, Name from UserRole where Name = 'Developer'];
 
-        User user = new User(LastName = 'acme1', Alias = 'acme1', Email = 'acme1@acme.com', IsActive = true, ManagerId = UserInfo.getUserId(),
-                    UserName = 'acme1@acme.com', CommunityNickname = 'acme1', ProfileId = p.Id, UserRoleId = r.Id, EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', TimeZoneSidKey = 'America/Los_Angeles');
-
+        User user = TestDataFactory.newUser(p.Id, r.Id);
         insert user;
 
-        List<MProject__c> projects = TestDataFactory.createProjects();
-        TeamMember__c member = new TeamMember__c(Name='acme', User__c=UserInfo.getUserId(), Project__c=projects[0].Id);
+        MProject__c pro = TestDataFactory.generateSampleActiveProject('acme');
+        insert pro;
+
+        TeamMember__c member = TestDataFactory.generateSampleTeamMember(pro);
         insert member;
-        TimeCard__c card = new TimeCard__c(Project__c=projects[0].Id, TeamMember__c=member.Id, Date__c=Date.today().toStartOfWeek().addDays(-1), Hours__c=3, Description__c='acme');
+
+        TimeCard__c card = new TimeCard__c(Project__c=pro.Id, TeamMember__c=member.Id, Date__c=Date.today().toStartOfWeek().addDays(-1), Hours__c=3, Description__c='acme');
         insert card;
 
         ForecastingController controller = new ForecastingController();
