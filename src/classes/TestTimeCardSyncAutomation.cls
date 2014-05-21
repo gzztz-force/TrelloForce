@@ -5,7 +5,7 @@ private class TestTimeCardSyncAutomation
 	static void testTimeCardSyncService()
 	{
 		TestDataUtil.createTimeCardSyncSettings();
-		String customerId = TestDataUtil.createCustomer('Touchpoint');
+		String customerId = TestDataUtil.createCustomer('Touchpoint Solutions');
 		String projectId = TestDataUtil.createProject(customerId, 'Touchpoint project');
 		String teamMemberId = TestDataUtil.createTeamMember(projectId);
 		List<Change__c> changes = TestDataUtil.createChanges(projectId);
