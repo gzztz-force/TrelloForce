@@ -1,12 +1,12 @@
 /*
- * this Schedule used to send daily timecard report. 
+ * this Schedule used to send daily timecard report.
  */
 global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObject>, Schedulable, Database.Stateful
 {
     private static final String EmailTemplateName = 'DailyTimeCardReport';
     private Id EmailTemplateId;
     private OrgWideEmailAddress OrgWideEmail;
-    
+
     global Database.QueryLocator start(Database.BatchableContext BC)
     {
         Integer dayofweekToday = getDayOfWeek(Date.today());
@@ -15,7 +15,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
             List<EmailTemplate> templates = [select Id from EmailTemplate where Name = :EmailTemplateName];
             List<OrgWideEmailAddress> orgWideEmails = [select Id, DisplayName from OrgWideEmailAddress where Address='pm@meginfo.com' limit 1];
             OrgWideEmail = (orgWideEmails.size() > 0) ? orgWideEmails[0] : null;
-            
+
             if(templates.size() > 0)
             {
                 EmailTemplateId = templates[0].Id;
@@ -24,14 +24,14 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
         }
         return null;
     }
- 
+
     global void execute(Database.BatchableContext BC, List<User> users)
     {
         List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
         for(User user : users)
         {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            mail.setSaveAsActivity(false); 
+            mail.setSaveAsActivity(false);
             mail.setReplyTo('noreply@meginfo.com');
             if(OrgWideEmail != null)
             {
@@ -58,7 +58,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
             }
         }
     }
-    
+
     private void sendErrorMsg(String[] toAddresses, String subject, String body)
     {
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
@@ -69,15 +69,15 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
         mail.setPlaintextBody(body);
         Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
     }
-    
+
     global void finish(Database.BatchableContext BC) {}
-    
+
     global void execute(SchedulableContext SC)
     {
         SendDailyTimeCardReportSchedule batch = new SendDailyTimeCardReportSchedule();
         Database.executeBatch(batch, 1);
     }
-    
+
     //recurring holiday is not supported
     public static Boolean isWorkday(Date d)
     {
@@ -91,7 +91,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
             return false;
         }
     }
-    
+
     //recurring holiday is not supported
     public static Boolean isHoliday(Date d)
     {
@@ -105,18 +105,18 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
             return false;
         }
     }
-    
+
     public static Boolean isWeekend(Integer dayOfWeek)
     {
         return dayOfWeek == 6 || dayOfWeek == 0;
     }
-    
+
     public static Integer getDayOfWeek(Date d)
     {
         Date previousDate = Date.newInstance(2012, 1, 1); //it is sunday
         return Math.mod(previousDate.daysBetween(d), 7);
     }
-    
+
     @isTest
     static void testGetDayOfWeek()
     {
@@ -124,7 +124,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
         System.assertEquals(3, getDayOfWeek(Date.newInstance(2013, 2, 13)));
         System.assertEquals(1, getDayOfWeek(Date.newInstance(2012, 10, 29)));
     }
-    
+
     @isTest
     static void testSendDailyTimeCardReportSchedule()
     {
@@ -136,7 +136,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
         Database.executeBatch(batch);
         Test.stopTest();
     }
-    
+
     @isTest
     static void testExecute()
     {

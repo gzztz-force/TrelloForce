@@ -73,12 +73,23 @@
         <type>Lookup</type>
     </fields>
     <fields>
+        <fullName>FinUserName__c</fullName>
+        <description>Store username in finance system.</description>
+        <externalId>false</externalId>
+        <label>Finance Username</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>IsDeveloper__c</fullName>
-        <description>1 represents developer user,
+        <description>1 represents developer user, 
 0 represents non-developer</description>
         <externalId>false</externalId>
-        <formula>IF((IsEmployee__c == 1) &amp;&amp;
-(UserRole.Name != &apos;Finance User&apos;) &amp;&amp;
+        <formula>IF((IsEmployee__c == 1) &amp;&amp; 
+(UserRole.Name != &apos;Finance User&apos;) &amp;&amp; 
 (UserRole.Name != &apos;CEO&apos;),
 1, 0)</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
@@ -87,17 +98,6 @@
         <required>false</required>
         <scale>0</scale>
         <type>Number</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>FinUserName__c</fullName>
-        <description>Store username in finance system.</description>
-        <externalId>false</externalId>
-        <label>Fin UserName</label>
-        <length>100</length>
-        <required>false</required>
-        <trackFeedHistory>false</trackFeedHistory>
-        <type>Text</type>
         <unique>false</unique>
     </fields>
     <fields>
@@ -128,6 +128,10 @@
         <scale>0</scale>
         <type>Number</type>
         <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ManagerId</fullName>
+        <type>Hierarchy</type>
     </fields>
     <fields>
         <fullName>NextBirthday__c</fullName>

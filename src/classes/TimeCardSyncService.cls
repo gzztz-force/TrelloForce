@@ -31,7 +31,7 @@ public class TimeCardSyncService
         for(TimeCard__c entry : [select Id, Name, IsSync__c, Billable__c, Date__c, Hours__c, Description__c, Project__c, Change__c,
                                         Project__r.Name, TeamMember__r.User__r.Name, TeamMember__r.User__r.Email, 
                                         Change__r.Name, Change__r.ExternalID__c, Change__r.Project__c, Change__r.Project__r.Name, Change__r.CreatedBy.Name, Change__r.CreatedBy.Email
-                                from TimeCard__c where IsSync__c = false and Project__r.Customer__r.Name = :customerName
+                                from TimeCard__c where IsSync__c = false and Project__r.Customer__r.Name = :customerName and Hours__c > 0 and Date__c != null
                                 order by Project__r.Name, Change__r.Name, Name])
         {
             
@@ -131,7 +131,7 @@ public class TimeCardSyncService
             gen.writeStringField('Requirement__c', timeCard.Change__r.ExternalID__c);
             gen.writeDateField('Date__c', timeCard.Date__c);
             gen.writeNumberField('Hour__c', timeCard.Hours__c);
-            gen.writeStringField('Description__c', timeCard.Description__c);
+            gen.writeStringField('Description__c', (timeCard.Description__c != null ? timeCard.Description__c : 'No Description'));
             gen.writeStringField('Type__c', (timeCard.Billable__c ? 'Billable' : 'Non-Billable'));            
             gen.writeEndObject();
         }

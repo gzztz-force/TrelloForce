@@ -2,5 +2,6 @@ config/
 src/staticresources/
 *.sublime-project
 *.sublime-workspace
+*.sublime-settings
 *.log
 deploy/
