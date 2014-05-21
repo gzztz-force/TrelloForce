@@ -141,11 +141,11 @@ public class ChartTable
             this.ImageName = '';
         }
 
-        public CellInfo(Decimal hours, String leaveType, String ImageName)
+        public CellInfo(Decimal hours, String leaveType, String imageName)
         {
             this.Hours = hours;
             this.LeaveType = leaveType;
-            this.ImageName = ImageName;
+            this.ImageName = imageName;
         }
 
         public Decimal Hours { get; set; }
