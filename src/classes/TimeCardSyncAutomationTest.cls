@@ -1,5 +1,5 @@
 @isTest
-private class TestTimeCardSyncAutomation
+private class TimeCardSyncAutomationTest
 {
     @isTest
     static void testTimeCardSyncService()
