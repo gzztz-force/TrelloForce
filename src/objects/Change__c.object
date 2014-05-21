@@ -498,7 +498,7 @@
     </validationRules>
     <validationRules>
         <fullName>ChangeCantBeCreatedUnderSelectedProject</fullName>
-        <active>false</active>
+        <active>true</active>
         <errorConditionFormula>AND(ISNEW(), OR(ISPICKVAL(Project__r.Status__c, &quot;Not Started&quot;), ISPICKVAL(Project__r.Status__c, &quot;Pending&quot;), ISPICKVAL(Project__r.Status__c, &quot;Closed&quot;)))</errorConditionFormula>
         <errorDisplayField>Project__c</errorDisplayField>
         <errorMessage>The selected project has not been started, or the project is pending or closed.</errorMessage>
@@ -515,7 +515,7 @@
         <fullName>OnlyOpenerOrAdminCanCloseChange</fullName>
         <active>true</active>
         <description>Only the change owner or system administrator can close this change.</description>
-        <errorConditionFormula>AND(ISCHANGED(Status__c), ISPICKVAL(Status__c, &quot;Closed&quot;), OpenedBy__c &lt;&gt; $User.Id, $Profile.Name &lt;&gt; &quot;Platform System Admin&quot;)</errorConditionFormula>
+        <errorConditionFormula>AND(ISCHANGED(Status__c), ISPICKVAL(Status__c, &quot;Closed&quot;), OpenedBy__c &lt;&gt; $User.Id, $Profile.Name &lt;&gt; &quot;Platform System Admin&quot;, $UserRole.Name &lt;&gt; &apos;Team Manager&apos;)</errorConditionFormula>
         <errorDisplayField>Status__c</errorDisplayField>
         <errorMessage>Only the change owner or system administrator can close this change.</errorMessage>
     </validationRules>
