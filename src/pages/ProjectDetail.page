@@ -26,9 +26,9 @@
               this.style.color = "black";
             } );
         });
-        function setSelectMemberId(obj)
+        function setSelectMemberId(obj, selectMember)
         {
-            var selectMemberInput = document.getElementById("j_id0:j_id18:changelist:j_id78:hiddenSelectMember");
+            var selectMemberInput = document.getElementById(selectMember);
             selectMemberInput.value = obj.value;
         }
     </script>
@@ -102,7 +102,7 @@
               <span style="float:right">
                   <apex:actionFunction action="{!refreshByMember}" name="refreshByMember" reRender="changePanel" status="selectMembersStatus" />
                   <apex:inputhidden value="{!selectMemberId}" id="hiddenSelectMember" />
-                  <select id="memberSelect" onchange="setSelectMemberId(this);refreshByMember()">
+                  <select id="memberSelect" onchange="setSelectMemberId(this, '{!$Component.hiddenSelectMember}');refreshByMember()">
                       <option value="All">All Members</option>
                       <option value="{!$User.Id}">Mine</option>
                       <optgroup label="----"></optgroup>
