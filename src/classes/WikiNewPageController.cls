@@ -1,5 +1,5 @@
 /*
- * This controller is Referenced by WikiNewPage and used to create/edit WikiPages.
+ * This controller is Referenced by WikiNewPage and used to create/edit WikiPage.
  */
 public class WikiNewPageController
 {
@@ -12,7 +12,6 @@ public class WikiNewPageController
     public Boolean IsValid { get; set; }
     public WikiPageVersion__c LatestPage { get; set; }
 
-
     public WikiNewPageController()
     {
         IsValid = true;
@@ -22,6 +21,7 @@ public class WikiNewPageController
                                     from WikiPageVersions__r where WikiPage__c = :pageId and IsLatestVersion__c = true)
                                     from WikiPage__c where Id = :pageId];
         isNew = (pages.size() <= 0) ? true : false;
+
         if (isNew)
         {
             parentPage = new WikiPage__c();
@@ -44,21 +44,22 @@ public class WikiNewPageController
                 IsValid = false;
             }
         }
-    }    
+    }
 
     public User getUserInfo()
     {
         return [select Id, Name, SmallPhotoUrl from User where Id = :UserInfo.getUserId()];
     }
+
     public List<SelectOption> SpaceOptions
-    {        
+    {
        get
         {
             List<SelectOption> options = new List<SelectOption>();
             options.add(new SelectOption('', '--None--'));
 
             List<WikiSpace__c> spaces = [select Id, Name from WikiSpace__c];
-            if(spaces.size() <= 0)
+            if (spaces.size() <= 0)
             {
                 WikiSpace__c space =  new WikiSpace__c(Name = 'Other');
                 insert space;
@@ -75,8 +76,8 @@ public class WikiNewPageController
                     WikiSpaceId = options[1].getValue();
                 }
             }
-            return options; 
-        }       
+            return options;
+        }
     }
 
     public PageReference save()
@@ -98,24 +99,24 @@ public class WikiNewPageController
                 update versionPageClone;
             }
 
-            WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true,VersionNumber__c = LatestPage.VersionNumber__c + 1, LastPublishedDate__c = System.Now());
+            WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true, VersionNumber__c = LatestPage.VersionNumber__c + 1, LastPublishedDate__c = System.Now());
             insert newVersionPage;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Database.rollback(sp);
             ApexPages.addMessages(ex);
             return null;
         }
-        return new PageReference('/apex/WikiViewPage?id='+parentPage.Id);
+        return new PageReference('/apex/WikiViewPage?id=' + parentPage.Id);
     }
 
     public PageReference cancel()
     {
-        if(!isNew)
+        if (!isNew)
         {
-            return new PageReference('/apex/WikiViewPage?id='+parentPage.Id);
+            return new PageReference('/apex/WikiViewPage?id=' + parentPage.Id);
         }
-        return new PageReference('/apex/WikiHome');        
+        return new PageReference('/apex/WikiHome');
     }
 }
