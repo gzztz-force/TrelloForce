@@ -69,6 +69,8 @@
         <members>User</members>
         <members>WorkBadgeDefinition</members>
         <members>WorkThanks</members>
+        <members>Score__c</members>
+        <members>SubScore__c</members>
         <name>CustomObject</name>
     </types>
     <types>
