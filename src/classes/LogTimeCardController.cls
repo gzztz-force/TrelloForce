@@ -37,6 +37,22 @@ global with sharing class LogTimeCardController
         }
     }
 
+    public String CurrentUserName
+    {
+        get
+        {
+            return [select Name from User where Id = :UserInfo.getUserId()].Name;
+        }
+    }
+
+    public String ReportId
+    {
+        get
+        {
+            return [select Id, Name from Report where Name = 'Seven Days Timecard Report' limit 1].Id;
+        }
+    }
+
     private static List<ProjectWithChanges> getRecentUsedProjects()
     {
         List<ProjectWithChanges> result = new List<ProjectWithChanges>();
