@@ -7,6 +7,8 @@
                     <div class="tab-pane active" id="home">
                         <form class="form-horizontal">
                             <fieldset>
+                                <!-- <legend>Log your time card</legend> -->
+                                <div class="alert-panel"></div>
                                 <div class="control-group">
                                     <label class="control-label" for="inputProject">Project</label>
                                     <div class="form-nowrap">
