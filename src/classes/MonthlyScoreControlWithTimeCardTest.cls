@@ -5,7 +5,15 @@
 private class MonthlyScoreControlWithTimeCardTest
 {
     @isTest
-    static void testTimeCardGreaterThan23()
+    static void testSchedule()
+    {
+        Test.startTest();
+        MonthlyScoreControlWithTimeCard schedule = new MonthlyScoreControlWithTimeCard();
+        Test.stopTest();
+
+    }
+    @isTest
+    static void testBatch()
     {
         Test.startTest();
         User user = TestDataFactory.newUser('00e8000000183bS', '00E800000013v1n');
@@ -26,15 +34,16 @@ private class MonthlyScoreControlWithTimeCardTest
             timecards.add(new TimeCard__c(Project__c = project.Id, TeamMember__c = teamMember.Id, Hours__c = 8, Description__c = 'description' + i, Date__c = firstDay.addDays(i)));
         }
         insert timecards;
-        MonthlyScoreControlWithTimeCard ms = new MonthlyScoreControlWithTimeCard();
-        String jobId = System.schedule('testMonthlyScoreControlWithTimeCard', '0 0 0 1 7 ? 2014', ms);
-        CronTrigger ct = [select Id, CronExpression, TimesTriggered, NextFireTime from CronTrigger where id = :jobId];
-        ID batchId = Database.executeBatch(ms);
-        //Double scores1 = [select Worth__c from  Score__c where User__c = :UserInfo.getUserId() limit 1].Worth__c;
+        //MonthlyScoreControlWithTimeCard ms = new MonthlyScoreControlWithTimeCard();
+        //String jobId = System.schedule('testMonthlyScoreControlWithTimeCard', '0 0 0 1 7 ? 2014', ms);
+        MonthlyScoreControlWithTimeCard batch = new MonthlyScoreControlWithTimeCard();
+        Database.executeBatch(batch);
+
         System.assertNotEquals(0.3, [select Worth__c from  Score__c where User__c = :user.Id limit 1].Worth__c);
         Test.stopTest();
-        //Double scores2 = [select Worth__c from  Score__c where User__c = :UserInfo.getUserId() limit 1].Worth__c;
         System.assertEquals(0.3, [select Worth__c from  Score__c where User__c = :user.Id limit 1].Worth__c);
+
+
     }
 
 }

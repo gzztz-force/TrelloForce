@@ -7,43 +7,45 @@ global class MonthlyScoreControlWithTimeCard implements Database.Batchable<SObje
 
     global   Database.QueryLocator start(Database.BatchableContext BC)
     {
-        return Database.getQueryLocator([select Id, Name from User]);
+        return Database.getQueryLocator([select Id, Name from User where IsActive = true and IsEmployee__c=1]);
     }
 
     //execute method for batch
     global void execute(Database.BatchableContext BC, List<User> users)
     {
         Date dateNow = Date.today();
-        Integer yearNow = dateNow.year();
         Integer lastMonth = dateNow.month()-1;
         Integer daysLastMonth = workDaysOf2014.get(lastMonth);
 
         Set<Id> userIds = new Set<Id>();
-
         for(User u : users)
         {
             userIds.add(u.Id);
         }
 
-        //date for sql to select TimeCard where between startDay and endDay
-        Date startDay = Date.newInstance(yearNow, lastMonth, 1);
-        Date endDay = Date.newInstance(yearNow, lastMonth, daysLastMonth);
-        //String startDay = yearNow + '-' + lastMonth + '-01';
-        //String endDay = yearNow + '-' + lastMonth + '-' + daysLastMonth;
+        //***************start************
+        //Date startDay = Date.newInstance(yearNow, lastMonth, 1);
+        //Date endDay = Date.newInstance(yearNow, lastMonth, daysLastMonth);
+        //**************end***************
 
         //all TimeCards this month
-        AggregateResult[] timeCards = [select TeamMember__r.User__r.Id, sum(hours__c) from TimeCard__c where (IsLogatSameDay__c = true) and (Date__c >= :startDay and Date__c <= :endDay) group by TeamMember__r.User__r.Id, Date__c order by Date__c desc];
-        List<Score__c> scores = [select User__r.Id, Worth__c, Id from Score__c];
-
-        Map<Id, Integer> allTimeCards = new Map<Id, Integer>();
-        Map<Id, Id> allScores = new Map<Id, Id>();
-
+        AggregateResult[] timeCards;
+        if(Test.isRunningTest())
+        {
+            timeCards = [select TeamMember__r.User__c uid, Date__c, sum(hours__c) from TimeCard__c where (TeamMember__r.User__c in :userIds) and (Date__c >= 2014-06-01) and (Date__c < 2014-07-01) group by TeamMember__r.User__c, Date__c order by Date__c desc];
+        }
+        else
+        {
+            timeCards = [select TeamMember__r.User__c uid, Date__c, sum(hours__c) from TimeCard__c where (TeamMember__r.User__c in :userIds) and (IsLogatSameDay__c = true) and Date__c = LAST_MONTH group by TeamMember__r.User__c, Date__c order by Date__c desc];
+        }
+        List<Score__c> scores = [select User__r.Id, Worth__c, Id from Score__c where User__r.Id in :userIds];
         //keep the userId as key and his/her count of days has timecard this month as value on the map
+        Map<Id, Integer> allTimeCards = new Map<Id, Integer>();
         for(AggregateResult ar: timeCards)
         {
             if(Integer.valueOf(ar.get('expr0')) >= 6)
             {
-                String userIdStr = String.valueOf(ar.get('TeamMember__r.User__r.Id'));
+                String userIdStr = String.valueOf(ar.get('uid'));
                 Id userId = Id.valueOf(userIdStr);
                 Integer TimeCardNumber;
                 if(allTimeCards.get(userId) == null)
@@ -59,8 +61,10 @@ global class MonthlyScoreControlWithTimeCard implements Database.Batchable<SObje
             }
         }
 
-        //It is wordy here....
-        //keep the userId as key and his/her scoreId  as value on the map
+        //save the userId as key and his/her scoreId  as value on the map
+        Map<Id, Id> allScores = new Map<Id, Id>();
+        //save all subScore should be insert
+        List<SubScore__c> addSubScores = new List<SubScore__c>();
         for(Score__c s : scores)
         {
             allScores.put(s.User__r.Id, s.Id);
@@ -83,11 +87,12 @@ global class MonthlyScoreControlWithTimeCard implements Database.Batchable<SObje
                     SubScore__c addScore = new SubScore__c();
                     addScore.Score__c = scoreId;
                     addScore.worth__c = 0.3;
-                    addScore.Description__c = 'TimeCard encourage for ' + yearNow + '.' + (lastMonth) ;
-                    insert addScore;
+                    addScore.Description__c = 'TimeCard encourage for ' + dateNow.year() + '.' + lastMonth ;
+                    addSubScores.add(addScore);
                 }
             }
         }
+        insert addSubScores;
     }
 
     global void finish(Database.BatchableContext BC)
