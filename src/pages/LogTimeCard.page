@@ -2,7 +2,7 @@
     <html class="no-js">
         <c:PMDocumentHead />
         <body class="time-card-body">
-            <div id="force" class="time-card" style="width: 518px;">
+            <div id="force" class="time-card">
                 <div>
                     <div class="tab-pane active" id="home">
                         <form class="form-horizontal">
