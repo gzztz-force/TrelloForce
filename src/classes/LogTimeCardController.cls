@@ -195,8 +195,7 @@ global with sharing class LogTimeCardController
 
         try {
             insert obj;
-            String recordId = String.valueOf(obj.Id);
-            ConnectApi.Topics.assignTopicByName(null, recordId, 'Global Action');
+            createTopicForTimecardRecord(obj.Id);
         } catch (DMLException dmle) {
             String fieldNames = '';
             for (String field : dmle.getDmlFieldNames(0)) {
@@ -232,5 +231,11 @@ global with sharing class LogTimeCardController
             }
         }
         return hoursMap;
+    }
+
+    // When timecard created by global action, add topic for the record
+    private static void createTopicForTimecardRecord(Id objId)
+    {
+        ConnectApi.Topics.assignTopicByName(null, String.valueOf(objId), 'Global Action');
     }
 }
