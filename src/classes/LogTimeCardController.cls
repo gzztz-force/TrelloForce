@@ -86,10 +86,11 @@ global with sharing class LogTimeCardController
         {
             ProjectWithChanges pc = new ProjectWithChanges(project);
 
-            // The first element of Project Id List is the latest used prject id
-            // It is selected by default
+            // The current project or the first element of project Id list
+            // will be selected by default
             pc.IsSelectedProject = (selectedProjectId == project.Id);
 
+            // When query projects we didn't query current change, put it in.
             if(currentChange != null && currentChange.Project__c == project.Id)
             {
                 pc.addChange(currentChange);
@@ -157,7 +158,6 @@ global with sharing class LogTimeCardController
             this.Changes = project.Changes__r;
             this.IsSelectedProject = false;
             this.TeamMemberId = (project.TeamMembers__r.size() > 0) ? project.TeamMembers__r[0].Id : null;
-            //this.ChangesJsonData = JSON.serialize(project.Changes__r);
         }
 
         public Boolean IsSelectedProject { get; set; }

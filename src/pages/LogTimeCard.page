@@ -24,6 +24,7 @@
                                                 </apex:outputPanel>
                                             </apex:repeat>
                                         </select>
+                                        <!-- Link to project detail page -->
                                         <a id="projectLink" target="_blank" href="#" class="link-area pull-right">
                                             <span class="glyphicon glyphicon-new-window"></span>
                                         </a>
@@ -37,6 +38,7 @@
                                         <apex:repeat value="{!RecentProjects}" var="rp">
                                             <apex:outputPanel rendered="{!rp.IsSelectedProject}">
                                                 <apex:repeat value="{!rp.Changes}" var="change">
+                                                    <!-- Set option as a default -->
                                                     <apex:outputPanel rendered="{!CurrentChange.Id == change.Id}">
                                                         <option selected="selected" value="{!change.Id}">{!change.Name}</option>
                                                     </apex:outputPanel>
@@ -47,6 +49,7 @@
                                             </apex:outputPanel>
                                         </apex:repeat>
                                     </select>
+                                    <!-- Link to change detail page -->
                                     <a id="changeLink" target="_blank" href="#" class="link-area pull-right">
                                         <span class="glyphicon glyphicon-new-window"></span>
                                     </a>
@@ -97,7 +100,6 @@
                                     <!--
                                         Save is implmented by remote action in timecard.js
                                         ================================================= -->
-
                                     <div class="btn-group pull-right">
                                         <div>
                                             <apex:outputPanel layout="none" rendered="{!$ObjectType.TimeCard__c.Fields.Billable__c.Accessible}">
