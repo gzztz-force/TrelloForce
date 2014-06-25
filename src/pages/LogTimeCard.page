@@ -12,14 +12,23 @@
                                 <div class="control-group">
                                     <label class="control-label" for="inputProject">Project</label>
                                     <div class="form-nowrap">
-                                        <select name="" class="form-control pull-left resize-width" id="selectProject" required="required">
-                                            <apex:repeat value="{!RecentProjects}" var="rp">
+                                        <select name="" class="form-control pull-left resize-width" id="selectProject" required="required" tabindex="1">
+                                            <apex:repeat value="{!RecentProjects}" var="rp" rendered="{!NOT(IsChatterPage)}">
+                                                <apex:outputPanel layout="none" rendered="{!rp.IsSelectedProject}">
+                                                    <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="none" rendered="{!NOT(rp.IsSelectedProject)}">
+                                                    <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                                                </apex:outputPanel>
+                                            </apex:repeat>
+
+                                            <apex:repeat value="{!RecentProjects}" var="rp" rendered="{!IsChatterPage}">
                                                 <!-- Set option as a default -->
-                                                <apex:outputPanel layout="none" rendered="{!rp.IsLatestUsedProject}">
+                                                <apex:outputPanel layout="none" rendered="{!rp.IsSelectedProject}">
                                                     <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}
                                                     </option>
                                                 </apex:outputPanel>
-                                                <apex:outputPanel layout="none" rendered="{!Not(rp.IsLatestUsedProject)}">
+                                                <apex:outputPanel layout="none" rendered="{!Not(rp.IsSelectedProject)}">
                                                     <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
                                                 </apex:outputPanel>
                                             </apex:repeat>
@@ -32,12 +41,17 @@
                                 </div>
                                 <div class="control-group">
                                     <label class="control-label" for="selectChange">Change</label>
-                                    <select class="form-control pull-left resize-width" id="selectChange">
+                                    <select class="form-control pull-left resize-width" id="selectChange" tabindex="2">
                                         <option></option>
                                         <apex:repeat value="{!RecentProjects}" var="rp">
-                                            <apex:outputPanel rendered="{!rp.IsLatestUsedProject}">
+                                            <apex:outputPanel rendered="{!rp.IsSelectedProject}">
                                                 <apex:repeat value="{!rp.Changes}" var="change">
-                                                    <option value="{!change.Id}">{!change.Name}</option>
+                                                    <apex:outputPanel rendered="{!CurrentChange.Id == change.Id}">
+                                                        <option selected="selected" value="{!change.Id}">{!change.Name}</option>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!CurrentChange.Id != change.Id}">
+                                                        <option value="{!change.Id}">{!change.Name}</option>
+                                                    </apex:outputPanel>
                                                 </apex:repeat>
                                             </apex:outputPanel>
                                         </apex:repeat>
