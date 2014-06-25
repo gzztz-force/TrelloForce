@@ -13,16 +13,7 @@
                                     <label class="control-label" for="inputProject">Project</label>
                                     <div class="form-nowrap">
                                         <select name="" class="form-control pull-left resize-width" id="selectProject" required="required" tabindex="1">
-                                            <apex:repeat value="{!RecentProjects}" var="rp" rendered="{!NOT(IsChatterPage)}">
-                                                <apex:outputPanel layout="none" rendered="{!rp.IsSelectedProject}">
-                                                    <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
-                                                </apex:outputPanel>
-                                                <apex:outputPanel layout="none" rendered="{!NOT(rp.IsSelectedProject)}">
-                                                    <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
-                                                </apex:outputPanel>
-                                            </apex:repeat>
-
-                                            <apex:repeat value="{!RecentProjects}" var="rp" rendered="{!IsChatterPage}">
+                                            <apex:repeat value="{!RecentProjects}" var="rp">
                                                 <!-- Set option as a default -->
                                                 <apex:outputPanel layout="none" rendered="{!rp.IsSelectedProject}">
                                                     <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}

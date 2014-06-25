@@ -14,37 +14,28 @@ global with sharing class LogTimeCardController
 
     public LogTimeCardController()
     {
-        IsChatterPage = false;
-        try
+        objectId = ApexPages.currentPage().getParameters().get('id');
+
+        CurrentChange = new Change__c();
+        if(String.isNotBlank(objectId))
         {
-            objectId = ApexPages.currentPage().getParameters().get('id');
-
-            CurrentChange = new Change__c();
-            if(String.isNotBlank(objectId))
+            if(objectId.startsWith(Schema.getGlobalDescribe().get('Change__c').getDescribe().getKeyPrefix()))
             {
-                if(objectId.startsWith(Schema.getGlobalDescribe().get('Change__c').getDescribe().getKeyPrefix()))
-                {
-                    currentChangeId = objectId;
-                    CurrentChange = [select Id, Name, Project__c, Project__r.Name from Change__c where Id = :objectId][0];
-                    currentProjectId = CurrentChange.Project__c;
-                }
+                //Set default change and project when in change detail page.
+                currentChangeId = objectId;
+                CurrentChange = [select Id, Name, Project__c, Project__r.Name from Change__c where Id = :objectId][0];
+                currentProjectId = CurrentChange.Project__c;
+            }
 
-                if(objectId.startsWith(Schema.getGlobalDescribe().get('MProject__c').getDescribe().getKeyPrefix()))
-                {
-                    currentProjectId = objectId;
-                }
+            else if(objectId.startsWith(Schema.getGlobalDescribe().get('MProject__c').getDescribe().getKeyPrefix()))
+            {
+                currentProjectId = objectId;
             }
         }
-        catch(Exception ex)
-        {
-            IsChatterPage = true;
-        }
-
         loggedHoursMap = getTodayAndYesterdayHours();
     }
 
     public Change__c CurrentChange { get; set; }
-    public Boolean IsChatterPage { get; set; }
 
     public String TodayHours
     {
