@@ -204,6 +204,8 @@ global with sharing class LogTimeCardController
 
         try {
             insert obj;
+            String recordId = String.valueOf(obj.Id);
+            ConnectApi.Topics.assignTopicByName(null, recordId, 'Global Action');
         } catch (DMLException dmle) {
             String fieldNames = '';
             for (String field : dmle.getDmlFieldNames(0)) {
