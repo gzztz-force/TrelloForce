@@ -8,10 +8,34 @@ global with sharing class LogTimeCardController
     private static final Integer QUERY_CHANGE_NUMBER = 50;
 
     private Map<String, String> loggedHoursMap;
+    private String objectId;
+    private String currentProjectId;
+    private String currentChangeId;
+
     public LogTimeCardController()
     {
+        objectId = ApexPages.currentPage().getParameters().get('id');
+
+        CurrentChange = new Change__c();
+        if(String.isNotBlank(objectId))
+        {
+            if(objectId.startsWith(Schema.getGlobalDescribe().get('Change__c').getDescribe().getKeyPrefix()))
+            {
+                //Set default change and project when in change detail page.
+                currentChangeId = objectId;
+                CurrentChange = [select Id, Name, Project__c, Project__r.Name from Change__c where Id = :objectId][0];
+                currentProjectId = CurrentChange.Project__c;
+            }
+
+            else if(objectId.startsWith(Schema.getGlobalDescribe().get('MProject__c').getDescribe().getKeyPrefix()))
+            {
+                currentProjectId = objectId;
+            }
+        }
         loggedHoursMap = getTodayAndYesterdayHours();
     }
+
+    public Change__c CurrentChange { get; set; }
 
     public String TodayHours
     {
@@ -33,27 +57,46 @@ global with sharing class LogTimeCardController
     {
         get
         {
-            return getRecentUsedProjects();
+            return getRecentUsedProjects(CurrentChange, currentProjectId);
         }
     }
 
-    private static List<ProjectWithChanges> getRecentUsedProjects()
+    public String CurrentUserName
+    {
+        get
+        {
+            return UserInfo.getName();
+        }
+    }
+
+    private static List<ProjectWithChanges> getRecentUsedProjects(Change__c currentChange, String currentProjectId)
     {
         List<ProjectWithChanges> result = new List<ProjectWithChanges>();
 
-        List<String> projectIds = getRecentUsedProjectIds();
-        List<MProject__c> recentProjects = queryProjects(projectIds);
+        List<String> recentUsedProjectIds = getRecentUsedProjectIds();
 
+        Set<String> projectIds = new Set<String>();
+        projectIds.addAll(recentUsedProjectIds);
+        projectIds.add(currentProjectId);
+
+        List<MProject__c> recentProjects = queryProjects(projectIds, currentChange);
+
+        String selectedProjectId = String.isBlank(currentProjectId) ? recentUsedProjectIds[0] : currentProjectId;
         for(MProject__c project : recentProjects)
         {
             ProjectWithChanges pc = new ProjectWithChanges(project);
 
-            // The first element of Project Id List is the latest used prject id
-            // It is selected by default
-            if(projectIds.size() > 0 && projectIds[0] == project.Id)
+            // The current project or the first element of project Id list
+            // will be selected by default
+            pc.IsSelectedProject = (selectedProjectId == project.Id);
+
+            // When query projects we didn't query current change, put it in.
+            if(currentChange != null && currentChange.Project__c == project.Id)
             {
-                pc.IsLatestUsedProject = true;
+                pc.addChange(currentChange);
             }
+
+            pc.setChangesJsonData(pc.changes);
 
             // Only the project's team member can log time card
             if(pc.TeamMemberId != null)
@@ -83,24 +126,24 @@ global with sharing class LogTimeCardController
         return projectIds;
     }
 
-    private static List<MProject__c> queryProjects(List<String> recentUsedProjectIds)
+    private static List<MProject__c> queryProjects(Set<String> projectIds, Change__c currentChange)
     {
         List<MProject__c> projects = new List<MProject__c>();
 
-        if(recentUsedProjectIds.size() > 0)
+        if(projectIds.size() > 0)
         {
             projects = [select Id, Name,
                  (select Id from TeamMembers__r where User__c = :UserInfo.getUserId()),
-                 (select Id, Name from Changes__r where IsClosed__c = 0 order by LastActivityDate desc, CreatedDate desc limit :QUERY_CHANGE_NUMBER)
-                 from MProject__c where Id in :recentUsedProjectIds
+                 (select Id, Name from Changes__r where IsClosed__c = 0 and Id != :currentChange.Id order by LastActivityDate desc, CreatedDate desc limit :QUERY_CHANGE_NUMBER)
+                 from MProject__c where Id in :projectIds and IsClosed__c = false
             ];
         }
         else // New user maybe no used project
         {
             projects = [select Id, Name,
                 (select Id from TeamMembers__r where User__c = :UserInfo.getUserId()),
-                (select Id, Name from Changes__r where IsClosed__c = 0 order by LastActivityDate desc, CreatedDate desc limit :QUERY_CHANGE_NUMBER)
-                from MProject__c order by CreatedDate desc limit :QUERY_PROJECT_NUMBER
+                (select Id, Name from Changes__r where IsClosed__c = 0 and Id != :currentChange.Id order by LastActivityDate desc, CreatedDate desc limit :QUERY_CHANGE_NUMBER)
+                from MProject__c where IsClosed__c = false order by CreatedDate desc limit :QUERY_PROJECT_NUMBER
             ];
         }
 
@@ -113,16 +156,25 @@ global with sharing class LogTimeCardController
         {
             this.Project = project;
             this.Changes = project.Changes__r;
-            this.IsLatestUsedProject = false;
+            this.IsSelectedProject = false;
             this.TeamMemberId = (project.TeamMembers__r.size() > 0) ? project.TeamMembers__r[0].Id : null;
-            this.ChangesJsonData = JSON.serialize(project.Changes__r);
         }
 
-        public Boolean IsLatestUsedProject { get; set; }
+        public Boolean IsSelectedProject { get; set; }
         public String TeamMemberId { get; set; }
         public MProject__c Project { get; set; }
         public List<Change__c> Changes { get; set; }
         public String ChangesJsonData { get; set; }
+
+        private void addChange(Change__c change)
+        {
+            this.Changes.add(change);
+        }
+
+        private void setChangesJsonData(List<Change__c> changes)
+        {
+            this.ChangesJsonData = JSON.serialize(changes);
+        }
     }
 
     @remoteAction
@@ -143,6 +195,7 @@ global with sharing class LogTimeCardController
 
         try {
             insert obj;
+            createTopicForTimecardRecord(obj.Id);
         } catch (DMLException dmle) {
             String fieldNames = '';
             for (String field : dmle.getDmlFieldNames(0)) {
@@ -178,5 +231,11 @@ global with sharing class LogTimeCardController
             }
         }
         return hoursMap;
+    }
+
+    // When timecard created by global action, add topic for the record
+    private static void createTopicForTimecardRecord(Id objId)
+    {
+        ConnectApi.Topics.assignTopicByName(null, String.valueOf(objId), 'Global Action');
     }
 }

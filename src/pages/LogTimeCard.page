@@ -1,106 +1,127 @@
 <apex:page docType="html-5.0" language="en_US" standardStylesheets="false" showHeader="false" sidebar="false" controller="LogTimeCardController" >
-    <c:PMDocumentHead />
-
-    <div id="force" class="time-card" >
-        <div>
-            <div class="tab-pane active" id="home">
-                <form class="form-horizontal">
-                    <fieldset>
-                        <div class="alert-panel">
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="inputProject">Project</label>
-                            <div class="controls">
-                                <select class="span5" id="selectProject" value="T2" required="required">
-                                    <apex:repeat value="{!RecentProjects}" var="rp">
-                                        <!-- Set option as a default -->
-                                        <apex:outputPanel layout="none" rendered="{!rp.IsLatestUsedProject}">
-                                            <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
-                                        </apex:outputPanel>
-                                        <apex:outputPanel layout="none" rendered="{!Not(rp.IsLatestUsedProject)}">
-                                            <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
-                                        </apex:outputPanel>
-                                    </apex:repeat>
-                                </select>
-                                <a id="projectLink" target="_blank" href="#"><span class="icon-new-tab"></span></a>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="selectChange">Change</label>
-                            <div class="controls">
-                                <select class="span5" id="selectChange">
-                                    <option></option>
-                                    <apex:repeat value="{!RecentProjects}" var="rp">
-                                        <apex:outputPanel rendered="{!rp.IsLatestUsedProject}">
-                                            <apex:repeat value="{!rp.Changes}" var="change">
-                                                <option value="{!change.Id}">{!change.Name}</option>
+    <html class="no-js">
+        <c:PMDocumentHead />
+        <body class="time-card-body">
+            <div id="force" class="time-card">
+                <div>
+                    <div class="tab-pane active" id="home">
+                        <form class="form-horizontal">
+                            <fieldset>
+                                <!-- <legend>Log your time card</legend> -->
+                                <div class="alert-panel"></div>
+                                <div class="control-group">
+                                    <label class="control-label" for="inputProject">Project</label>
+                                    <div class="form-nowrap">
+                                        <select name="" class="form-control pull-left resize-width" id="selectProject" required="required" tabindex="1">
+                                            <apex:repeat value="{!RecentProjects}" var="rp">
+                                                <!-- Set option as a default -->
+                                                <apex:outputPanel layout="none" rendered="{!rp.IsSelectedProject}">
+                                                    <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}
+                                                    </option>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="none" rendered="{!Not(rp.IsSelectedProject)}">
+                                                    <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
+                                                </apex:outputPanel>
                                             </apex:repeat>
-                                        </apex:outputPanel>
-                                    </apex:repeat>
-                                </select>
-                                <a id="changeLink" target="_blank" href="#"><span class="icon-new-tab"></span></a>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="inputDate">Date</label>
-                            <div class="controls controls-row">
-                                <div class="input-append date datepicker" data-date="{!YEAR(TODAY())}-{!MONTH(TODAY())}-{!DAY(TODAY())}" data-date-format="yyyy-mm-dd">
-                                    <input id="inputDate" class="span2" size="16" type="text" value="{!YEAR(TODAY())}-{!MONTH(TODAY())}-{!DAY(TODAY())}"/>
-                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                        </select>
+                                        <!-- Link to project detail page -->
+                                        <a id="projectLink" target="_blank" href="#" class="link-area pull-right">
+                                            <span class="glyphicon glyphicon-new-window"></span>
+                                        </a>
+                                        <div class="clearfix"></div>
+                                    </div>
                                 </div>
-                                <div class="input-prepend hours" >
-                                    <span class="add-on"><i class="icon-leaf"></i></span>
-                                    <input type="number" class="input-mini" id="inputHours" max="24" min="0" placeholder="Hours" required="required"/>
+                                <div class="control-group">
+                                    <label class="control-label" for="selectChange">Change</label>
+                                    <select class="form-control pull-left resize-width" id="selectChange" tabindex="2">
+                                        <option></option>
+                                        <apex:repeat value="{!RecentProjects}" var="rp">
+                                            <apex:outputPanel rendered="{!rp.IsSelectedProject}">
+                                                <apex:repeat value="{!rp.Changes}" var="change">
+                                                    <!-- Set option as a default -->
+                                                    <apex:outputPanel rendered="{!CurrentChange.Id == change.Id}">
+                                                        <option selected="selected" value="{!change.Id}">{!change.Name}</option>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!CurrentChange.Id != change.Id}">
+                                                        <option value="{!change.Id}">{!change.Name}</option>
+                                                    </apex:outputPanel>
+                                                </apex:repeat>
+                                            </apex:outputPanel>
+                                        </apex:repeat>
+                                    </select>
+                                    <!-- Link to change detail page -->
+                                    <a id="changeLink" target="_blank" href="#" class="link-area pull-right">
+                                        <span class="glyphicon glyphicon-new-window"></span>
+                                    </a>
+                                    <div class="clearfix"></div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <div class="controls clear-margin">
-                                <textarea rows="3" id="inputDescription" class="span5" placeholder="Description" required="required"></textarea>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <div class="controls clear-margin">
-                                <apex:outputPanel layout="none" rendered="{!$ObjectType.TimeCard__c.Fields.Billable__c.Accessible}">
-                                    <label class="checkbox" for="isBillable">
-                                        <input id="isBillable" type="checkbox" checked="true"/>Billable
-                                    </label>
-                                </apex:outputPanel>
-                                <!--
-                                    Save is implmented by remote action in timecard.js
-                                    ================================================= -->
-                                <div class="btn-group pull-right">
-                                    <input type="submit" class="btn" value="Save" id="saveBtn" data-loading-text="Saving..."/>
-                                    <button class="btn btn-success dropdown-toggle" value="Save" id="saveBtn" data-toggle="dropdown"><span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a id="saveYesterday" href="#">Save as Yesterday</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="bs-callout bs-callout-info bs-docs-example">
-                            <div class="date-form">
-                                <span class="date-name">Today:</span>
-                                <div class="input-prepend total-hours">
-                                    <span class="add-on"><i class="icon-stopwatch"></i></span>
+                                <div class="control-group">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <label class="control-label" for="inputDate">Date</label>
+                                            <div class="input-group input-append date datepicker" data-date="{!YEAR(TODAY())}-{!MONTH(TODAY())}-{!DAY(TODAY())}" data-date-format="yyyy-mm-dd">
+                                            <input id="inputDate" class="form-control" type="text" value="{!YEAR(TODAY())}-{!MONTH(TODAY())}-{!DAY(TODAY())}" tabindex="3" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label class="control-label" for="inputDate">Hours</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="inputHours" placeholder="Hours" required="required" tabindex="4" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-dashboard"></span>
+                                              </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span id="todayHours" class="num-area">{!TodayHours}</span>
-                            </div>
-                            <div class="date-form">
-                                <span class="date-name">Yesterday:</span>
-                                <div class="input-prepend total-hours">
-                                    <span class="add-on"><i class="icon-stopwatch"></i></span>
+
+                                <div class="control-group">
+                                    <textarea class="form-control  required" rows="5" placeholder="Description" id="inputDescription" tabindex="5"></textarea>
                                 </div>
-                                <span id="yesterdayHours" class="num-area">{!YesterdayHours}</span>
-                            </div>
-                            <div class="clearfix"></div>
-                        </div>
-                    </fieldset>
-                </form>
+                                <div class="bs-callout bs-callout-info bs-docs-example">
+                                    <div class="date-form">
+                                        <span class="date-name">Today:</span>
+                                        <a href="/00O80000005fezc?pv0={!CurrentUserName}" target="_blank">
+                                            <span id="todayHours" class="num-area">{!TodayHours}</span>
+                                        </a>
+                                    </div>
+                                    <div class="date-form">
+                                        <span class="date-name">Yesterday:</span>
+                                        <a href="/00O80000005fezc?pv0={!CurrentUserName}" target="_blank">
+                                            <span id="yesterdayHours" class="num-area">
+                                            {!YesterdayHours}</span>
+                                        </a>
+                                    </div>
+
+                                    <!--
+                                        Save is implmented by remote action in timecard.js
+                                        ================================================= -->
+                                    <div class="btn-group pull-right">
+                                        <div>
+                                            <apex:outputPanel layout="none" rendered="{!$ObjectType.TimeCard__c.Fields.Billable__c.Accessible}">
+                                                <label class="control-label billable-label" for="isBillable">
+                                                    <input id="isBillable" type="checkbox" class="billable-checkbox" checked="true" />Billable
+                                                </label>
+                                            </apex:outputPanel>
+                                            <input type="submit" class="btn" value="Save" id="saveBtn" data-loading-text="Saving..."/>
+                                            <button class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li><a id="saveYesterday" href="#">Save as Yesterday</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <c:PMDocumentFooter />
+        </body>
+        <c:PMDocumentFooter />
+    </html>
 </apex:page>

@@ -288,10 +288,10 @@
                     <select class="sf1select" style="margin-bottom:5px" id="selectProject">
                     <apex:repeat value="{!RecentProjects}" var="rp">
                         <!-- Set option as a default -->
-                        <apex:outputPanel layout="none" rendered="{!rp.IsLatestUsedProject}">
+                        <apex:outputPanel layout="none" rendered="{!rp.IsSelectedProject}">
                             <option selected="selected" value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
                         </apex:outputPanel>
-                        <apex:outputPanel layout="none" rendered="{!Not(rp.IsLatestUsedProject)}">
+                        <apex:outputPanel layout="none" rendered="{!Not(rp.IsSelectedProject)}">
                             <option value="{!rp.Project.Id}" data-member-id="{!rp.TeamMemberId}" data-changes-info="{!rp.ChangesJsonData}">{!rp.Project.Name}</option>
                         </apex:outputPanel>
                     </apex:repeat>
@@ -305,7 +305,7 @@
                     <span class="selectArrow"></span>
                     <select class="sf1select" id="selectChange">
                         <apex:repeat value="{!RecentProjects}" var="rp">
-                            <apex:outputPanel rendered="{!rp.IsLatestUsedProject}">
+                            <apex:outputPanel rendered="{!rp.IsSelectedProject}">
                                 <apex:repeat value="{!rp.Changes}" var="change">
                                     <option value="{!change.Id}">{!change.Name}</option>
                                 </apex:repeat>
