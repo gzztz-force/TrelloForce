@@ -32,6 +32,7 @@ public class LogTimeCardControllerTest
         LogTimeCardController controller = new LogTimeCardController();
         String todayHours = controller.TodayHours;
         String yesterdayHours = controller.YesterdayHours;
+        String userName = controller.CurrentUserName;
 
         Test.stopTest();
 
@@ -58,5 +59,23 @@ public class LogTimeCardControllerTest
         Test.stopTest();
 
         System.assertEquals(10, controller.RecentProjects.size());
+    }
+
+    @isTest(SeeAllData=true)
+    static void testRemoteAction()
+    {
+        List<MProject__c> projects = TestDataFactory.createProjects();
+        List<Change__c> changes = TestDataFactory.createChanges(projects);
+        List<TeamMember__c> members = TestDataFactory.createTeamMembers(projects);
+
+        String fields = '{"Project__c": "' + projects[0].Id +
+                        '", "TeamMember__c": "' + members[0].Id +
+                        '", "Change__c": "' + changes[0].Id +
+                        '", "Hours__c": "8", "Date__c": "' + Date.today() +
+                        '", "Description__c": "acme", "Billable__c": ' + true + '}';
+        Test.startTest();
+        LogTimeCardController.create(null, fields);
+        LogTimeCardController.create('TimeCard__c', fields);
+        Test.stopTest();
     }
 }
