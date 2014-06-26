@@ -81,7 +81,8 @@ global with sharing class LogTimeCardController
 
         List<MProject__c> recentProjects = queryProjects(projectIds, currentChange);
 
-        String selectedProjectId = String.isBlank(currentProjectId) ? recentUsedProjectIds[0] : currentProjectId;
+        String selectedProjectId = (String.isBlank(currentProjectId) && recentUsedProjectIds.size() >0) ? recentProjects[0].Id : currentProjectId;
+
         for(MProject__c project : recentProjects)
         {
             ProjectWithChanges pc = new ProjectWithChanges(project);
@@ -129,6 +130,8 @@ global with sharing class LogTimeCardController
     private static List<MProject__c> queryProjects(Set<String> projectIds, Change__c currentChange)
     {
         List<MProject__c> projects = new List<MProject__c>();
+
+        projectIds.remove(null);
 
         if(projectIds.size() > 0)
         {
@@ -192,6 +195,7 @@ global with sharing class LogTimeCardController
         if (error != null) {
             return error;
         }
+
 
         try {
             insert obj;
