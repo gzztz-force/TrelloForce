@@ -12,7 +12,7 @@
 
         .col-md-9{
             margin-top:20px;
-            padding-right:20px;            
+            padding-right:20px;
         }
 
         .col-md-2 ul{
@@ -98,7 +98,7 @@
                             <div class="col-md-9">
                                 <apex:outputPanel rendered="{!WikiPages.size == 0}">
                                    <div id="div1">
-                                        Sorry,there is no pages about {!SpaceName}
+                                        Sorry,there is no page of {!SpaceName}
                                         <button type="button"  class="btn btn-primary" style="margin-left:35px;" onclick="window.open('/apex/WikiNewPage?spaceid={!SpaceId}')">New Page</button>
                                    </div>
                                 </apex:outputPanel>

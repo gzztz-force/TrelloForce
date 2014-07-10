@@ -5,25 +5,34 @@ public with sharing class WikiViewPageController
 {
     private String pageId;
     public PublishedPage PubPage { get; set; }
+    public Boolean Error { get; private set; }
 
     public WikiViewPageController()
     {
         pageId = ApexPages.currentPage().getParameters().get('id');
-        getPubishedPage();
-    }    
+        if(string.isNotBlank(pageId))
+        {
+            Error = false;
+            getPubishedPage();
+        }
+        else
+        {
+            Error = true;
+        }
+    }
 
     private void getPubishedPage()
     {
-        List<WikiPage__c> publishedPages = [select Id, WikiSpace__r.Name,WikiSpace__c, CreatedById, LastModifiedById, LastPublishedDate__c,
-                                            (select Id, Body__c, Title__c, CreatedById, LastModifiedDate from WikiPageVersions__r
-                                             where IsLatestVersion__c = true)
-                                           from WikiPage__c where Id = :pageId];
+        List<WikiPage__c> publishedPages = [select Id, WikiSpace__r.Name, WikiSpace__c, CreatedById, LastModifiedById, LastPublishedDate__c,
+                                             (select Id, Body__c, Title__c, CreatedById, LastModifiedDate from WikiPageVersions__r
+                                              where IsLatestVersion__c = true)
+                                              from WikiPage__c where Id = :pageId];
         if(publishedPages.size() > 0)
         {
-            PubPage = new PublishedPage(publishedPages[0]);     
-        }        
+            PubPage = new PublishedPage(publishedPages[0]);
+        }
     }
-    
+
     public class PublishedPage
     {
         public PublishedPage(WikiPage__c wikiPage)
