@@ -28,9 +28,7 @@
             padding-top: 12px;
         }
 
-        .feedpage .feedrightbar {
-            margin-right: 0px;
-        }
+        .feedpage .feedrightbar{margin-right: 0px;}
 
         .btn-default1{
             color: #333333;
@@ -76,6 +74,54 @@
             height: 40px;
         }
     </style>
+
+    <script>
+        $(document).ready(function($) {
+
+            $("pre,code").css("font-family","Menlo");
+
+            $("#editid").bind('mouseenter', function(event) {
+                $(this).removeClass().addClass("btn-primary1 pull-right").css("background-color","#428bca").css("text-decoration","none");
+            });
+
+            $("#editid").bind('mouseout', function(event) {
+                $(this).removeClass().addClass("btn-default1 pull-right").css("background-color","#fdfdfd");
+            });
+
+            $(".glyphicon-pencil").bind('mouseenter', function() {$("#editid").mouseenter();});
+
+            $(".glyphicon-pencil").bind('mouseout', function() {});
+
+
+
+
+                var opts = {
+                  container: 'epicpreview',
+                  basePath: '{!URLFOR($Resource.EpicEditor)}',
+
+                  clientSideStorage: false,
+                  useNativeFullscreen: true,
+                  parser: marked,
+                  theme: {
+                      base: '/themes/base/epiceditor.css',
+                      preview: '/themes/preview/github.css',
+
+                  },
+                  button:false,
+                  focusOnLoad: false,
+                  shortcut: {
+                    modifier: 18,
+                    fullscreen: 70,
+                    preview: 80
+                  },
+                  autogrow: true
+                }
+
+                var editor = new EpicEditor(opts).load();
+        });
+
+    </script>
+
     <apex:composition template="WikiTemplate">
         <apex:define name="body" >
             <div class="content" style=" background-color: f9f9f9;">

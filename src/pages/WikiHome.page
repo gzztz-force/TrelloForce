@@ -1,245 +1,242 @@
 <apex:page controller="WikiHomeController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki Home">
-<head>
-    <script type="text/javascript" src="{!URLFOR($Resource.WayPoint)}"></script>
-    <style>
-        body {
-            background-color: f9f9f9;
-            font-size: 12px;
-        }
-        .container-custom {
-            padding: 5px 20px;
-            width: 100%;
-            margin: auto 0px;
-          }
+    <head>
+        <script type="text/javascript" src="{!URLFOR($Resource.WayPoint)}"></script>
+        <style>
+            body {
+                background-color: f9f9f9;
+            }
 
-        .nav-wiki {
-            padding: 10px 0px;
-        }
+            .container-custom {
+                padding: 5px 20px;
+                width: 100%;
+                margin: auto 0px;
+            }
 
-        .new-page {
-            padding-top: 25px;
-            background-color: #EEEEEE;
-        }
+            .nav-wiki {
+                padding: 10px 0px;
+            }
 
-        .new-page h2 {
-            border-bottom: 1px solid #bbb;
-            display: block;
-        }
+            .new-page {
+                padding-top: 25px;
+                background-color: #EEEEEE;
+            }
 
-        .spaces-list a {
-            padding-right: 30px;
-            word-wrap: break-word;
-        }
+            .new-page h2 {
+                border-bottom: 1px solid #bbb;
+                display: block;
+            }
 
-        .spaces-list li>div {
-            margin-left: 5px;
-            position: relative;
-        }
+            .spaces-list a {
+                padding-right: 30px;
+                word-wrap: break-word;
+            }
 
-        .spaces-list li, .popular-list li {
-            margin-top: 5px;
-            padding-left: 5px;
-            padding-top: 2px;
-            font-size: 15px;
-            overflow: hidden;
-        }
+            .spaces-list li>div {
+                margin-left: 5px;
+                position: relative;
+            }
 
-        .spaces-list .fav {
-            background-position: 0 0;
-            height: 16px;
-            width: 16px;
-            margin: 2px 15px 0 3px;
-            float: left;
-        }
+            .spaces-list li, .popular-list li {
+                margin-top: 5px;
+                padding-left: 5px;
+                padding-top: 2px;
+                font-size: 15px;
+                overflow: hidden;
+            }
 
-        .divider {
-            height: 1px;
-            margin: 9px 0px;
-            overflow: hidden;
-            background-color: #e5e5e5;
-            border-bottom: 1px solid #dfdfdf;
-            padding: 0px;
-        }
+            .spaces-list .fav {
+                background-position: 0 0;
+                height: 16px;
+                width: 16px;
+                margin: 2px 15px 0 3px;
+                float: left;
+            }
 
-        .popular-list a {
-            margin-right: 10px;
-        }
+            .divider {
+                height: 1px;
+                margin: 9px 0px;
+                overflow: hidden;
+                background-color: #e5e5e5;
+                border-bottom: 1px solid #dfdfdf;
+                padding: 0px;
+            }
 
-        .popular-list .media {
-            width: 75%;
-            margin-top: 0px;
-        }
+            .popular-list a {
+                margin-right: 10px;
+            }
 
-        .popular-list .comment {
-            margin-right: 20px
-        }
+            .popular-list .media {
+                width: 75%;
+                margin-top: 0px;
+            }
 
-        .popular-list .page-author {
-            font-size: 12px;
-            padding-left: 0px;
-            padding-top: 5px;
-        }
+            .popular-list .comment {
+                margin-right: 20px
+            }
 
-        .add-btns {
-            margin-top: 0px;
-        }
+            .popular-list .page-author {
+                font-size: 12px;
+                padding-left: 0px;
+                padding-top: 5px;
+            }
 
-        .search-result-dropdown {
-            width:90%;
-            float: left;
-            position: absolute;
-            top:35px;
-            font-size:14px;
-            z-index:20;
-            border:1px solid gray;
-            background-color:#EAEAEA;
-            display: none;
-            filter:alpha(Opacity=80);
-            -moz-opacity:0.5;
-            opacity: 0.9;
-        }
+            .add-btns {
+                margin-top: 0px;
+            }
 
-        .search-result-dropdown li{
-            list-style: none;
-            line-height:20px;
-            position:relative;
-            text-indent: -0.5cm;
-        }
-        .loadingbottom {
-            text-align:center;
-        }
-        .loadimg {
-            margin: 0 auto;
-        }
-    </style>
-    <script type="text/javascript">
-    
-        //js cache search page 
-        function pageClass(href,title) {
-            this.title__c = title;
-            this.href__c = href;
-        }
-        var activePanel = "popular"; //true means that the AllUpdatePanel is the current panel
-        var isLoading = false; // true means that it is loading
-        var isSearchWikiPage = false;
-        var pageArr = new Array();
+            .search-result-dropdown {
+                width:90%;
+                float: left;
+                position: absolute;
+                top:35px;
+                font-size:14px;
+                z-index:20;
+                border:1px solid gray;
+                background-color:#EAEAEA;
+                display: none;
+                filter:alpha(Opacity=80);
+                -moz-opacity:0.5;
+                opacity: 0.9;
+            }
 
-        $(function () {
+            .search-result-dropdown li{
+                list-style: none;
+                line-height:20px;
+                position:relative;
+                text-indent: -0.5cm;
+            }
 
-            $('#addSpaceBtn').click(function () {
-                $('#addSpaceAlert').hide();
-            });
+            .load-status{
+                margin-left: 28px;
+            }
+        </style>
+        <script type="text/javascript">
 
-            $('.tabmark').click(function() {
-                if(this.rel != null && this.rel != '') {
-                    activePanel = this.rel
-                }
-            });
+            function pageClass(href,title) {
+                this.title__c = title;
+                this.href__c = href;
+            }
+            var activePanel = "popular"; //true means that the AllUpdatePanel is the current panel
+            var isLoading = false; // true means that it is loading
+            var isSearchWikiPage = false;
+            var pageArr = new Array();
 
-            $(window).bind('scroll',function(){$('#load-location').waypoint('enable');});
+            $(function () {
 
-            $('#searchWikiId').bind('input propertychange', function() {
-                    if(!isSearchWikiPage) {
-                        setTimeout(searchWikiPage,200);
-                        isSearchWikiPage = true;
+                $('#addSpaceBtn').click(function () {
+                    $('#addSpaceAlert').hide();
+                });
+
+                $('.tabmark').click(function() {
+                    if(this.rel != null && this.rel != '') {
+                        activePanel = this.rel
                     }
                 });
 
-            $('#searchWikiId').bind('blur',function() {
-                    $('#theSearchSpanId').fadeOut(100);
-                });
+                $(window).bind('scroll',function(){$('#load-location').waypoint('enable');});
 
-            $('#searchWikiId').bind('focus',function() {
-                    searchWikiPage();
-                });
+                $('#searchWikiId').bind('input propertychange', function() {
+                        if(!isSearchWikiPage) {
+                            setTimeout(searchWikiPage,200);
+                            isSearchWikiPage = true;
+                        }
+                    });
 
-            $('#theSearchSpanId').hide();
+                $('#searchWikiId').bind('blur',function() {
+                        $('#theSearchSpanId').fadeOut(100);
+                    });
 
-            $.each($('#theSearchSpanId span ul').children('li'), function(index, val) {
-                pageArr.push(new pageClass($(this).find('a').attr('href'),$(this).find('a').text()));
-                $(this).remove();
-             });
+                $('#searchWikiId').bind('focus',function() {
+                        searchWikiPage();
+                    });
 
-            $('#load-location').waypoint(
-                function(direction){
-                    if('down' == direction) {
-                        if(!isLoading){
-                            if(activePanel == "popular") {
-                                if('down' == direction) {
-                                    if($('#HasNextPopularPages').val()=='true') {
-                                    loadMorePopularPages();
-                                    isLoading = true;
+                $('#theSearchSpanId').hide();
+
+                $.each($('#theSearchSpanId span ul').children('li'), function(index, val) {
+                    pageArr.push(new pageClass($(this).find('a').attr('href'),$(this).find('a').text()));
+                    $(this).remove();
+                 });
+
+                $('#load-location').waypoint(
+                    function(direction){
+                        if('down' == direction) {
+                            if(!isLoading){
+                                if(activePanel == "popular") {
+                                    if('down' == direction) {
+                                        if($('#HasNextPopularPages').val()=='true') {
+                                        loadMorePopularPages();
+                                        isLoading = true;
+                                        }
                                     }
                                 }
-                            } 
-                            else if(activePanel == 'update') {
-                                if($('#hasMoreFeedMark').val()=='true') {
-                                    loadMoreFeedItems();
-                                    isLoading = true;
+                                else if(activePanel == 'update') {
+                                    if($('#hasMoreFeedMark').val()=='true') {
+                                        loadMoreFeedItems();
+                                        isLoading = true;
+                                    }
                                 }
                             }
                         }
-                    }
-                }, {continuous: true,offset: 'bottom-in-view',enabled: true});
-        });
+                    }, {continuous: true,offset: 'bottom-in-view',enabled: true});
+            });
 
-        function doneLoad() {
-            isLoading = false;
-            $('#load-location').waypoint('enable');
-        }
-
-        function addNewSpace() {
-            $('#addSpaceModal button').button('loading');
-            newSpace();
-        }
-
-        function addSpaceOnComplete(isSuccess) {
-            if(isSuccess) {
-                $('#addSpaceModal').modal('hide');
-                $('#addSpaceModal button').button('reset');
+            function doneLoad() {
+                isLoading = false;
+                $('#load-location').waypoint('enable');
             }
-        }
 
-        function enterPress(e) {
-            var e = e || window.event;
-            if(e.keyCode == 13) {
-                var searchkey = $.trim($('#searchWikiId').val());
-                if(searchkey != null && searchkey != '') {
-                    window.open("/apex/wikisearch?key="+$("#searchWikiId").val());
+            function addNewSpace() {
+                $('#addSpaceModal button').button('loading');
+                newSpace();
+            }
+
+            function addSpaceOnComplete(isSuccess) {
+                if(isSuccess) {
+                    $('#addSpaceModal').modal('hide');
+                    $('#addSpaceModal button').button('reset');
+                    window.open("/apex/WikiSpace?id="+$("#NewSpaceId").val());
                 }
             }
-        }
 
-        function searchWikiPage() {
-            var searchKey = $.trim($('#searchWikiId').val());
-            searchWikiPageInJsArray(searchKey);
-            isSearchWikiPage = false;
-        }
-
-        function searchWikiPageInJsArray(searchKey) {
-            $('#theSearchSpanId').empty();
-            $('#theSearchSpanId').hide();
-            if(searchKey != null && searchKey != '') {
-                var j = 0;
-                for(var i = 0; i < pageArr.length; i++) {
-                    if(pageArr[i].title__c.indexOf(searchKey) > -1) {
-                        $('#theSearchSpanId').append(
-                            $("<a class='list-group-item' href='#'>"+pageArr[i].title__c+"</a>").bind('click', function() {window.open(pageArr[i].href__c);})
-                            );
-                        j++;
+            function enterPress(e) {
+                var e = e || window.event;
+                if(e.keyCode == 13) {
+                    var searchkey = $.trim($('#searchWikiId').val());
+                    if(searchkey != null && searchkey != '') {
+                        window.open("/apex/wikisearch?key="+$("#searchWikiId").val());
                     }
-                    if(j > 15) {
-                        break;
-                    }
-                }
-                if(j > 0) {
-                    $('#theSearchSpanId').show();
                 }
             }
-        }
-        
-    </script>
-</head>
+
+            function searchWikiPage() {
+                var searchKey = $.trim($('#searchWikiId').val());
+                searchWikiPageInJsArray(searchKey);
+                isSearchWikiPage = false;
+            }
+
+            function searchWikiPageInJsArray(searchKey) {
+                $('#theSearchSpanId').empty();
+                $('#theSearchSpanId').hide();
+                if(searchKey != null && searchKey != '') {
+                    var j = 0;
+                    for(var i = 0; i < pageArr.length; i++) {
+                        if(pageArr[i].title__c.indexOf(searchKey) > -1) {
+                            $('#theSearchSpanId').append(
+                                $("<a class='list-group-item' href='#'>"+pageArr[i].title__c+"</a>").bind('click', {id:pageArr[i].href__c}, function(event) {window.open(event.data.id);})
+                                );
+                            j++;
+                        }
+                        if(j > 15) {
+                            break;
+                        }
+                    }
+                    if(j > 0) {
+                        $('#theSearchSpanId').show();
+                    }
+                }
+            }
+        </script>
+    </head>
     <apex:form >
         <apex:actionFunction name="loadMorePopularPages"  status="loadPage" action="{!loadMorePopularPagesAction}" reRender="popularPagePanel" oncomplete="doneLoad()"/>
         <apex:actionFunction name="loadMoreFeedItems"  status="loadItem" action="{!loadMoreFeedItemsAction}" reRender="updatePagesPanel" oncomplete="doneLoad()"/>
@@ -375,7 +372,7 @@
                                                 <div class="divider"></div>
                                             </apex:repeat>
                                         </ul>
-                                        <apex:actionStatus id="loadPage" >
+                                        <apex:actionStatus id="loadPage">
                                             <apex:facet name="start">
                                                 <div class="loadingbottom">
                                                     <img src="{!$Resource.loadPic}" class="loadimg"/>
@@ -385,7 +382,7 @@
                                             <apex:facet name="stop">
                                                 <apex:outputPanel rendered="{!Not(HasNextPopularPages)}" style="display:block;" styleClass="well well-sm alert alert-danger">
                                                     No more pages ...
-                                                </apex:outputPanel>                                                
+                                                </apex:outputPanel>
                                             </apex:facet>
                                         </apex:actionStatus>
                                         <input type="hidden" value="{!HasNextPopularPages}" id="HasNextPopularPages"/>
@@ -419,13 +416,13 @@
                                                                     </apex:outputPanel>
                                                                     <apex:outputPanel rendered="{!item.Type == 'TrackedChange'}">
                                                                         <div class="page-author">
-                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a> <br/>                                                                            
+                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a> <br/>
                                                                             <div class="update-track-change-div">
                                                                                 <ul>
                                                                                     <apex:repeat value="{!item.FeedTrackedChanges}" var="changeItem">
                                                                                         <li class="page-author">
-                                                                                            {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from 
-                                                                                            <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] != 'DATETIME') && (WikiPageField2Type[changeItem.FieldName] != 'DATE') && (WikiPageField2Type[changeItem.FieldName] != 'TIME')}">         
+                                                                                            {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from
+                                                                                            <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] != 'DATETIME') && (WikiPageField2Type[changeItem.FieldName] != 'DATE') && (WikiPageField2Type[changeItem.FieldName] != 'TIME')}">
                                                                                                 "{!if(isBlank(changeItem.OldValue),'blank', changeItem.OldValue)}" to "{!changeItem.Newvalue}"
                                                                                             </apex:outputPanel>
 
@@ -433,7 +430,7 @@
                                                                                                 "<apex:outputText value="{0,date,MM-dd-yyyy}">
                                                                                                     <apex:param value="{!changeItem.OldValue}"/>
                                                                                                 </apex:outputText>"
-                                                                                                 to 
+                                                                                                 to
                                                                                                 "<apex:outputText value="{0,date,MM-dd-yyyy}">
                                                                                                     <apex:param value="{!changeItem.Newvalue}"/>
                                                                                                 </apex:outputText>"
@@ -469,7 +466,7 @@
                                             <apex:facet name="stop">
                                                 <apex:outputPanel rendered="{!Not(hasMoreFeedMark)}" style="display:block;" styleClass="well well-sm alert alert-danger">
                                                     No more items ...
-                                                </apex:outputPanel>  
+                                                </apex:outputPanel>
                                             </apex:facet>
                                         </apex:actionStatus>
                                         <input type="hidden" value="{!HasMoreFeedMark}" id="hasMoreFeedMark"/>
@@ -481,8 +478,7 @@
                     </div>
                 </div>
             </apex:form>
-            <!-- Add space modal
-                ================================ -->
+            <!-- Add space modal ================================ -->
             <div class="modal" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false" role="dialog">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -518,6 +514,7 @@
                                 <apex:actionFunction name="newSpace" action="{!createNewSpace}" rerender="allSpaces, addSpaceForm" status=""
                                  oncomplete="addSpaceOnComplete({!NOT(HasError)});"/>
                             </div>
+                            <input type="hidden" value="{!NewSpaceId}" id="NewSpaceId"/>
                         </apex:form>
                     </div>
                 </div>

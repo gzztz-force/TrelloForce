@@ -1,9 +1,9 @@
-public class WiKiSearchController 
+public class WiKiSearchController
 {
     private List<WiKiPageVersion__c> wikiPages;
     private ApexPages.StandardSetController standardSetController;
 
-    public WiKiSearchController() 
+    public WiKiSearchController()
     {
         Key = ApexPages.currentPage().getParameters().get('key');
         if(Key != null && Key.length() > 1)
@@ -17,8 +17,8 @@ public class WiKiSearchController
             wikiPages = new List<WiKiPageVersion__c>();
             MyWiKiPages = new List<MyWiKiPage>();
         }
-        initPopularPage();       
-    } 
+        initPopularPage();
+    }
 
     public String Key { get; set; }
     public List<MyWiKiPage> MyWiKiPages { get; set; }
@@ -29,7 +29,7 @@ public class WiKiSearchController
 
     public void initPopularPage()
     {
-        List<AggregateResult> results = [select ParentId, count(Id) FeedItems, sum(commentcount) Comments, sum(likecount) Likes 
+        List<AggregateResult> results = [select ParentId, count(Id) FeedItems, sum(commentcount) Comments, sum(likecount) Likes
             from WiKiPage__Feed group by ParentId order by count(Id) desc, sum(commentcount) desc, sum(likecount) desc limit 10];
         Set<Id> pageIds = new Set<Id>();
         PopularPages = new List<PopularPage>();
@@ -65,7 +65,7 @@ public class WiKiSearchController
         String keyword  = getQueryKeyword();
         standardSetController = new ApexPages.StandardSetController(
                 [Find :keyword In All Fields Returning WiKiPageVersion__c
-                    (WikiPage__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true order by CreatedDate desc)].get(0));
+                    (WikiPage__c, wikiPage__r.Wikispace__r.Name__c, wikiPage__r.WikiSpace__c, WikiPage__r.LastPublishedDate__c, Title__c, Body__c, CreatedDate Where IsLatestVersion__c = true order by CreatedDate desc)].get(0));
         PageNumber = 1;
         Results = standardSetController.getResultSize();
         standardSetController.setPageSize(10);
@@ -85,7 +85,7 @@ public class WiKiSearchController
             {
                 break;
             }
-        }    
+        }
     }
 
     public void resetLinks()
@@ -173,6 +173,10 @@ public class WiKiSearchController
             MyWiKiPage mypage = new MyWiKiPage();
             mypage.Id = page.WikiPage__c;
             mypage.Title = page.Title__c;
+
+            mypage.SpaceName = page.WikiPage__r.WikiSpace__r.Name__c;
+            mypage.SpaceId = page.WikiPage__r.Wikispace__c;
+            mypage.lastPublishedDate = page.WikiPage__r.lastPublishedDate__c;
             String content = page.Body__c;
             if(content != null)
             {
@@ -181,7 +185,7 @@ public class WiKiSearchController
                     Integer index = content.indexOf(word);
                     String before = content.substringBefore(word);
                     Integer offset = before.length() > 100 ? before.length() - 100 : 0;
-                    mypage.Body = content.abbreviate(200, offset);    
+                    mypage.Body = content.abbreviate(200, offset);
                 }
                 else
                 {
@@ -237,6 +241,9 @@ public class WiKiSearchController
         public String Id { get; set; }
         public String Title { get; set; }
         public String Body { get; set; }
+        public String SpaceName { get; set; }
+        public Id SpaceId { get; set; }
+        public Datetime LastPublishedDate { get; set; }
     }
 
     private class PopularPage

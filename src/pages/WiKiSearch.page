@@ -1,24 +1,50 @@
-<apex:page controller="WiKiSearchController" doctype="html-5.0" sidebar="false" showheader="true" standardStylesheets="false" title="Wiki Search">
+<apex:page controller="WiKiSearchController" sidebar="false" showheader="true" standardStylesheets="false" title="Wiki Search">
     <style type="text/css">
         body{
             background: #F9F9F9;
-            font-size: 12px;
         }
-        #force .list-group-item{
+
+        #force .list-group-item {
             margin-left: 0px;
         }
-        #force .alert{
+
+        #force .alert {
             font-size: 14px;
         }
     </style>
-    <apex:stylesheet value="{!URLFOR($Resource.BootStrap3_1_1, 'bootstrap3.1.1/css/bootstrap.css')}" />
+
+    <apex:stylesheet value="{!URLFOR($Resource.bootstrap3_2, 'css/bootstrap.css')}" />
     <apex:includeScript value="{!URLFOR($Resource.jQueryLatest, 'jquery.min.js')}"/>
-    <script src="{!URLFOR($Resource.bootstrap3, 'bootstrap/js/bootstrap.min.js')}"></script>
+    <script src="{!URLFOR($Resource.bootstrap3_2, 'js/bootstrap.min.js')}"></script>
     <div id="force">
-        <div class="container">
+        <div class="container" style="margin-left:5px;">
+            <div class="col-md-4">
+                <div class="page-header">
+                    <h3>Top Popular Page <span class="label label-info">{!PopularPages.size}</span></h3>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Mostly popular</h4>
+                    </div>
+                    <div class="panel-body" style="padding:0;">
+                        <apex:variable value="1" var="top"/>
+                        <ul class="list-group">
+                            <apex:repeat value="{!PopularPages}" var="page">
+                                <li class="list-group-item">
+                                    <span class="badge" style="background:{!CASE(top, TEXT(1), 'red', TEXT(2), 'green', TEXT(3), 'blue', 'grey')}">{!page.FeedItems}</span>
+                                    <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank" style="font-size:14px;">
+                                        {!page.Title}
+                                    </apex:outputLink>
+                                </li>
+                                <apex:variable value="{!TEXT(VALUE(top) + 1)}" var="top"/>
+                            </apex:repeat>
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-8">
                 <div class="page-header">
-                  <h2>WiKi Search <small>please input search key</small></h2>
+                    <h2>WiKi Search <small>please input search key</small></h2>
                 </div>
                 <div class="row">
                     <apex:form >
@@ -31,18 +57,34 @@
                     </apex:form>
                 </div>
                 <apex:outputPanel id="warning"  rendered="{!AND(Key != null, LEN(Key) < 2)}">
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning" style="margin-top:10px;">
                         <p>The key must be more than two characters.</p>
                     </div>
                 </apex:outputPanel>
-                <apex:repeat value="{!MyWiKiPages}" var="page" rendered="{!MyWiKiPages.size > 0}">
-                    <div class=".navbar-left" style="padding:5px 0px;">
-                        <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank">
-                            <h3>{!page.Title}</h3>
-                        </apex:outputLink>
-                        <p>{!page.Body}</p>
+                <apex:outputPanel rendered="{!MyWiKiPages.size > 0}">
+                    <div class="alert alert-success" style="margin-top:10px;">
+                        <p>We've found {!Results} pages about "{!Key}".</p>
                     </div>
-                </apex:repeat>
+
+                    <apex:repeat value="{!MyWiKiPages}" var="page">
+                        <div class=".navbar-left" style="padding:5px 0px;">
+                            <apex:outputLink value="{!$Page.WikiSpace}?Id={!page.SpaceId}" target="_blank" rendered="{!NOT(ISBLANK(page.SpaceName))}">
+                                <h3>{!page.SpaceName}&nbsp;&nbsp;/&nbsp;&nbsp;</h3>
+                            </apex:outputLink>
+                            <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank">
+                                <h3>{!page.Title}</h3>
+                            </apex:outputLink>
+                            <p>{!page.Body}</p>
+                            <p style="font-size:11px;color:#999999;margin:0;">
+                                Last Update:
+                                    <apex:outputText value="{0, date, MM.dd.YYYY}">
+                                        <apex:param value="{!page.LastPublishedDate}"/>
+                                    </apex:outputText>
+                            </p>
+                            <p style="height:1px;border-bottom:1px solid #999999;margin:5px 0px;" />
+                        </div>
+                    </apex:repeat>
+                </apex:outputPanel>
                 <apex:form rendered="{!Results > 10}">
                     <ul class="pagination">
                         <li class="{!IF(PageNumber == 1, 'disabled', '')}">
@@ -67,30 +109,6 @@
                         <p>There are no result of searching..., try to input another key</p>
                     </div>
                 </apex:outputPanel>
-            </div>
-            <div class="col-md-4">
-                <div class="page-header">
-                    <h3>Top Popular Page <span class="label label-info">{!PopularPages.size}</span></h3>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">Mostly popular</h4>
-                    </div>
-                    <div class="panel-body">
-                        <apex:variable value="1" var="top"/>
-                        <ul class="list-group">
-                            <apex:repeat value="{!PopularPages}" var="page">
-                                <li class="list-group-item">
-                                    <span class="badge" style="background:{!CASE(top, TEXT(1), 'red', TEXT(2), 'green', TEXT(3), 'blue', 'grey')}">{!page.FeedItems}</span>
-                                    <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank" style="font-size:14px;">
-                                        {!page.Title}
-                                    </apex:outputLink>
-                                </li>
-                                <apex:variable value="{!TEXT(VALUE(top) + 1)}" var="top"/>
-                            </apex:repeat>
-                        </ul>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

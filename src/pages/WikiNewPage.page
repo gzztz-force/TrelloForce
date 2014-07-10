@@ -126,8 +126,8 @@
                                 <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" html-placeholder="New Page Title" style="width:95%;"/>
                             </div>
                             <div id="contentSection" class="row">
-                                <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" rows="0" style="display:none"/>
-                                <div id="epiceditor" style="height:550px"></div>
+                                <apex:inputTextarea id="contentInput" styleClass="content-input" value="{!LatestPage.Body__c}" rows="0" style="display:none"/>
+                                <div id="epiceditor" style="height:550px;border:1px solid gray;"></div>
                             </div>
                             <div id="extensionBar" class="row">
                                 <div style="padding-top:20px;">
@@ -167,12 +167,12 @@
                                 <br/>
                                 <dt>Headings</dt>
                                 <table>
-                                    <tr><td># text</td><td>H1 heading</td></tr>
-                                    <tr><td>## text</td><td>H2 heading</td></tr>
-                                    <tr><td>### text</td><td>H3 heading</td></tr>
-                                    <tr><td>#### text</td><td>H4 heading</td></tr>
-                                    <tr><td>##### text</td><td>H5 heading</td></tr>
-                                    <tr><td>###### text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>H6 heading</td></tr>
+                                    <tr><td>#text</td><td>H1 heading</td></tr>
+                                    <tr><td>##text</td><td>H2 heading</td></tr>
+                                    <tr><td>###text</td><td>H3 heading</td></tr>
+                                    <tr><td>####text</td><td>H4 heading</td></tr>
+                                    <tr><td>#####text</td><td>H5 heading</td></tr>
+                                    <tr><td>######text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>H6 heading</td></tr>
                                 </table>
                                 <br/>
                                 <dt>Links</dt>
@@ -211,41 +211,42 @@
 
     <script>
         var opts = {
-            container: 'epiceditor',
-            textarea: 'page:tempalte:form:contentInput',
-            basePath: '{!URLFOR($Resource.EpicEditor)}',
-            clientSideStorage: true,
-            localStorageName: 'new-wikipage',
-            useNativeFullscreen: true,
-            parser: marked,
-            file: {
-                name: 'epiceditor',
-                defaultContent: '',
-                autoSave: 100
-            },
-            theme: {
-                base: '/themes/base/epiceditor.css',
-                preview: '/themes/preview/github.css',
-                editor: '/themes/editor/epic-dark.css'
-            },
-            button: {
-                preview: true,
-                fullscreen: true,
-                bar: "auto"
-            },
-            focusOnLoad: false,
-            shortcut: {
-                modifier: 18,
-                fullscreen: 70,
-                preview: 80
-            },
-            string: {
-                togglePreview: 'Toggle Preview Mode',
-                toggleEdit: 'Toggle Edit Mode',
-                toggleFullscreen: 'Enter Fullscreen'
-            },
-            autogrow: false
-        }
+                  container: 'epiceditor',
+                  textarea: $('.content-input')[0],
+                  basePath: '{!URLFOR($Resource.EpicEditor)}',
+                  clientSideStorage: false,
+                  localStorageName: 'epiceditor',
+                  useNativeFullscreen: true,
+                  parser: marked,
+                  focusOnLoad: true,
+                  file: {
+                    name: 'epiceditor',
+                    defaultContent: '',
+                    autoSave: 100
+                  },
+                  theme: {
+                      base: '/themes/base/epiceditor.css',
+                      preview: '/themes/preview/github.css',
+                      editor: '/themes/editor/epic-light.css'
+                  },
+                  button: {
+                    preview: true,
+                    fullscreen: true,
+                    bar: "auto"
+                  },
+                  focusOnLoad: false,
+                  shortcut: {
+                    modifier: 18,
+                    fullscreen: 70,
+                    preview: 80
+                  },
+                  string: {
+                    togglePreview: 'Toggle Preview Mode',
+                    toggleEdit: 'Toggle Edit Mode',
+                    toggleFullscreen: 'Enter Fullscreen'
+                  },
+                  autogrow: false
+                }
 
         var wikiEditor = new EpicEditor(opts).load();
 

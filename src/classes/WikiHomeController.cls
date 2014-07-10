@@ -27,6 +27,7 @@ public with sharing class WikiHomeController
     public Boolean HasMoreFeedMark { get; set; }
     public Map<Id,User> IdUserMap { get; set; }
     public Map<String, String> WikiPageField2Type { get; private set;}
+    public Id NewSpaceId { get; private set; }
 
     public Boolean HasNextPopularPages
     {
@@ -91,6 +92,7 @@ public with sharing class WikiHomeController
         try
         {
             insert NewSpace;
+            NewSpaceId = NewSpace.Id;
             NewSpace = new WikiSpace__c();
         }
         catch(Exception ex)
@@ -117,7 +119,7 @@ public with sharing class WikiHomeController
                                  from WikiPageVersions__r where IsLatestVersion__c = true),
                             (select Id, CommentCount, LikeCount from Feeds) from WikiPage__c order by LastPublishedDate__c desc]);
             popularPagesSet.setPageSize(12);
-        }        
+        }
 
         List<WikiPage__c> pages = (List<WikiPage__c>)popularPagesSet.getRecords();
 
