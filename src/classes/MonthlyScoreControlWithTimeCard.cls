@@ -1,33 +1,30 @@
 /*
- * this Schedule used to control score with timecard every month
+ * this Schedule used to control Credit with timecard every month, which should execute every month's first day in 2014.
  */
 global class MonthlyScoreControlWithTimeCard implements Database.Batchable<SObject>, Schedulable
 {
-    private final Map<Integer, Integer> workDaysOf2014 = new Map<Integer, Integer>{ 1 => 20, 2 => 17, 3 => 21, 4 => 21, 5 => 21, 6 => 20, 7 => 23, 8 => 21, 9 => 22, 10 => 19, 11 => 20, 12 => 23 };
-
-    global   Database.QueryLocator start(Database.BatchableContext BC)
+    global Database.QueryLocator start(Database.BatchableContext BC)
     {
-        return Database.getQueryLocator([select Id, Name from User where IsActive = true and IsEmployee__c=1]);
+        return Database.getQueryLocator([select Id, Name, Email from User where IsActive = true and IsEmployee__c = 1]);
     }
 
     //execute method for batch
     global void execute(Database.BatchableContext BC, List<User> users)
     {
-        Date dateNow = Date.today();
-        Integer lastMonth = dateNow.month()-1;
-        Integer daysLastMonth = workDaysOf2014.get(lastMonth);
-
+        Date lastMonth = Date.today().addMonths(-1);
+        Integer year = lastMonth.year();
+        Integer month = lastMonth.month();
+        Integer workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month));
+        
+        Set<String> userEmails = new Set<String>();
         Set<Id> userIds = new Set<Id>();
-        for(User u : users)
+        Map<String, String> allUser = new Map<String, String>();
+        for(User user : users)
         {
-            userIds.add(u.Id);
+            userEmails.add(user.Email);
+            userIds.add(user.Id);
+            allUser.put(user.Email, user.Id);
         }
-
-        //***************start************
-        //Date startDay = Date.newInstance(yearNow, lastMonth, 1);
-        //Date endDay = Date.newInstance(yearNow, lastMonth, daysLastMonth);
-        //**************end***************
-
         //all TimeCards this month
         AggregateResult[] timeCards;
         if(Test.isRunningTest())
@@ -38,61 +35,39 @@ global class MonthlyScoreControlWithTimeCard implements Database.Batchable<SObje
         {
             timeCards = [select TeamMember__r.User__c uid, Date__c, sum(hours__c) from TimeCard__c where (TeamMember__r.User__c in :userIds) and (IsLogatSameDay__c = true) and Date__c = LAST_MONTH group by TeamMember__r.User__c, Date__c order by Date__c desc];
         }
-        List<Score__c> scores = [select User__r.Id, Worth__c, Id from Score__c where User__r.Id in :userIds];
+
         //keep the userId as key and his/her count of days has timecard this month as value on the map
         Map<Id, Integer> allTimeCards = new Map<Id, Integer>();
-        for(AggregateResult ar: timeCards)
+        for(AggregateResult aggregateResult: timeCards)
         {
-            if(Integer.valueOf(ar.get('expr0')) >= 6)
+            if(Integer.valueOf(aggregateResult.get('expr0')) >= 6)
             {
-                String userIdStr = String.valueOf(ar.get('uid'));
+                String userIdStr = String.valueOf(aggregateResult.get('uid'));
                 Id userId = Id.valueOf(userIdStr);
-                Integer TimeCardNumber;
-                if(allTimeCards.get(userId) == null)
-                {
-                   TimeCardNumber = 1;
-                }
-                else
-                {
-                    TimeCardNumber = allTimeCards.get(userId);
-                    TimeCardNumber += 1;
-                }
-                allTimeCards.put(userId,TimeCardNumber);
+                Integer timeCardNumber = (allTimeCards.get(userId) == null) ? 1 : allTimeCards.get(userId) + 1;
+                allTimeCards.put(userId, timeCardNumber);
+
             }
         }
-
-        //save the userId as key and his/her scoreId  as value on the map
-        Map<Id, Id> allScores = new Map<Id, Id>();
-        //save all subScore should be insert
-        List<SubScore__c> addSubScores = new List<SubScore__c>();
-        for(Score__c s : scores)
-        {
-            allScores.put(s.User__r.Id, s.Id);
-        }
-
-        //if timecard meet the condition ,then add his/her score
+        //save the userId as key and creditId as value on the map
+        Map<String, String> allCredits = EmployeeCredit.getCreditsInFin(allUser);
         Set<Id> uIds = allTimeCards.keySet();
-        for(Id i : uIds)
+        //save all CreditTransaction shoud be inserted into Fin
+        List<EmployeeCreditTransaction.CreditTransaction> addCreditTransactions = new List<EmployeeCreditTransaction.CreditTransaction>();
+        for(Id id : uIds)
         {
-            Integer tmNumber = allTimeCards.get(i);
-            if(tmNumber >= daysLastMonth)
+            Integer timeCardNumber = allTimeCards.get(id);
+            if(timeCardNumber >= workday)
             {
-                Id scoreId = allScores.get(i);
-                if(scoreId  == null)
+                String creditId = allCredits.get(String.valueOf(id));
+                if(creditId != null && creditId != '')
                 {
-                    //how to deal with it, um......
-                }
-                else
-                {
-                    SubScore__c addScore = new SubScore__c();
-                    addScore.Score__c = scoreId;
-                    addScore.worth__c = 0.3;
-                    addScore.Description__c = 'TimeCard encourage for ' + dateNow.year() + '.' + lastMonth ;
-                    addSubScores.add(addScore);
+                    EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction( 0.3, creditId, 'Perfect Attendence' + year + '-' + month, Date.today(), true, 'Perfect Attendence');
+                    addCreditTransactions.add(creditTransaction);
                 }
             }
         }
-        insert addSubScores;
+        EmployeeCreditTransaction.createCreditTransactions(addCreditTransactions);
     }
 
     global void finish(Database.BatchableContext BC)
@@ -105,4 +80,5 @@ global class MonthlyScoreControlWithTimeCard implements Database.Batchable<SObje
         MonthlyScoreControlWithTimeCard batch = new MonthlyScoreControlWithTimeCard();
         Database.executeBatch(batch, 1);
     }
+
 }

@@ -18,8 +18,31 @@ public class SFRestAPI
         request.setEndpoint(theUrl.getUrl());
         request.setMethod('GET');
         request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
+        if(Test.isRunningTest())
+        {
+            String queryResponse = '{"totalSize":1,"done":true,' +
+                                        '"records":[{' +
+                                            '"attributes":{' +
+                                                '"type":"Credit__c",' +
+                                                '"url":"/services/data/v22.0/sobjects/Credit__c/a07J0000006BFL3IAO"},' +
+                                                    '"Id":"a07J0000006BFL3IAO",' +
+                                                    '"Balance__c":"0",' +
+                                                    '"Employee__r":{' +
+                                                        '"attributes":{' +
+                                                            '"type":"User",' +
+                                                            '"url":"/services/data/v22.0/sobjects/User/005A0000001R7vFIAS"},' +
+                                                                '"Name":"Jair Zheng",' +
+                                                                '"Email":"jair.zheng@meginfo.com"}}]}';
 
-        response = (new Http()).send(request);
+            response = new HttpResponse();
+            response.setHeader('Content-Type', 'application/json');
+            response.setBody(queryResponse);
+            response.setStatusCode(200);
+        }
+        else
+        {
+           response = (new Http()).send(request);
+        }
 
         return response;
     }
@@ -38,8 +61,14 @@ public class SFRestAPI
         request.setBody(jsonBody);
         request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
         request.setHeader('Content-Type', 'application/json');
+        if(Test.isRunningTest())
+        {
 
-        (new Http()).send(request);
+        }
+        else
+        {
+            (new Http()).send(request);
+        }
     }
 
     public static void del(String sObj, String id)
