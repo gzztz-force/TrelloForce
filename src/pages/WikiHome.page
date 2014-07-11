@@ -6,7 +6,6 @@
             background-color: f9f9f9;
             font-size: 12px;
         }
-
         .container-custom {
             padding: 5px 20px;
             width: 100%;
@@ -105,6 +104,12 @@
             line-height:20px;
             position:relative;
             text-indent: -0.5cm;
+        }
+        .loadingbottom {
+            text-align:center;
+        }
+        .loadimg {
+            margin: 0 auto;
         }
     </style>
     <script type="text/javascript">
@@ -253,7 +258,7 @@
                             <a href="/apex/WikiNewPage" target="blank" class="btn btn-primary">Add Page</a>
                         </div>
                         <div class="col-md-3">
-                            <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search in Wiki" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
+                            <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search Pages" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
                             <div id="theSearchSpanId" class="search-result-dropdown list-group">
                                 <apex:outputPanel id="TheSearchSuggest" rendered="{!PagesForSearch.size > 0}">
                                     <ul>
@@ -372,14 +377,14 @@
                                         </ul>
                                         <apex:actionStatus id="loadPage" >
                                             <apex:facet name="start">
-                                                <div>
-                                                    <img src="{!$Resource.loadPic}" />
-                                                    Loading more pages ...
+                                                <div class="loadingbottom">
+                                                    <img src="{!$Resource.loadPic}" class="loadimg"/>
+                                                    Loading ...
                                                 </div>
                                             </apex:facet>
                                             <apex:facet name="stop">
                                                 <apex:outputPanel rendered="{!Not(HasNextPopularPages)}" style="display:block;" styleClass="well well-sm alert alert-danger">
-                                                    Sorry, there is no more page ...
+                                                    No more pages ...
                                                 </apex:outputPanel>                                                
                                             </apex:facet>
                                         </apex:actionStatus>
@@ -456,14 +461,14 @@
                                        </div>
                                         <apex:actionStatus id="loadItem">
                                             <apex:facet name="start">
-                                                <div>
-                                                    <img src="{!$Resource.loadPic}" />
-                                                    Loading more items ...
+                                                <div class="loadingbottom">
+                                                    <img src="{!$Resource.loadPic}" class="lodingimg" />
+                                                    Loading ...
                                                 </div>
                                             </apex:facet>
                                             <apex:facet name="stop">
                                                 <apex:outputPanel rendered="{!Not(hasMoreFeedMark)}" style="display:block;" styleClass="well well-sm alert alert-danger">
-                                                    Sorry, there is no more item ...
+                                                    No more items ...
                                                 </apex:outputPanel>  
                                             </apex:facet>
                                         </apex:actionStatus>
