@@ -1,8 +1,8 @@
 /*
- * Test method for class MonthlyScoreControlWithTimeCard.
+ * Test method for class PerfectAttendanceCreditJob.
  */
 @isTest
-private class MonthlyScoreControlWithTimeCardTest
+private class PerfectAttendanceCreditJobTest
 {
     //Create user
     private static User user;
@@ -28,7 +28,7 @@ private class MonthlyScoreControlWithTimeCardTest
     static void testSchedule()
     {
         Test.startTest();
-        MonthlyScoreControlWithTimeCard schedule = new MonthlyScoreControlWithTimeCard();
+        PerfectAttendanceCreditJob schedule = new PerfectAttendanceCreditJob();
         Test.stopTest();
 
     }
@@ -53,7 +53,7 @@ private class MonthlyScoreControlWithTimeCardTest
             insert timecards;
             
             Test.startTest();
-            MonthlyScoreControlWithTimeCard batch = new MonthlyScoreControlWithTimeCard();
+            PerfectAttendanceCreditJob batch = new PerfectAttendanceCreditJob();
             Database.executeBatch(batch);
             Test.stopTest();
 

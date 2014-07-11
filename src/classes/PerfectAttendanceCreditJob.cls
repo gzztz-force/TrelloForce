@@ -1,7 +1,7 @@
 /*
  * this Schedule used to control Credit with timecard every month, which should execute every month's first day in 2014.
  */
-global class MonthlyScoreControlWithTimeCard implements Database.Batchable<SObject>, Schedulable
+global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, Schedulable
 {
     global Database.QueryLocator start(Database.BatchableContext BC)
     {
@@ -77,7 +77,7 @@ global class MonthlyScoreControlWithTimeCard implements Database.Batchable<SObje
     //execute method for schedule
     global void execute(SchedulableContext SC)
     {
-        MonthlyScoreControlWithTimeCard batch = new MonthlyScoreControlWithTimeCard();
+        PerfectAttendanceCreditJob batch = new PerfectAttendanceCreditJob();
         Database.executeBatch(batch, 1);
     }
 
