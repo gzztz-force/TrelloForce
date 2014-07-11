@@ -44,7 +44,7 @@ public with sharing class WikiHomeController
 
     public List<WikiPageVersion__c> getMyPages()
     {
-        return [select Title__c, WikiPage__c from WikiPageVersion__c where IsLatestVersion__c = true and CreatedById = :UserInfo.getUserId() order by CreatedDate];
+        return [select Title__c, WikiPage__c from WikiPageVersion__c where IsLatestVersion__c = true and CreatedById = :UserInfo.getUserId() order by CreatedDate desc];
     }
 
     public void getUpdateInfo()
