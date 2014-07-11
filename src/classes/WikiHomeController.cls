@@ -14,13 +14,9 @@ public with sharing class WikiHomeController
     {
         NewSpace = new WikiSpace__c();
         HasError = false;
-
         popularPages = getPopularPagesResult();
-
         feedItemCount = [select count() from WikiPage__Feed where Type in ('TrackedChange','TextPost')];
-
         getUpdateInfo();
-
         PagesForSearch = [select Id, Title__c, WikiPage__c from WikiPageVersion__c where IsLatestVersion__c = true order by WikiPage__r.LastPublishedDate__c desc limit 50];
     }
 
@@ -48,7 +44,7 @@ public with sharing class WikiHomeController
 
     public List<WikiPageVersion__c> getMyPages()
     {
-        return [select Title__c, WikiPage__c from WikiPageVersion__c where IsLatestVersion__c = true and CreatedById = :UserInfo.getUserId()];
+        return [select Title__c, WikiPage__c from WikiPageVersion__c where IsLatestVersion__c = true and CreatedById = :UserInfo.getUserId() order by CreatedDate];
     }
 
     public void getUpdateInfo()
