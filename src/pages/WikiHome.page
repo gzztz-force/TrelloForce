@@ -109,6 +109,9 @@
             .load-status{
                 margin-left: 28px;
             }
+            .loadingbottom{text-align:center;}
+            .loadimg{margin:0 auto;}
+
         </style>
         <script type="text/javascript">
 

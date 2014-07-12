@@ -20,6 +20,7 @@ public class WikiDataFactory
     {
         List<WikiSpace__c> spaces = createWikiSpaces(spacesCount);
         List<WikiPage__c> pages = new List<WikiPage__c>();
+        List<FeedItem> feedItems = new List<FeedItem>();
         for(WikiSpace__c space :spaces)
         {
             for(Integer i = 0; i < pageCount; i++)
@@ -29,6 +30,25 @@ public class WikiDataFactory
             }
         }
         insert pages;
+        Boolean flage = false;
+        for(WikiPage__c page : pages) 
+        {
+            if(flage)
+            {
+                FeedItem feedItem1 = new FeedItem(ParentId = page.Id, Body = 'testBody');
+                FeedItem feedItem2 = new FeedItem(ParentId = page.Id, Body = 'testBody');
+                feedItems.add(feedItem1);
+                feedItems.add(feedItem2);
+                flage = false;
+            }
+            else
+            {
+                FeedItem feedItem = new FeedItem(ParentId = page.Id, Body = 'testBody');
+                feedItems.add(feedItem);
+                flage = true;
+            }
+        }
+        insert feedItems;
         if(withPageVersion)
         {
             createWikiPageVersions(pages);

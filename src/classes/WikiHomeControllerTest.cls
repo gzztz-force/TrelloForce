@@ -19,7 +19,17 @@ public class WikiHomeControllerTest
 		System.assertEquals(spaces[0].WikiPages__r.size(), 6);
 		controller.getMyPages();
 		controller.loadMorePopularPagesAction();
-		System.assertEquals(controller.getMyPopularPages().size(), 20);
+		List<WikiPage__c> pages = [select LastPublishedDate__c from WikiPage__c limit 3];
+		List<WikiPage__c> modifiedFiledPages = new List<WikiPage__c>();
+		Date testDate = date.newinstance(2014,12,12);
+		for(WikiPage__c wikipage : pages)
+		{
+			wikipage.LastPublishedDate__c = testDate;
+			modifiedFiledPages.add(wikipage);
+		}
+		update modifiedFiledPages;
+		controller.getWikiPageFieldLabelMap();
+		System.assertEquals(controller.getPopularPages().size(), 24);
 	}
 
 	@isTest
