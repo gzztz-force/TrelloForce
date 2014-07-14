@@ -26,22 +26,6 @@ public with sharing class EmployeeCreditTransaction {
 
     private static String generateJson(List<CreditTransaction> creditTransactions)
     {
-        /*
-        List<Map<String, String>> creditTransactions = new List<Map<String,String>>();
-        for(CreditTransaction c : cts)
-        {
-            Map<String, String> fieldToValueMap = new Map<String, String>();
-            fieldToValueMap.put('Adjustment__c', String.valueOf(c.Adjustment_c));
-            fieldToValueMap.put('Credit__c', c.Credit_r.Id);
-            fieldToValueMap.put('Description__c', c.Description_c);
-            fieldToValueMap.put('EffectiveDate__c', String.valueOf(c.EffectiveDate_c));
-            fieldToValueMap.put('IsValid__c', String.valueOf(c.IsValid_c));
-            fieldToValueMap.put('Reason__c', c.Reason_c); 
-            creditTransactions.add(fieldToValueMap);
-        }
-
-        return JSON.serialize(creditTransactions);
-        */
         String jsonSerialized = '';
         for(CreditTransaction creditTransaction : creditTransactions)
         {

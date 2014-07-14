@@ -18,9 +18,12 @@ public class SFRestAPI
         request.setEndpoint(theUrl.getUrl());
         request.setMethod('GET');
         request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
-        if(Test.isRunningTest())
+        if(Test.isRunningTest() && (q.contains('Credit__c') || q.contains('CreditTransaction__c')))
         {
-            String queryResponse = '{"totalSize":1,"done":true,' +
+            String queryResponse;
+            if(q.contains('Credit__c'))
+            {
+                queryResponse = '{"totalSize":1,"done":true,' +
                                         '"records":[{' +
                                             '"attributes":{' +
                                                 '"type":"Credit__c",' +
@@ -34,6 +37,17 @@ public class SFRestAPI
                                                                 '"Name":"Jair Zheng",' +
                                                                 '"Email":"jair.zheng@meginfo.com"}}]}';
 
+            }
+            else
+            {
+                queryResponse = '{"totalSize":1,"done":true,' +
+                                            '"records":[{' +
+                                                '"attributes":{' +
+                                                    '"type":"CreditTransaction__c",' +
+                                                    '"url":"/services/data/v22.0/sobjects/CreditTransaction__c/a07J0005606BFL3IAO"},' +
+                                                        '"Id":"a07J1100006BFL3IAO"}]}';
+            }
+            
             response = new HttpResponse();
             response.setHeader('Content-Type', 'application/json');
             response.setBody(queryResponse);

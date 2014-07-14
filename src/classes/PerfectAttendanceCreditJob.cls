@@ -14,7 +14,7 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
         Date lastMonth = Date.today().addMonths(-1);
         Integer year = lastMonth.year();
         Integer month = lastMonth.month();
-        Integer workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month));
+        Integer workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month).Days__c);
         
         Set<String> userEmails = new Set<String>();
         Set<Id> userIds = new Set<Id>();

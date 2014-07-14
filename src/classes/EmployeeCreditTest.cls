@@ -18,4 +18,13 @@ public class EmployeeCreditTest
         EmployeeCredit.Employee employee = new EmployeeCredit.Employee('test');
         EmployeeCredit.Credit credit = new EmployeeCredit.Credit('test');
     }
+
+    @isTest
+    static void testGetData()
+    {
+        Map<String, String> allUser = new Map<String, String>();
+        allUser.put('005A0000001R7vFIAS', 'jair.zheng@meginfo.com');
+        Map<String, String> allCredit = EmployeeCredit.getCreditsInFin(allUser);
+        System.assert(allCredit != null);
+    }
 }
