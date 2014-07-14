@@ -123,30 +123,37 @@
                                         <img width="35" height="35" title="{!UserInfo.Name}" class="avatar-photo" src="{!UserInfo.SmallPhotoUrl}"/>
                                     </span>
                                 </a>
-                                <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" html-placeholder="New Page Title" style="width:95%;"/>
+                                <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" html-placeholder="Page Title" style="width:90%; margin-left:10px;" />
                             </div>
                             <div id="contentSection" class="row">
                                 <apex:inputTextarea id="contentInput" styleClass="content-input" value="{!LatestPage.Body__c}" rows="0" style="display:none"/>
-                                <div id="epiceditor" style="height:550px;border:1px solid gray;"></div>
+                                <div id="epiceditor" class="col-md-12 div-border" style="padding-left:5px; height:550px;"></div>
                             </div>
-                            <div id="extensionBar" class="row">
-                                <div style="padding-top:20px;">
-                                    <div id="spaceDiv" class="col-md-4" style="padding-left:0px;">
-                                        <span style="width:60px;float:left;">Space :</span>
-                                        <apex:selectList id="selectList" styleclass="select-style form-control" style="width:70%;" value="{!WikiSpaceId}" size="1">
-                                            <apex:selectOptions value="{!SpaceOptions}"/>
-                                        </apex:selectList>
-                                    </div>
+
+                            <div id="extensionBar" class="row" style="padding-left:10px; padding-top:10px;">
+                            
+                                <div id="spaceDiv" class="col-md-4" style="padding-left:0px; width:70%;">
+                                    <span style="float:left; font-size:18px; font-weight:bold; height:34px; padding-top:4px;" >Space &nbsp;&nbsp;</span>
+                                    <apex:selectList id="selectList" styleclass="select-style form-control" style="height:34px;width:50%;" value="{!WikiSpaceId}" size="1">
+                                        <apex:selectOptions value="{!SpaceOptions}"/>
+                                    </apex:selectList>
+                                </div>
+                                
+                                <div id="buttonDiv" class="col-md-3" style="padding-left:-40px; width:30%;">
+                                    <apex:commandButton id="saveBtn" action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary" style="margin-right:40px;"/>
+                                    <apex:commandButton id="cancelBtn" action="{!cancel}" value="Cancel" styleclass="btn btn-default"/>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div style="padding-top:40px;">
+                            <!--
+                            <div class="row" >
+                                <div style="padding-top:20px; padding-left:20px;">
                                     <div id="buttonDiv" class="col-md-3" style="padding-left:0px;">
                                         <apex:commandButton id="saveBtn" action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary" style="margin-right:40px;"/>
                                         <apex:commandButton id="cancelBtn" action="{!cancel}" value="Cancel" styleclass="btn btn-default"/>
                                     </div>
                                 </div>
                             </div>
+                            -->
                         </div>
                         <div id="rightMainContainer" class="col-md-3 div-border">
                             <p><span class="tips-title">Help Tips</span></p>
