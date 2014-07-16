@@ -20,7 +20,7 @@
         <div class="container" style="margin-left:5px;">
             <div class="col-md-4">
                 <div class="page-header">
-                    <h3>Top Popular Page <span class="label label-info">{!PopularPages.size}</span></h3>
+                    <h3>Top Popular Pages <span class="label label-info">{!PopularPages.size}</span></h3>
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -44,7 +44,7 @@
             </div>
             <div class="col-md-8">
                 <div class="page-header">
-                    <h2>WiKi Search <small>please input search key</small></h2>
+                    <h2>WiKi Search <small>please input a search key</small></h2>
                 </div>
                 <div class="row">
                     <apex:form >
@@ -52,7 +52,7 @@
                             <apex:inputText value="{!Key}" styleClass="form-control" html-placeholder="Search"/>
                         </div>
                         <div class="col-sm-2" style="text-align:right;">
-                            <apex:commandButton action="{!search}" value="Search" styleClass="btn btn-default"/>
+                            <apex:commandButton action="{!search}" value="search key" styleClass="btn btn-default"/>
                         </div>
                     </apex:form>
                 </div>
@@ -62,9 +62,11 @@
                     </div>
                 </apex:outputPanel>
                 <apex:outputPanel rendered="{!MyWiKiPages.size > 0}">
-                    <div class="alert alert-success" style="margin-top:10px;">
-                        <p>We've found {!Results} pages about "{!Key}".</p>
-                    </div>
+                    <apex:outputText rendered="{!LEN(Key) > 2}">
+                        <div class="alert alert-success" style="margin-top:10px;">
+                            <p>We've found {!Results} pages about "{!Key}".</p>
+                        </div>
+                    </apex:outputText>
 
                     <apex:repeat value="{!MyWiKiPages}" var="page">
                         <div class=".navbar-left" style="padding:5px 0px;">
