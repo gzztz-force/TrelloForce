@@ -86,15 +86,17 @@
                             <li>
                                 <a href="{!$Page.WikiHome}">Wiki Home</a>
                             </li>
-                            <li>
-                                <a href="/apex/wikispace?id={!PubPage.WikiPage.WikiSpace__c}">{!PubPage.WikiPage.WikiSpace__r.Name}</a>
-                            </li>
+                            <apex:outputText rendered="{!PubPage.WikiPage.WikiSpace__r.Name != null}">
+                                <li>
+                                    <a href="{!$Site.Prefix}/apex/wikispace?id={!PubPage.WikiPage.WikiSpace__c}">{!PubPage.WikiPage.WikiSpace__r.Name}</a>
+                                </li>
+                            </apex:outputText>
                             <li class="active">{!PubPage.WikiPageVersion.Title__c}</li>
                         </ul>
                     </div>
                     <div class="page-header">
                         <h1>{!PubPage.WikiPageVersion.Title__c}</h1>
-                        <a id="editid" href='/apex/WikiNewPage?id={!PubPage.WikiPage.Id}' type="button" class="btn-default1 pull-right" style="margin-bottom:10px;">
+                        <a id="editid" href='{!$Site.Prefix}/apex/WikiNewPage?id={!PubPage.WikiPage.Id}' type="button" class="btn-default1 pull-right" style="margin-bottom:10px;">
                             <span class="glyphicon glyphicon-pencil"></span> &nbsp;&nbsp;Edit
                         </a>
                         <div class="page-metadata muted">

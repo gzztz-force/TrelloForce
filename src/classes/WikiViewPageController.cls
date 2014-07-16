@@ -5,19 +5,12 @@ public with sharing class WikiViewPageController
 {
     private String pageId;
     public PublishedPage PubPage { get; set; }
-    public Boolean Error { get; private set; }
-
     public WikiViewPageController()
     {
         pageId = ApexPages.currentPage().getParameters().get('id');
         if(string.isNotBlank(pageId))
         {
-            Error = false;
             getPubishedPage();
-        }
-        else
-        {
-            Error = true;
         }
     }
 
