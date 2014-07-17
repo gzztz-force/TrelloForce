@@ -7,17 +7,9 @@ private class NewTimeCardOnChangeControllerTest
     @isTest
     static void WithNullChange()
     {
-        MProject__c project = TestDataFactory.generateSampleActiveProject('ntcocc');
-        insert project;
-
-        Change__c change = TestDataFactory.generateSampleChange(project.Id, 'new change for timecard');
-        insert change;
-
-        PageReference page = new PageReference('/apex/NewTimeCardOnChange?cid=' + change.Id);
-
-        delete change;
-
-        Test.setCurrentPage(page);
+        PageReference pageReference = Page.NewTimeCardOnChange;
+        pageReference.getParameters().put('cid', '');
+        Test.setCurrentPage(pageReference);
         NewTimeCardOnChangeController controller = new NewTimeCardOnChangeController();
         String url = controller.redirect().getUrl();
         System.assert(url.contains('/a0L/e'));
@@ -32,13 +24,13 @@ private class NewTimeCardOnChangeControllerTest
         Change__c change = TestDataFactory.generateSampleChange(project.Id, 'new change for timecard');
         insert change;
 
-        PageReference page = new PageReference('/apex/NewTimeCardOnChange?cid=' + change.Id);    
-        Test.setCurrentPage(page);
-        NewTimeCardOnChangeController controller = new NewTimeCardOnChangeController();
-        String url = controller.redirect().getUrl();
-        //System.assert(url.containsNone('CF00N80000003iWpD'));
-        System.assert(url.contains('saveUrl'));
-        System.assert(controller.redirect().getParameters().get('CF00N80000003iWpD')==null);
+        PageReference pageReference = Page.NewTimeCardOnChange;
+        Test.setCurrentPage(pageReference);
+        ApexPages.currentPage().getParameters().put('cid', change.Id); 
+        NewTimeCardOnChangeController controller = new NewTimeCardOnChangeController();        String url = controller.redirect().getUrl();
+
+        System.assert(url.indexOf('saveUrl') > 0);
+        System.assert(url.indexOf(EncodingUtil.urlEncode(UserInfo.getName(), 'UTF-8')) < 0);
     }
     
     @isTest
@@ -53,12 +45,13 @@ private class NewTimeCardOnChangeControllerTest
         TeamMember__c member = TestDataFactory.generateSampleTeamMember(project);
         insert member;
 
-        PageReference page = new PageReference('/apex/NewTimeCardOnChange?cid=' + change.Id);    
-        Test.setCurrentPage(page);
+        PageReference pageReference = Page.NewTimeCardOnChange;
+        pageReference.getParameters().put('cid', change.Id);    
+        Test.setCurrentPage(pageReference);
         NewTimeCardOnChangeController controller = new NewTimeCardOnChangeController();
         String url = controller.redirect().getUrl();
-        System.assert(url.contains('CF00N80000003iWpD'));
-        //System.assert(controller.redirect().getParameters().get('CF00N80000003iWpD')!=null);
-    }
 
+        System.assert(url.indexOf(EncodingUtil.urlEncode(UserInfo.getName(), 'UTF-8')) > 0);
+        System.assert(url.indexOf('saveUrl') > 0);
+    }
 }
