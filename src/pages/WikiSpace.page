@@ -42,7 +42,7 @@
         #div1{
             font-size:20px;
             background-color:#F2DEDE;
-            height:50px;
+            padding-bottom:10px;
             padding-left:20px;
             padding-top:10px;
             border-radius:10px;
@@ -51,9 +51,9 @@
         #div2{
             font-size:20px;
             background-color:#D9EDF7;
-            height:50px;
             padding-left:20px;
             padding-top:10px;
+            padding-bottom: 10px;
             border-radius:10px;
         }
     </style>
@@ -83,24 +83,33 @@
         <apex:define name="body">
             <apex:form >
                 <div id="force">
-                    <div class="container" style="margin-left:5px;">
+                    <div class="container" style="margin-left:5px; width:100%; margin-top:20px;">
                         <div class="row">
-                            <div class="col-md-2">
-                                <span style="font-size:20px;">WIkI SPACES</span>
+                            <div class="col-md-3">
+                                <div style="padding-bottom:10px;"><h2><span >Wiki Spaces</span></h2></div>
                                 <ul>
-                                    <apex:repeat value="{!Spaces}" var="space">
-                                        <li>
-                                            <a href="/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'black', '#999999')};">{!space.Name}</a>
-                                        </li>
-                                    </apex:repeat>
+                                    <table class="table table-hover">
+                                        <apex:repeat value="{!Spaces}" var="space">
+                                            <tr>
+                                                <td style="font-color:#428bca;">
+                                                    <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'black', '#999999')}; font-size:14px;">{!space.Name}</a>
+                                                    <span class="badge pull-right comment" title="{!space.WikiPages__r.size} page(s)">{!space.WikiPages__r.size}</span>
+                                                </td>
+                                            </tr>
+                                            <!--<li>
+                                                <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'black', '#999999')};">{!space.Name}</a>
+                                            </li>-->
+                                        </apex:repeat>
+                                    </table>
                                 </ul>
                             </div>
-                            <div class="col-md-9">
+
+                            <div class="col-md-9" style="padding-top:20px;">
                                 <apex:outputPanel rendered="{!WikiPages.size == 0}">
-                                   <div id="div1">
+                                    <div id="div1">
                                         Sorry,there is no page of {!SpaceName}
-                                        <button type="button"  class="btn btn-primary" style="margin-left:35px;" onclick="window.open('/apex/WikiNewPage?spaceid={!SpaceId}')">New Page</button>
-                                   </div>
+                                        <button type="button"  class="btn btn-primary" style="margin-left:35px;" onclick="window.open('{!$Site.Prefix}/apex/WikiNewPage?spaceid={!SpaceId}')">New Page</button>
+                                    </div>
                                 </apex:outputPanel>
                                 <apex:outputPanel id="pagePanel" rendered="{!WikiPages.size > 0}">
                                     <ul>
@@ -109,18 +118,18 @@
                                         </div>
                                         <apex:repeat value="{!WikiPages}" var="page">
                                             <li>
-                                                <a href="/{!Page.WikiPageVersion.CreatedById}">
+                                                <a href="{!$Site.Prefix}/{!Page.WikiPageVersion.CreatedById}">
                                                     <span title="{!page.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto">
                                                         <img width="45" height="45" title="{!page.WikiPageVersion.CreatedBy.Name}" alt="{!page.WikiPageVersion.CreatedBy.Name}" src="{!page.WikiPageVersion.CreatedBy.FullPhotoUrl}"/>
                                                     </span>
                                                 </a>&nbsp;&nbsp;
-                                                <a href="#" onclick="window.open('/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}')">
+                                                <a href="#" onclick="window.open('{!$Site.Prefix}/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}')">
                                                     <h4>{!page.WikiPageVersion.Title__c}</h4>
                                                 </a><br/><br/>
                                                 <span id="showBody">
                                                     <apex:outputText value="{!page.WikiPageVersion.Body__c}" escape="false"/>
                                                 </span><br/>
-                                                <a href="/{!page.WikiPageVersion.CreatedById}">{!page.WikiPageVersion.CreatedBy.Name}</a>&nbsp;&nbsp;
+                                                <a href="{!$Site.Prefix}/{!page.WikiPageVersion.CreatedById}">{!page.WikiPageVersion.CreatedBy.Name}</a>&nbsp;&nbsp;
                                                 <apex:outputText value="{0, date, MM-dd-yyyy}">
                                                     <apex:param value="{!page.WikiPageVersion.LastPublishedDate__c}"/>
                                                 </apex:outputText>

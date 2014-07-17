@@ -29,7 +29,7 @@ public class WikiSpaceController
 
     private void initSpaces()
     {
-        Spaces = [select Id, Name from WikiSpace__c];
+        Spaces = [select Id, Name, (select Id from WikiPages__r) from WikiSpace__c order by CreatedDate desc];
     }
 
     private void initWikiPages()

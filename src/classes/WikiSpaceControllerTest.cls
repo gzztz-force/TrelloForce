@@ -7,12 +7,23 @@ public class WikiSpaceControllerTest
     static testmethod void test()
     {
         createData();
+        WikiSpace__c space = [select Id, Name from WikiSpace__c ].get(1);
 
+        //test spaceId is not blank
+        PageReference pageRef = new ApexPages.PageReference('/apex/WikiSpace');
+        pageRef.getParameters().put('id', space.Id);
+        Test.setCurrentPage(pageRef);
         WikiSpaceController controller = new WikiSpaceController();
-        controller.spaceId = controller.Spaces[1].Id;
         System.assertEquals('space1', controller.SpaceName);
         System.assertEquals(5, controller.Spaces.size());
         System.assertEquals(10, controller.WikiPages.size());
+
+        //test spaceId is blank
+        PageReference pageRef2 = new ApexPages.PageReference('/apex/WikiSpace');
+        pageRef2.getParameters().put('id', NULL);
+        Test.setCurrentPage(pageRef2);
+        WikiSpaceController controller2 = new WikiSpaceController();
+        System.assertEquals(controller2.SpaceId,[select Id from WikiSpace__c].get(0).Id);
     }
 
     private static void createData()
