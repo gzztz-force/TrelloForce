@@ -43,18 +43,4 @@ public with sharing class NewTimeCardOnChangeController
 		}
 	}
 
-	@isTest
-	static void testNewTimeCardOnChangeController()
-	{
-		MProject__c project = TestDataFactory.generateSampleActiveProject('acme');
-        insert project;
-
-	    Change__c change = TestDataFactory.generateSampleChange(project.Id, 'new change');
-        insert change;
-
-		PageReference page = new PageReference('/apex/NewTimeCardOnChange?cid=' + change.Id);
-		Test.setCurrentPage(page);
-		NewTimeCardOnChangeController controller = new NewTimeCardOnChangeController();
-		System.assert(controller.redirect() != null);
-	}
 }
