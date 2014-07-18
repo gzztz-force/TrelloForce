@@ -22,7 +22,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
                 return Database.getQueryLocator([select Id, Name, Email from User where IsActive = true and IsEmployee__c=1]);
             }
         }
-        return null;
+        return Database.getQueryLocator('');
     }
 
     global void execute(Database.BatchableContext BC, List<User> users)
@@ -54,7 +54,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
             catch(Exception ex)
             {
                 String error = ex.getMessage() + '\r\n' + ex.getStackTraceString();
-                sendErrorMsg(new String[] { 'kevin.chong@meginfo.com' }, 'Error occureed on SendDailyTimeCardReportSchedule class', error);
+                sendErrorMsg(new String[] { 'exception@meginfo.com' }, 'Error occureed on SendDailyTimeCardReportSchedule class', error);
             }
         }
     }
@@ -63,7 +63,7 @@ global class SendDailyTimeCardReportSchedule implements Database.Batchable<SObje
     {
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
         mail.setToAddresses(toAddresses);
-        mail.setSubject('Error in SendDailyTimeCardReportSchedule');
+        mail.setSubject('Meginfo Exception: Error in SendDailyTimeCardReportSchedule');
         mail.setSaveAsActivity(false);
         mail.setSenderDisplayName('System Administrator');
         mail.setPlaintextBody(body);
