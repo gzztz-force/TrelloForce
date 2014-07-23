@@ -18,7 +18,6 @@ private class PerfectAttendanceCreditJobTest
         user.LocaleSidKey = 'en_US';
         user.TimeZoneSidKey = 'America/Chicago';
         user.EmailEncodingKey = 'UTF-8';
-
         user.UserRoleId = '00E800000013v1n';
         user.ProfileId = '00e8000000183bS';
         user.ManagerId = UserInfo.getUserId();
@@ -30,7 +29,6 @@ private class PerfectAttendanceCreditJobTest
         Test.startTest();
         PerfectAttendanceCreditJob schedule = new PerfectAttendanceCreditJob();
         Test.stopTest();
-
     }
     @isTest
     static void testBatch()
@@ -75,8 +73,6 @@ private class PerfectAttendanceCreditJobTest
             PerfectAttendanceCreditJob batch = new PerfectAttendanceCreditJob();
             Database.executeBatch(batch);
             Test.stopTest();
-
        } 
     }
-
 }
