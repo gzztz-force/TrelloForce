@@ -5,37 +5,30 @@
             body {
                 background-color: f9f9f9;
             }
-
             .container-custom {
                 padding: 5px 20px;
                 width: 100%;
                 margin: auto 0px;
             }
-
             .nav-wiki {
                 padding: 10px 0px;
             }
-
             .new-page {
                 padding-top: 25px;
                 background-color: #EEEEEE;
             }
-
             .new-page h2 {
                 border-bottom: 1px solid #bbb;
                 display: block;
             }
-
             .spaces-list a {
                 padding-right: 30px;
                 word-wrap: break-word;
             }
-
             .spaces-list li>div {
                 margin-left: 5px;
                 position: relative;
             }
-
             .spaces-list li, .popular-list li {
                 margin-top: 5px;
                 padding-left: 5px;
@@ -43,7 +36,6 @@
                 font-size: 15px;
                 overflow: hidden;
             }
-
             .spaces-list .fav {
                 background-position: 0 0;
                 height: 16px;
@@ -51,7 +43,6 @@
                 margin: 2px 15px 0 3px;
                 float: left;
             }
-
             .divider {
                 height: 1px;
                 margin: 9px 0px;
@@ -60,36 +51,30 @@
                 border-bottom: 1px solid #dfdfdf;
                 padding: 0px;
             }
-
             .popular-list a {
                 margin-right: 10px;
             }
-
             .popular-list .media {
                 width: 75%;
                 margin-top: 0px;
             }
-
             .popular-list .comment {
                 margin-right: 20px
             }
-
             .popular-list .page-author {
                 font-size: 12px;
                 padding-left: 0px;
                 padding-top: 5px;
             }
-
             .add-btns {
                 margin-top: 0px;
             }
-
             .search-result-dropdown {
                 width:90%;
                 float: left;
                 position: absolute;
-                top:35px;
-                font-size:14px;
+                top: 35px;
+                font-size: 14px;
                 z-index:20;
                 border:1px solid gray;
                 background-color:#EAEAEA;
@@ -98,23 +83,312 @@
                 -moz-opacity:0.5;
                 opacity: 0.9;
             }
-
             .search-result-dropdown li{
                 list-style: none;
                 line-height:20px;
                 position:relative;
                 text-indent: -0.5cm;
             }
-
             .load-status{
                 margin-left: 28px;
             }
-            .loadingbottom{text-align:center;}
-            .loadimg{margin:0 auto;}
-
+            .loadingbottom{
+                text-align:center;
+            }
+            .loadimg{
+                margin:0 auto;
+            }
         </style>
-        <script type="text/javascript">
+        
+    </head>
+    <apex:form >
+        <apex:actionFunction name="loadMorePopularPages" status="loadPage" action="{!loadMorePopularPages}" reRender="popularPagePanel" oncomplete="doneLoad()"/>
+        <apex:actionFunction name="loadMoreFeedItems"  status="loadItem" action="{!loadMoreFeedItems}" reRender="updatePagesPanel" oncomplete="doneLoad()"/>
+    </apex:form>
+    <apex:composition template="WikiTemplate">
+        <apex:define name="body">
+            <div id="force">
+                <apex:form onsubmit="return false">
+                    <div class="container-custom">
+                        <div class="row nav-wiki">
+                            <div class="col-md-6">
+                                <h1 class="h1">Wiki Home</h1>
+                            </div>
+                            <div class="add-btns col-md-3">
+                                <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
+                                <a href="/apex/WikiNewPage" target="blank" class="btn btn-primary">Add Page</a>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search Pages" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
+                                <div id="theSearchSpanId" class="search-result-dropdown list-group">
+                                    <apex:outputPanel id="TheSearchSuggest" rendered="{!PagesForSearch.size > 0}">
+                                        <ul>
+                                            <apex:repeat value="{!PagesForSearch}" var="item">
+                                                <li>
+                                                    <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!item.WikiPage__c}" target="_self">{!item.Title__c}</a>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="well new-page">
+                                    <h2 >Hello, world!</h2>
+                                    <ul> Wiki Version 1 Function：
+                                        <li> Article Version Control</li>
+                                        <li> Comment (Chatter)</li>
+                                        <li> Search</li>
+                                        <li> Markdown</li>
+                                        <li> Highlight with Code</li>
+                                        <li> Bookmark a page or space</li>
+                                    </ul>
+                                </div>
+                                <div class="spaces-pane">
+                                    <ul id="myTab" class="nav nav-tabs">
+                                        <li class="active">
+                                            <a href="#mySpace" data-toggle="tab">Spaces</a>
+                                        </li>
+                                        <li>
+                                            <a href="#myPages" data-toggle="tab">My Pages</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="mySpace" class="tab-pane fade active in">
+                                            <apex:outputPanel id="allSpaces">
+                                            <ul class="list-unstyled spaces-list">
+                                                <apex:repeat value="{!MySpaces}" var="space">
+                                                    <li>
+                                                        <span class="fav glyphicon glyphicon-globe"></span>
+                                                        <div>
+                                                            <a href="{!$Site.Prefix}/apex/wikispace?id={!space.id}" target="_self">{!space.Name}</a>
+                                                            <span class="badge pull-right comment" title="{!space.WikiPages__r.size} page(s)">{!space.WikiPages__r.size}</span>
+                                                        </div>
+                                                    </li>
+                                                    <div class="divider"></div>
+                                                </apex:repeat>
+                                            </ul>
+                                            </apex:outputPanel>
+                                        </div>
+                                        <div id="myPages" class="tab-pane fade">
+                                            <ul class="list-unstyled spaces-list">
+                                                <apex:repeat value="{!MyPages}" var="page">
+                                                    <li>
+                                                        <span class="fav glyphicon glyphicon-globe"></span>
+                                                        <div>
+                                                            <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!page.WikiPage__c}" target="_self">{!page.Title__c}</a>
+                                                        </div>
+                                                    </li>
+                                                    <div class="divider"></div>
+                                                </apex:repeat>
+                                              </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <ul class="nav nav-tabs" id="popularul">
+                                    <li class="active">
+                                        <a href="#popularDiv" data-toggle="tab" class="tabmark" rel='popular'>Popular</a>
+                                    </li>
+                                    <li>
+                                        <a href="#allUpdateDiv" data-toggle="tab" class="tabmark" rel="update">All Update</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="popularDiv" class="tab-pane fade active in">
+                                        <apex:outputPanel id="popularPagePanel">
+                                            <ul class="list-unstyled popular-list">
+                                                <apex:repeat value="{!PopularPages}" var="item">
+                                                    <li class="popular-page">
+                                                        <a href="/{!item.CreatedById}" class="pull-left">
+                                                            <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                                <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
+                                                            </span>
+                                                        </a>
+                                                        <div class="media pull-left" style="margin-left:20px;margin-top:0px;">
+                                                            <div class="media-body">
+                                                                <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!item.WikiPage__c}" target="_self">{!item.Title__c}</a>
+                                                                <div class="page-author">
+                                                                    <a href="{!$Site.Prefix}/{!item.CreatedById}" target="_self">{!item.CreatedBy.Name}</a>
+                                                                    <span>
+                                                                        <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                            <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
+                                                                        </apex:outputText>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="pull-right comment">
+                                                        <apex:outputPanel rendered="{!item.WikiPage__r.Post_Count__c < 10}" styleClass="badge" title="{!item.WikiPage__r.Post_Count__c} state(s)">
+                                                                {!item.WikiPage__r.Post_Count__c}
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!(item.WikiPage__r.Post_Count__c > 10)&&(item.WikiPage__r.Post_Count__c < 50)}" styleClass="badge" style="background-color:#d7ac67;" title="{!item.WikiPage__r.Post_Count__c} state(s)">
+                                                                {!item.WikiPage__r.Post_Count__c}
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!item.WikiPage__r.Post_Count__c > 50}" styleClass="badge" style="background-color:#b1605a" title="{!item.WikiPage__r.Post_Count__c} state(s)">
+                                                                {!item.WikiPage__r.Post_Count__c}
+                                                            </apex:outputPanel>
+                                                        </div>
+                                                    </li>
+                                                    <div class="divider"></div>
+                                                </apex:repeat> 
+                                            </ul>
+                                            <apex:actionStatus id="loadPage">
+                                                <apex:facet name="start">
+                                                    <div class="loadingbottom">
+                                                        <img src="{!$Resource.loadPic}" class="loadimg"/>
+                                                        Loading ...
+                                                    </div>
+                                                </apex:facet>
+                                                <apex:facet name="stop">
+                                                    <apex:outputPanel rendered="{!Not(HasNextPopularPages)}" style="display:block;" styleClass="well well-sm alert alert-danger">
+                                                        No more pages ...
+                                                    </apex:outputPanel>
+                                                </apex:facet>
+                                            </apex:actionStatus>
+                                            <input type="hidden" value="{!HasNextPopularPages}" id="HasNextPopularPages"/>
+                                        </apex:outputPanel>
+                                    </div>
+                                    <div id="allUpdateDiv" class="tab-pane fade">
+                                        <apex:outputPanel id="updatePagesPanel">
+                                            <apex:variable var="WikiPageFieldLabelMap" value="{!WikiPageFieldLabelMap}" />
+                                            <div>
+                                                <ul class="list-unstyled popular-list">
+                                                    <apex:repeat value="{!FeedItems}" var="item">
+                                                        <li>
+                                                            <a href="/{!item.CreatedById}" class="pull-left">
+                                                                <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                                    <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!IdUserMap[item.CreatedById].FullPhotoUrl}" />
+                                                                </span>
+                                                            </a>
+                                                            <div class="media pull-left" style="margin-left:20px;margin-top:0px;">
+                                                                <div class="media-body">
+                                                                    <div>
+                                                                        <apex:outputPanel rendered="{!item.Type == 'TextPost'}">
+                                                                            <div class="page-author">
+                                                                                <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>post a text on the WikiPage —— <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!item.ParentId}" target="_self">{!item.Parent.Title__c}</a>
+                                                                                <div style="margin-top:3px;">{!item.Body}</div>
+                                                                                <div style="margin-top:3px;">at &nbsp;&nbsp;
+                                                                                    <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                        <apex:param value="{!item.CreatedDate}"/>
+                                                                                    </apex:outputText>
+                                                                                </div>
+                                                                            </div>
+                                                                        </apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!item.Type == 'TrackedChange'}">
+                                                                            <div class="page-author">
+                                                                                <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}" target="_self">{!item.Parent.Title__c}</a> <br/>
+                                                                                <div class="update-track-change-div">
+                                                                                    <ul>
+                                                                                        <apex:repeat value="{!item.FeedTrackedChanges}" var="changeItem">
+                                                                                            <li class="page-author">
+                                                                                                {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from
+                                                                                                <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] != 'DATETIME') && (WikiPageField2Type[changeItem.FieldName] != 'DATE') && (WikiPageField2Type[changeItem.FieldName] != 'TIME')}">
+                                                                                                    "{!if(isBlank(changeItem.OldValue),'blank', changeItem.OldValue)}" to "{!changeItem.Newvalue}"
+                                                                                                </apex:outputPanel>
 
+                                                                                                <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] == 'DATETIME') || (WikiPageField2Type[changeItem.FieldName] == 'DATE') || (WikiPageField2Type[changeItem.FieldName] == 'TIME')}">
+                                                                                                    "<apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                                        <apex:param value="{!changeItem.OldValue}"/>
+                                                                                                    </apex:outputText>"
+                                                                                                     to
+                                                                                                    "<apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                                        <apex:param value="{!changeItem.Newvalue}"/>
+                                                                                                    </apex:outputText>"
+                                                                                                </apex:outputPanel>
+                                                                                            </li>
+                                                                                        </apex:repeat>
+                                                                                    </ul>
+                                                                                </div>
+                                                                                <div style="margin-top:3px;">at &nbsp;&nbsp;
+                                                                                    <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                        <apex:param value="{!item.CreatedDate}"/>
+                                                                                    </apex:outputText>
+                                                                                </div>
+                                                                            </div>
+                                                                        </apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!item.Type == 'PollPost'}">
+                                                                        </apex:outputPanel>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <div class="divider"></div>
+                                                    </apex:repeat>
+                                                </ul>
+                                           </div>
+                                            <apex:actionStatus id="loadItem">
+                                                <apex:facet name="start">
+                                                    <div class="loadingbottom">
+                                                        <img src="{!$Resource.loadPic}" class="lodingimg" />
+                                                        Loading ...
+                                                    </div>
+                                                </apex:facet>
+                                                <apex:facet name="stop">
+                                                    <apex:outputPanel rendered="{!Not(hasMoreFeedMark)}" style="display:block;" styleClass="well well-sm alert alert-danger">
+                                                        No more items ...
+                                                    </apex:outputPanel>
+                                                </apex:facet>
+                                            </apex:actionStatus>
+                                            <input type="hidden" value="{!HasMoreFeedMark}" id="hasMoreFeedMark"/>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <span id="load-location"></span>
+                            </div>
+                        </div>
+                    </div>
+                </apex:form>
+                <!-- Space modal start-->
+                <div class="modal" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <apex:form id="addSpaceForm">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-loading-text="&times;">&times;</button>
+                                    <h3 class="modal-title">New Space</h3>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Error Messages start -->
+                                    <div id="addSpaceAlert" class="alert alert-danger" style="display:{!IF(HasError, '', 'none')}">
+                                        <button type="button" class="close" data-dismiss="alert" data-loading-text="&times;">
+                                            &times;
+                                        </button>
+                                        <apex:messages layout="table" />
+                                    </div>
+                                    <!-- Error Messages end -->
+                                    <div class="form-group">
+                                        <label class="control-label" for="inputName">Name</label>
+                                        <div>
+                                            <apex:inputText value="{!NewSpace.Name}" style="width:300px" styleClass="form-control" html-placeholder="Apex, HTML5, etc."/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Description</label>
+                                        <div >
+                                          <apex:inputTextarea value="{!NewSpace.Summary__c}" style="width:511px; height:100px" styleClass="form-control"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">Close</button>
+                                    <button type="button" onclick="addNewSpace(); " class="btn btn-primary" data-loading-text="Saving...">Save</button>
+                                    <apex:actionFunction name="newSpace" action="{!createNewSpace}" rerender="allSpaces, addSpaceForm" status=""
+                                     oncomplete="addSpaceOnComplete({!NOT(HasError)});"/>
+                                </div>
+                                <input type="hidden" value="{!NewSpaceId}" id="NewSpaceId"/>
+                            </apex:form>
+                        </div>
+                    </div>
+                </div>
+                <!--Space modal end -->
+            </div>
+        </apex:define>
+    </apex:composition>
+     <script type="text/javascript">
             function pageClass(href,title) {
                 this.title__c = title;
                 this.href__c = href;
@@ -125,6 +399,16 @@
             var pageArr = new Array();
 
             $(function () {
+                //search the wiki pages for the search box.
+                function searchWikiPages(e) {
+                    var e = e || window.event;
+                    if(e.keyCode == 13) {
+                        var searchkey = $.trim($('#searchWikiId').val());
+                        if(searchkey != null && searchkey != '') {
+                            window.location.href = "{!$Site.Prefix}/apex/wikisearch?key="+$("#searchWikiId").val();
+                        }
+                    }
+                }
 
                 $('#addSpaceBtn').click(function () {
                     $('#addSpaceAlert').hide();
@@ -132,11 +416,9 @@
 
                 $('.tabmark').click(function() {
                     if(this.rel != null && this.rel != '') {
-                        activePanel = this.rel
+                        activePanel = this.rel;
                     }
                 });
-
-                $(window).bind('scroll',function(){$('#load-location').waypoint('enable');});
 
                 $('#searchWikiId').bind('input propertychange', function() {
                         if(!isSearchWikiPage) {
@@ -145,6 +427,7 @@
                         }
                     });
 
+                // For the search box 
                 $('#searchWikiId').bind('blur',function() {
                         $('#theSearchSpanId').fadeOut(100);
                     });
@@ -160,6 +443,8 @@
                     $(this).remove();
                  });
 
+                //Scroll the screen to load the date of PopularPages or UpdatePages
+                $(window).bind('scroll',function(){$('#load-location').waypoint('enable');});
                 $('#load-location').waypoint(
                     function(direction){
                         if('down' == direction) {
@@ -197,17 +482,7 @@
                 if(isSuccess) {
                     $('#addSpaceModal').modal('hide');
                     $('#addSpaceModal button').button('reset');
-                    window.open("/apex/WikiSpace?id="+$("#NewSpaceId").val());
-                }
-            }
-
-            function enterPress(e) {
-                var e = e || window.event;
-                if(e.keyCode == 13) {
-                    var searchkey = $.trim($('#searchWikiId').val());
-                    if(searchkey != null && searchkey != '') {
-                        window.open("/apex/wikisearch?key="+$("#searchWikiId").val());
-                    }
+                    window.location.href = "{!$Site.Prefix}/apex/WikiSpace?id="+$("#NewSpaceId").val();
                 }
             }
 
@@ -225,7 +500,7 @@
                     for(var i = 0; i < pageArr.length; i++) {
                         if(pageArr[i].title__c.indexOf(searchKey) > -1) {
                             $('#theSearchSpanId').append(
-                                $("<a class='list-group-item' href='#'>"+pageArr[i].title__c+"</a>").bind('click', {id:pageArr[i].href__c}, function(event) {window.open(event.data.id);})
+                                $("<a class='list-group-item' href='#'>"+pageArr[i].title__c+"</a>").bind('click', {id:pageArr[i].href__c}, function(event) {window.location.href = event.data.id;})
                                 );
                             j++;
                         }
@@ -238,291 +513,5 @@
                     }
                 }
             }
-        </script>
-    </head>
-    <apex:form >
-        <apex:actionFunction name="loadMorePopularPages"  status="loadPage" action="{!loadMorePopularPagesAction}" reRender="popularPagePanel" oncomplete="doneLoad()"/>
-        <apex:actionFunction name="loadMoreFeedItems"  status="loadItem" action="{!loadMoreFeedItemsAction}" reRender="updatePagesPanel" oncomplete="doneLoad()"/>
-    </apex:form>
-    <apex:composition template="WikiTemplate">
-        <apex:define name="body">
-        <div id="force">
-            <apex:form onsubmit="return false">
-                <div class="container-custom">
-                    <div class="row nav-wiki">
-                        <div class="col-md-6">
-                            <h1 class="h1">Wiki Home</h1>
-                        </div>
-                        <div class="add-btns col-md-3">
-                            <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
-                            <a href="/apex/WikiNewPage" target="blank" class="btn btn-primary">Add Page</a>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search Pages" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
-                            <div id="theSearchSpanId" class="search-result-dropdown list-group">
-                                <apex:outputPanel id="TheSearchSuggest" rendered="{!PagesForSearch.size > 0}">
-                                    <ul>
-                                        <apex:repeat value="{!PagesForSearch}" var="item">
-                                            <li>
-                                                <a href="/apex/WikiViewPage?id={!item.WikiPage__c}" >{!item.Title__c}</a>
-                                            </li>
-                                        </apex:repeat>
-                                    </ul>
-                                </apex:outputPanel>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="well new-page">
-                                <h2 >Hello, world!</h2>
-                                <ul> Wiki Version 1 Function：
-                                    <li> Article Version Control</li>
-                                    <li> Comment (Chatter)</li>
-                                    <li> Search</li>
-                                    <li> Markdown</li>
-                                    <li> Highlight with Code</li>
-                                    <li> Bookmark a page or space</li>
-                                </ul>
-                            </div>
-                            <div class="spaces-pane">
-                                <ul id="myTab" class="nav nav-tabs">
-                                    <li class="active">
-                                        <a href="#mySpace" data-toggle="tab">Spaces</a>
-                                    </li>
-                                    <li>
-                                        <a href="#myPages" data-toggle="tab">My Pages</a>
-                                    </li>
-                                </ul>
-                                <div class="tab-content">
-                                    <div id="mySpace" class="tab-pane fade active in">
-                                        <apex:outputPanel id="allSpaces">
-                                        <ul class="list-unstyled spaces-list">
-                                            <apex:repeat value="{!MySpaces}" var="space">
-                                                <li>
-                                                    <span class="fav glyphicon glyphicon-globe"></span>
-                                                    <div>
-                                                        <a href="#" onclick="window.open('/apex/wikispace?id={!space.id}')" >{!space.Name}</a>
-                                                        <span class="badge pull-right comment" title="{!space.WikiPages__r.size} page(s)">{!space.WikiPages__r.size}</span>
-                                                    </div>
-                                                </li>
-                                                <div class="divider"></div>
-                                            </apex:repeat>
-                                        </ul>
-                                        </apex:outputPanel>
-                                    </div>
-                                    <div id="myPages" class="tab-pane fade">
-                                        <ul class="list-unstyled spaces-list">
-                                            <apex:repeat value="{!MyPages}" var="page">
-                                                <li>
-                                                    <span class="fav glyphicon glyphicon-globe"></span>
-                                                    <div>
-                                                        <a href="#" onclick="window.open('/apex/WikiViewPage?id={!page.WikiPage__c}')">{!page.Title__c}</a>
-                                                    </div>
-                                                </li>
-                                                <div class="divider"></div>
-                                            </apex:repeat>
-                                          </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            <ul class="nav nav-tabs" id="popularul">
-                                <li class="active">
-                                    <a href="#popularDiv" data-toggle="tab" class="tabmark" rel='popular'>Popular</a>
-                                </li>
-                                <li>
-                                    <a href="#allUpdateDiv" data-toggle="tab" class="tabmark" rel="update">All Update</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content">
-                                <div id="popularDiv" class="tab-pane fade active in">
-                                    <apex:outputPanel id="popularPagePanel">
-                                        <ul class="list-unstyled popular-list">
-                                            <apex:repeat value="{!PopularPages}" var="item">
-                                                <li class="popular-page">
-                                                    <a href="/{!item.WikiPageVersion.CreatedById}" class="pull-left">
-                                                        <span title="{!item.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                            <img width="45" height="45" title="{!item.WikiPageVersion.CreatedBy.Name}" class="avatar-photo" alt="{!item.WikiPageVersion.CreatedBy.Name}" src="{!item.WikiPageVersion.CreatedBy.FullPhotoUrl}" />
-                                                        </span>
-                                                    </a>
-                                                    <div class="media pull-left" style="margin-left:20px;margin-top:0px;">
-                                                        <div class="media-body">
-                                                            <a href="/apex/WikiViewPage?id={!item.WikiPageVersion.WikiPage__c}" target="_blank">{!item.WikiPageVersion.Title__c}</a>
-                                                            <div class="page-author">
-                                                                <a href="/{!item.WikiPageVersion.CreatedById}">{!item.WikiPageVersion.CreatedBy.Name}</a>
-                                                                <span>
-                                                                    <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                        <apex:param value="{!item.WikiPageVersion.WikiPage__r.LastPublishedDate__c}"/>
-                                                                    </apex:outputText>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="pull-right comment">
-                                                    <apex:outputPanel rendered="{!item.FeedComment < 10}" styleClass="badge" title="{!item.FeedComment} state(s)">
-                                                            {!item.FeedComment}
-                                                        </apex:outputPanel>
-                                                        <apex:outputPanel rendered="{!(item.FeedComment > 10)&&(item.FeedComment < 50)}" styleClass="badge" style="background-color:#d7ac67;" title="{!item.FeedComment} state(s)">
-                                                            {!item.FeedComment}
-                                                        </apex:outputPanel>
-                                                        <apex:outputPanel rendered="{!item.FeedComment > 50}" styleClass="badge" style="background-color:#b1605a" title="{!item.FeedComment} state(s)">
-                                                            {!item.FeedComment}
-                                                        </apex:outputPanel>
-                                                    </div>
-                                                </li>
-                                                <div class="divider"></div>
-                                            </apex:repeat>
-                                        </ul>
-                                        <apex:actionStatus id="loadPage">
-                                            <apex:facet name="start">
-                                                <div class="loadingbottom">
-                                                    <img src="{!$Resource.loadPic}" class="loadimg"/>
-                                                    Loading ...
-                                                </div>
-                                            </apex:facet>
-                                            <apex:facet name="stop">
-                                                <apex:outputPanel rendered="{!Not(HasNextPopularPages)}" style="display:block;" styleClass="well well-sm alert alert-danger">
-                                                    No more pages ...
-                                                </apex:outputPanel>
-                                            </apex:facet>
-                                        </apex:actionStatus>
-                                        <input type="hidden" value="{!HasNextPopularPages}" id="HasNextPopularPages"/>
-                                    </apex:outputPanel>
-                                </div>
-                                <div id="allUpdateDiv" class="tab-pane fade">
-                                    <apex:outputPanel id="updatePagesPanel">
-                                        <apex:variable var="WikiPageFieldLabelMap" value="{!WikiPageFieldLabelMap}" />
-                                        <div>
-                                            <ul class="list-unstyled popular-list">
-                                                <apex:repeat value="{!FeedItems}" var="item">
-                                                    <li>
-                                                        <a href="/{!item.CreatedById}" class="pull-left">
-                                                            <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                                <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!IdUserMap[item.CreatedById].FullPhotoUrl}" />
-                                                            </span>
-                                                        </a>
-                                                        <div class="media pull-left" style="margin-left:20px;margin-top:0px;">
-                                                            <div class="media-body">
-                                                                <div>
-                                                                    <apex:outputPanel rendered="{!item.Type == 'TextPost'}">
-                                                                        <div class="page-author">
-                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>post a text on the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a>
-                                                                            <div style="margin-top:3px;">{!item.Body}</div>
-                                                                            <div style="margin-top:3px;">At &nbsp;&nbsp;
-                                                                                <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                                    <apex:param value="{!item.CreatedDate}"/>
-                                                                                </apex:outputText>
-                                                                            </div>
-                                                                        </div>
-                                                                    </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!item.Type == 'TrackedChange'}">
-                                                                        <div class="page-author">
-                                                                            <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}">{!item.Parent.Title__c}</a> <br/>
-                                                                            <div class="update-track-change-div">
-                                                                                <ul>
-                                                                                    <apex:repeat value="{!item.FeedTrackedChanges}" var="changeItem">
-                                                                                        <li class="page-author">
-                                                                                            {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from
-                                                                                            <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] != 'DATETIME') && (WikiPageField2Type[changeItem.FieldName] != 'DATE') && (WikiPageField2Type[changeItem.FieldName] != 'TIME')}">
-                                                                                                "{!if(isBlank(changeItem.OldValue),'blank', changeItem.OldValue)}" to "{!changeItem.Newvalue}"
-                                                                                            </apex:outputPanel>
-
-                                                                                            <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] == 'DATETIME') || (WikiPageField2Type[changeItem.FieldName] == 'DATE') || (WikiPageField2Type[changeItem.FieldName] == 'TIME')}">
-                                                                                                "<apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                                                    <apex:param value="{!changeItem.OldValue}"/>
-                                                                                                </apex:outputText>"
-                                                                                                 to
-                                                                                                "<apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                                                    <apex:param value="{!changeItem.Newvalue}"/>
-                                                                                                </apex:outputText>"
-                                                                                            </apex:outputPanel>
-                                                                                        </li>
-                                                                                    </apex:repeat>
-                                                                                </ul>
-                                                                            </div>
-                                                                            <div style="margin-top:3px;">At &nbsp;&nbsp;
-                                                                                <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                                    <apex:param value="{!item.CreatedDate}"/>
-                                                                                </apex:outputText>
-                                                                            </div>
-                                                                        </div>
-                                                                    </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!item.Type == 'PollPost'}">
-                                                                    </apex:outputPanel>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                    <div class="divider"></div>
-                                                </apex:repeat>
-                                            </ul>
-                                       </div>
-                                        <apex:actionStatus id="loadItem">
-                                            <apex:facet name="start">
-                                                <div class="loadingbottom">
-                                                    <img src="{!$Resource.loadPic}" class="lodingimg" />
-                                                    Loading ...
-                                                </div>
-                                            </apex:facet>
-                                            <apex:facet name="stop">
-                                                <apex:outputPanel rendered="{!Not(hasMoreFeedMark)}" style="display:block;" styleClass="well well-sm alert alert-danger">
-                                                    No more items ...
-                                                </apex:outputPanel>
-                                            </apex:facet>
-                                        </apex:actionStatus>
-                                        <input type="hidden" value="{!HasMoreFeedMark}" id="hasMoreFeedMark"/>
-                                    </apex:outputPanel>
-                                </div>
-                            </div>
-                            <span id="load-location"></span>
-                        </div>
-                    </div>
-                </div>
-            </apex:form>
-            <!-- Add space modal ================================ -->
-            <div class="modal" id="addSpaceModal" style="top:20%;" data-backdrop="static" data-keyboard="false" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <apex:form id="addSpaceForm">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-loading-text="&times;">&times;</button>
-                                <h3 class="modal-title">New Space</h3>
-                            </div>
-                            <div class="modal-body">
-                                <!-- Error Messages -->
-                                <div id="addSpaceAlert" class="alert alert-danger" style="display:{!IF(HasError, '', 'none')}">
-                                    <button type="button" class="close" data-dismiss="alert" data-loading-text="&times;">
-                                        &times;
-                                    </button>
-                                    <apex:messages layout="table" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label" for="inputName">Name</label>
-                                    <div>
-                                        <apex:inputText value="{!NewSpace.Name}" style="width:300px" styleClass="form-control" html-placeholder="Apex, HTML5, etc."/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label">Description</label>
-                                    <div >
-                                      <apex:inputTextarea value="{!NewSpace.Summary__c}" style="width:511px; height:100px" styleClass="form-control"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" data-loading-text="Saving...">Close</button>
-                                <button type="button" onclick="addNewSpace(); " class="btn btn-primary" data-loading-text="Saving...">Save</button>
-                                <apex:actionFunction name="newSpace" action="{!createNewSpace}" rerender="allSpaces, addSpaceForm" status=""
-                                 oncomplete="addSpaceOnComplete({!NOT(HasError)});"/>
-                            </div>
-                            <input type="hidden" value="{!NewSpaceId}" id="NewSpaceId"/>
-                        </apex:form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </apex:define>
-    </apex:composition>
+     </script>
 </apex:page>
