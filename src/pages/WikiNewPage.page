@@ -123,7 +123,7 @@
                                         <img width="35" height="35" title="{!UserInfo.Name}" class="avatar-photo" src="{!UserInfo.SmallPhotoUrl}"/>
                                     </span>
                                 </a>
-                                <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" html-placeholder="Page Title" style="width:90%; margin-left:10px;" />
+                                <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" html-placeholder="Page Title" style="width:90%; margin-left:10px;" maxlength="80"/>
                             </div>
                             <div id="contentSection" class="row">
                                 <apex:inputTextarea id="contentInput" styleClass="content-input" value="{!LatestPage.Body__c}" rows="0" style="display:none"/>

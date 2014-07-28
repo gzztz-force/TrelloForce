@@ -90,6 +90,7 @@ public class WikiNewPageController
             parentPage.WikiSpace__c = WikiSpaceId;
             parentPage.LastPublishedDate__c = System.now();
             parentPage.Title__c = LatestPage.Title__c;
+            parentPage.Name = LatestPage.Title__c;
             if (isNew)
             {
                 insert parentPage;
