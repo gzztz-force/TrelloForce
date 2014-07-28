@@ -31,6 +31,7 @@ public with sharing class TriggerFactory
     private static void execute(ITrigger handler)
     {
         // Before Trigger
+
         if (Trigger.isBefore)
         {
             // Call the bulk before to handle any caching of data and enable bulkification
@@ -106,7 +107,7 @@ public with sharing class TriggerFactory
     {
         if (soType == FeedItem.sObjectType)
         {
-    		return new WikiPageFeedHandler();
+    		return new WikiPageFeedTriggerHandler();
         }
 
         return null;
