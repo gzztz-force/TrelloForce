@@ -43,7 +43,7 @@ public with sharing class WikiHomeController
         get
         {   if(MySpaces == null)
             {
-               	MySpaces = [select Name, Summary__c, (select Id from WikiPages__r) from WikiSpace__c order by CreatedDate desc];
+                MySpaces = [select Name, Summary__c, (select Id from WikiPages__r) from WikiSpace__c order by CreatedDate desc];
             }
             return MySpaces;
         }
