@@ -25,7 +25,7 @@ public class WikiDataFactory
         {
             for(Integer i = 0; i < pageCount; i++)
             {
-                WikiPage__c page = new WikiPage__c(Title__c = 'title', WikiSpace__c = space.Id);
+                WikiPage__c page = new WikiPage__c(Title__c = 'title'+i, WikiSpace__c = space.Id);
                 pages.add(page);
             }
         }
@@ -43,7 +43,7 @@ public class WikiDataFactory
             }
             else
             {
-                FeedItem feedItem = new FeedItem(ParentId = page.Id, Body = 'testBody');
+                FeedItem feedItem = new FeedItem(ParentId = page.Id, Body = 'testBody2');
                 feedItems.add(feedItem);
                 flage = true;
             }
