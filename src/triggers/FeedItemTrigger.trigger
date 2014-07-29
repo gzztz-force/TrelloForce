@@ -3,5 +3,5 @@
 */
 trigger FeedItemTrigger on FeedItem (after insert, after delete, before insert, before delete, after update, before update) 
 {
-	TriggerFactory.createHandler(FeedItem.SObjectType);
+    TriggerFactory.createHandler(FeedItem.SObjectType);
 }
