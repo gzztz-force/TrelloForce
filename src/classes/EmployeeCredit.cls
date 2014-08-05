@@ -23,7 +23,7 @@ public with sharing class EmployeeCredit
         }
     }
 
-	public class Credit
+    public class Credit
     {
         public Credit(String id)
         {
@@ -35,20 +35,6 @@ public with sharing class EmployeeCredit
         public Decimal Balance { get; set; }
         public Employee Employee_r { get; set; }
 
-    }
-    
-    
-    public class Employee
-    {
-        public Employee(String id)
-        {
-            this.Id = id;
-        }
-
-        public String Id { get; set; }
-        public String Name { get; set; }
-        public String Email { get; set; }
-        public String UserName { get; set; }
     }
 
     public static Map<String, String> getCreditsInFin(Map<String, String> allUser)
@@ -77,4 +63,17 @@ public with sharing class EmployeeCredit
         }
         return allCredits;
     }
+
+    public class Employee
+    {
+        public Employee(String id)
+        {
+            this.Id = id;
+        }
+
+        public String Id { get; set; }
+        public String Name { get; set; }
+        public String Email { get; set; }
+        public String UserName { get; set; }
+    }  
 }

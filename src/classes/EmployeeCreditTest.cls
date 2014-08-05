@@ -8,8 +8,8 @@ public class EmployeeCreditTest
 
         Test.startTest();
         List<EmployeeCredit.Credit> credits = EmployeeCredit.getCredit('select Id from Credit__c');
-        System.assert(credits != null);
         Test.stopTest();
+        System.assert(credits != null);
     }
 
     @isTest

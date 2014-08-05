@@ -20,33 +20,8 @@ public class SFRestAPI
         request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
         if(Test.isRunningTest() && (q.contains('Credit__c') || q.contains('CreditTransaction__c')))
         {
-            String queryResponse;
-            if(q.contains('Credit__c'))
-            {
-                queryResponse = '{"totalSize":1,"done":true,' +
-                                        '"records":[{' +
-                                            '"attributes":{' +
-                                                '"type":"Credit__c",' +
-                                                '"url":"/services/data/v22.0/sobjects/Credit__c/a07J0000006BFL3IAO"},' +
-                                                    '"Id":"a07J0000006BFL3IAO",' +
-                                                    '"Balance__c":"0",' +
-                                                    '"Employee__r":{' +
-                                                        '"attributes":{' +
-                                                            '"type":"User",' +
-                                                            '"url":"/services/data/v22.0/sobjects/User/005A0000001R7vFIAS"},' +
-                                                                '"Name":"Jair Zheng",' +
-                                                                '"Email":"jair.zheng@meginfo.com"}}]}';
-
-            }
-            else
-            {
-                queryResponse = '{"totalSize":1,"done":true,' +
-                                            '"records":[{' +
-                                                '"attributes":{' +
-                                                    '"type":"CreditTransaction__c",' +
-                                                    '"url":"/services/data/v22.0/sobjects/CreditTransaction__c/a07J0005606BFL3IAO"},' +
-                                                        '"Id":"a07J1100006BFL3IAO"}]}';
-            }
+            String objectType = q.contains('Credit__c') ? 'Credit__c' : 'CreditTransaction__c';
+            String queryResponse = getResponse(objectType);
             
             response = new HttpResponse();
             response.setHeader('Content-Type', 'application/json');
@@ -151,4 +126,37 @@ public class SFRestAPI
     }
 
     public class LoginException extends Exception{}
+
+    private static String getResponse(String objectType)
+    {
+        String queryResponse = '';
+        if(objectType.contains('Credit__c'))
+        {
+            queryResponse = '{ "totalSize" : "1", '+
+                                '"done" : true, '+
+                                '"records" : [{ '+
+                                    '"attributes" : { "type" : "Credit__c", "url" : "/services/data/v22.0/sobjects/Credit__c/a07J0000006BFL3IAO"}, '+
+                                    '"Id" : "a07J0000006BFL3IAO", '+
+                                    '"Balance__c" : "0", '+
+                                    '"Employee__r" : { '+
+                                        '"attributes" : { "type" : "User", "url" : "/services/data/v22.0/sobjects/User/005A0000001R7vFIAS"}, '+
+                                        '"Name" : "Jair Zheng", '+
+                                        '"Email" : "jair.zheng@meginfo.com" '+
+                                    '} '+
+                                '}] '+
+                            '}';
+
+        }
+        else
+        {
+            queryResponse = '{ "totalSize" : "1", '+
+                                '"done" : true, '+
+                                '"records" : [{ '+
+                                    '"attributes" : { "type" : "CreditTransaction__c", "url" : "/services/data/v22.0/sobjects/CreditTransaction__c/a07J0005606BFL3IAO"}, '+
+                                    '"Id" : "a07J1100006BFL3IAO" '+
+                                '}] '+
+                            '}';
+        }
+        return queryResponse;
+    }
 }

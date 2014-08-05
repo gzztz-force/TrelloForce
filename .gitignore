@@ -5,3 +5,5 @@ src/staticresources/
 *.sublime-settings
 *.log
 deploy/
+
+src/classes/PerfectAttendanceCreditJob.cls-meta.xml

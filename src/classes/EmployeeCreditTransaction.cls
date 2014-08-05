@@ -24,21 +24,18 @@ public with sharing class EmployeeCreditTransaction {
         }
     }
 
-    private static String generateJson(List<CreditTransaction> creditTransactions)
-    {
-        String jsonSerialized = '';
-        for(CreditTransaction creditTransaction : creditTransactions)
-        {
-            jsonSerialized += JSON.serialize(creditTransaction);
-        }
-        return jsonSerialized;
-    }
-
     public static void createCreditTransactions(List<CreditTransaction> creditTransactions)
     {
-        String obj = 'CreditTransaction__c';    
-        String jsonBody = generateJson(creditTransactions);
-        SFRestAPI.create(obj, jsonBody);
+        try
+        {
+            String obj = 'CreditTransaction__c';    
+            String jsonBody = generateJson(creditTransactions);
+            SFRestAPI.create(obj, jsonBody);
+        }
+        catch(Exception ex)
+        {
+            System.debug(ex);
+        }
     }
 
     public class CreditTransaction
@@ -61,5 +58,15 @@ public with sharing class EmployeeCreditTransaction {
         public Date EffectiveDate_c { get; set; }
         public Boolean IsValid_c { get; set; }
         public String Reason_c { get; set; }
+    }
+
+    private static String generateJson(List<CreditTransaction> creditTransactions)
+    {
+        String jsonSerialized = '';
+        for(CreditTransaction creditTransaction : creditTransactions)
+        {
+            jsonSerialized += JSON.serialize(creditTransaction);
+        }
+        return jsonSerialized;
     }
 }

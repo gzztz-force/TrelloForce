@@ -1,7 +1,7 @@
 @isTest
 public class EmployeeCreditTransactionTest
 {
-	@isTest
+    @isTest
     static void testCallout()
     {
         TestDataFactory.createFinanceServerCustomSetting();
@@ -17,7 +17,7 @@ public class EmployeeCreditTransactionTest
         EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction( 2, 'creditId', 'test', Date.today(), false, 'test');
 	}
 
-	@isTest
+    @isTest
 	static void testCreateCreditTransaction()
 	{
         List<EmployeeCreditTransaction.CreditTransaction> creditTransactions = new List<EmployeeCreditTransaction.CreditTransaction>();

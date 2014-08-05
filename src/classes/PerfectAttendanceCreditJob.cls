@@ -1,8 +1,14 @@
 /*
- * this Schedule used to control Credit with timecard every month, which should execute every month's first day in 2014.
+ * this Schedule used to control Credit with timecard every month, which should execute every month's first day.
+ * should execute "0 0 0 1 * ? *"
  */
 global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, Schedulable
 {
+    public Date lastMonth = Date.today().addMonths(-1);
+    public Integer year = lastMonth.year();
+    public Integer month = lastMonth.month();
+    public Integer workday;
+
     global Database.QueryLocator start(Database.BatchableContext BC)
     {
         return Database.getQueryLocator([select Id, Name, Email from User where IsActive = true and IsEmployee__c = 1]);
@@ -11,11 +17,6 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
     //execute method for batch
     global void execute(Database.BatchableContext BC, List<User> users)
     {
-        Date lastMonth = Date.today().addMonths(-1);
-        Integer year = lastMonth.year();
-        Integer month = lastMonth.month();
-        Integer workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month).Days__c);
-        
         Set<String> userEmails = new Set<String>();
         Set<Id> userIds = new Set<Id>();
         Map<String, String> allUser = new Map<String, String>();
@@ -30,6 +31,7 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
         if(Test.isRunningTest())
         {
             timeCards = [select TeamMember__r.User__c uid, Date__c, sum(hours__c) from TimeCard__c where (TeamMember__r.User__c in :userIds) and (Date__c >= 2014-06-01) and (Date__c < 2014-07-01) group by TeamMember__r.User__c, Date__c order by Date__c desc];
+            workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month).Days__c);
         }
         else
         {
@@ -46,7 +48,6 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
                 Id userId = Id.valueOf(userIdStr);
                 Integer timeCardNumber = (allTimeCards.get(userId) == null) ? 1 : allTimeCards.get(userId) + 1;
                 allTimeCards.put(userId, timeCardNumber);
-
             }
         }
         //save the userId as key and creditId as value on the map
@@ -72,13 +73,39 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
 
     global void finish(Database.BatchableContext BC)
     {
+        if(Test.isRunningTest()) 
+        {
+            workday = null;
+        }        
+        else
+        {
+            workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + (month+1)).Days__c); 
+        }
+        if(workday == null)
+        {
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            String[] toAddresses = new String[] {UserInfo.getUserEmail()}; 
+            String[] ccAddresses = new String[] {'pm@meginfo.com'};
+            mail.setToAddresses(toAddresses);
+            mail.setCcAddresses(ccAddresses);
+            mail.setReplyTo('danae.deng@meginfo.com');
+            mail.setSenderDisplayName('Meginfo System Admin');
+            mail.setSubject('Please Insert New Custom Setting Data');
+            mail.setBccSender(false);
+            mail.setUseSignature(false);
+            mail.setPlainTextBody('Please insert new Custom Setting data into WorkDays__c at least this month! Or the PerfectAttendanceCreditJob will stop work.');
+            Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+        }
     }
 
     //execute method for schedule
     global void execute(SchedulableContext SC)
     {
-        PerfectAttendanceCreditJob batch = new PerfectAttendanceCreditJob();
-        Database.executeBatch(batch, 1);
+        workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month).Days__c);
+        if(workday != null)
+        {
+            PerfectAttendanceCreditJob batch = new PerfectAttendanceCreditJob();
+            Database.executeBatch(batch, 1);
+        }
     }
-
 }
