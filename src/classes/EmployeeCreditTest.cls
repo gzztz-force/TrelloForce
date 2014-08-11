@@ -1,7 +1,10 @@
+/*
+ * Test method for class EmployeeCredit.
+ */
 @isTest
 public class EmployeeCreditTest
 {
-	@isTest
+    @isTest
     static void testCallout()
     {
         TestDataFactory.createFinanceServerCustomSetting();

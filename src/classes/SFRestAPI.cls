@@ -18,10 +18,12 @@ public class SFRestAPI
         request.setEndpoint(theUrl.getUrl());
         request.setMethod('GET');
         request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
+
+        // Return a fake response when it is running test class and query object is Credit or CreditTransaction
         if(Test.isRunningTest() && (q.contains('Credit__c') || q.contains('CreditTransaction__c')))
         {
             String objectType = q.contains('Credit__c') ? 'Credit__c' : 'CreditTransaction__c';
-            String queryResponse = getResponse(objectType);
+            String queryResponse = getFakeResponse(objectType);
             
             response = new HttpResponse();
             response.setHeader('Content-Type', 'application/json');
@@ -32,7 +34,6 @@ public class SFRestAPI
         {
            response = (new Http()).send(request);
         }
-
         return response;
     }
 
@@ -90,9 +91,7 @@ public class SFRestAPI
         request.setBody(requestBody);
         request.setMethod('POST');
         request.setEndpoint(financeServer.EndPoint__c);//Note if my domain is set up use the proper domain name else use login.salesforce.com for prod or developer or test.salesforce.com for sandbox instance
-
         HttpResponse response = (new Http()).send(request);
-
         OAuth2 objAuth = (OAuth2)JSON.deserialize(response.getbody(), OAuth2.class);
 
         if(String.isBlank(objAuth.Access_Token) || String.isBlank(objAuth.Instance_Url))
@@ -127,7 +126,7 @@ public class SFRestAPI
 
     public class LoginException extends Exception{}
 
-    private static String getResponse(String objectType)
+    private static String getFakeResponse(String objectType)
     {
         String queryResponse = '';
         if(objectType.contains('Credit__c'))

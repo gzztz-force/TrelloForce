@@ -1,5 +1,10 @@
-public with sharing class EmployeeCreditTransaction {
-
+/*
+ * This class is created to handle operation about FIN's CreditTransaction.
+ * Get CreditTransaction's data in FIN
+ * Insert a new CreditTransaction record into FIN
+ */
+public with sharing class EmployeeCreditTransaction 
+{
     public static List<CreditTransaction> getCreditTransaction(String q)
     {
         HttpResponse response;
@@ -12,10 +17,9 @@ public with sharing class EmployeeCreditTransaction {
             System.debug(ex);
         }
 
-        JSONParser parser = JsonUtil.parseJson(response);
-
         try
         {
+            JSONParser parser = JsonUtil.parseJson(response);
             return (List<CreditTransaction>)parser.readValueAs(List<CreditTransaction>.class);
         }
         catch(Exception ex)
@@ -38,13 +42,23 @@ public with sharing class EmployeeCreditTransaction {
         }
     }
 
+    private static String generateJson(List<CreditTransaction> creditTransactions)
+    {
+        String jsonSerialized = '';
+        for(CreditTransaction creditTransaction : creditTransactions)
+        {
+            jsonSerialized += JSON.serialize(creditTransaction);
+        }
+        jsonSerialized = jsonSerialized.replaceAll('_c', '__c');
+        return jsonSerialized;
+    }
+
     public class CreditTransaction
     {
         public CreditTransaction(Decimal adjustment, String creditId, String description, Date effectiveDate, Boolean isValid, String reason)
         {
-            EmployeeCredit.Credit credit = new EmployeeCredit.Credit(creditId);
             this.Adjustment_c = adjustment;
-            this.Credit_r = credit;
+            this.Credit_c = creditId;
             this.Description_c = description;
             this.EffectiveDate_c = effectiveDate;
             this.IsValid_c = isValid;
@@ -53,20 +67,10 @@ public with sharing class EmployeeCreditTransaction {
 
         public String Id { get; set; }
         public Decimal Adjustment_c { get; set; }
-        public EmployeeCredit.Credit Credit_r { get; set; }
+        public String Credit_c { get; set; }
         public String Description_c { get; set; }
         public Date EffectiveDate_c { get; set; }
         public Boolean IsValid_c { get; set; }
         public String Reason_c { get; set; }
-    }
-
-    private static String generateJson(List<CreditTransaction> creditTransactions)
-    {
-        String jsonSerialized = '';
-        for(CreditTransaction creditTransaction : creditTransactions)
-        {
-            jsonSerialized += JSON.serialize(creditTransaction);
-        }
-        return jsonSerialized;
     }
 }

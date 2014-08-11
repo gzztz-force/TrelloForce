@@ -1,3 +1,7 @@
+/*
+ * This class is created to handle operation about FIN's Credit.
+ * Get Credit's data in FIN
+ */
 public with sharing class EmployeeCredit
 {
     public static List<Credit> getCredit(String q)
@@ -19,28 +23,15 @@ public with sharing class EmployeeCredit
         }
         catch(Exception ex)
         {
+            System.debug(ex);
             return new List<Credit>();
         }
     }
 
-    public class Credit
-    {
-        public Credit(String id)
-        {
-            this.Id = id;
-        }
-
-        public String Id { get; set; }
-        public String UserId { get; set; }
-        public Decimal Balance { get; set; }
-        public Employee Employee_r { get; set; }
-
-    }
-
     public static Map<String, String> getCreditsInFin(Map<String, String> allUser)
     {
-        List<String> creditUserEmails = allUser.values();
-        String soql = 'select Id, Employee__c, Employee__r.Eamil, Balance__c from Credit__c' +
+        Set<String> creditUserEmails = allUser.keySet();
+        String soql = 'select Id, Employee__c, Employee__r.Email, Balance__c from Credit__c' +
                     ' where Employee__r.Email in (';
         for(String userName : creditUserEmails)
         {
@@ -76,4 +67,17 @@ public with sharing class EmployeeCredit
         public String Email { get; set; }
         public String UserName { get; set; }
     }  
+
+    public class Credit
+    {
+        public Credit(String id)
+        {
+            this.Id = id;
+        }
+
+        public String Id { get; set; }
+        public String UserId { get; set; }
+        public Decimal Balance { get; set; }
+        public Employee Employee_r { get; set; }
+    }
 }

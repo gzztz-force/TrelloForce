@@ -1,3 +1,6 @@
+/*
+ * Test method for class EmployeeCreditTransaction.
+ */
 @isTest
 public class EmployeeCreditTransactionTest
 {
@@ -14,15 +17,15 @@ public class EmployeeCreditTransactionTest
     @isTest
     static void testConstructor()
     {
-        EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction( 2, 'creditId', 'test', Date.today(), false, 'test');
-	}
+        EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction(2, 'creditId', 'test', Date.today(), false, 'test');
+    }
 
     @isTest
-	static void testCreateCreditTransaction()
-	{
+    static void testCreateCreditTransaction()
+    {
         List<EmployeeCreditTransaction.CreditTransaction> creditTransactions = new List<EmployeeCreditTransaction.CreditTransaction>();
-        EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction( 2, 'creditId', 'test', Date.today(), false, 'test');
+        EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction(2, 'creditId', 'test', Date.today(), false, 'test');
         creditTransactions.add(creditTransaction);
-		EmployeeCreditTransaction.createCreditTransactions(creditTransactions);
-	}
+        EmployeeCreditTransaction.createCreditTransactions(creditTransactions);
+    }
 }

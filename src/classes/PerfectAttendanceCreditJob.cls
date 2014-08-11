@@ -1,20 +1,21 @@
 /*
- * this Schedule used to control Credit with timecard every month, which should execute every month's first day.
- * should execute "0 0 0 1 * ? *"
+ * This Schedule used to control Credit with timecard every month, which should execute every month's first day.
+ * Should execute "0 0 0 1 * ? *"
  */
-global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, Schedulable
+global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, Schedulable, Database.AllowsCallouts
 {
-    public Date lastMonth = Date.today().addMonths(-1);
-    public Integer year = lastMonth.year();
-    public Integer month = lastMonth.month();
-    public Integer workday;
+    private Date lastMonth = Date.today().addMonths(-1);
+    private Integer year = lastMonth.year();
+    private Integer month = lastMonth.month();
+    private Integer workday = null;
+    private final static Decimal ADJUSTMENT = 0.3;
 
     global Database.QueryLocator start(Database.BatchableContext BC)
     {
         return Database.getQueryLocator([select Id, Name, Email from User where IsActive = true and IsEmployee__c = 1]);
     }
 
-    //execute method for batch
+    // Execute method for batch
     global void execute(Database.BatchableContext BC, List<User> users)
     {
         Set<String> userEmails = new Set<String>();
@@ -26,19 +27,20 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
             userIds.add(user.Id);
             allUser.put(user.Email, user.Id);
         }
-        //all TimeCards this month
+        // All TimeCards last month
         AggregateResult[] timeCards;
         if(Test.isRunningTest())
         {
             timeCards = [select TeamMember__r.User__c uid, Date__c, sum(hours__c) from TimeCard__c where (TeamMember__r.User__c in :userIds) and (Date__c >= 2014-06-01) and (Date__c < 2014-07-01) group by TeamMember__r.User__c, Date__c order by Date__c desc];
-            workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month).Days__c);
+            workday = Integer.valueOf(WorkDays__c.getValues('2014-6').Days__c);
         }
         else
         {
             timeCards = [select TeamMember__r.User__c uid, Date__c, sum(hours__c) from TimeCard__c where (TeamMember__r.User__c in :userIds) and (IsLogatSameDay__c = true) and Date__c = LAST_MONTH group by TeamMember__r.User__c, Date__c order by Date__c desc];
+            workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month).Days__c);
         }
 
-        //keep the userId as key and his/her count of days has timecard this month as value on the map
+        // Keep the userId as key and his/her count of days has timecard this month as value on the map
         Map<Id, Integer> allTimeCards = new Map<Id, Integer>();
         for(AggregateResult aggregateResult: timeCards)
         {
@@ -50,20 +52,22 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
                 allTimeCards.put(userId, timeCardNumber);
             }
         }
-        //save the userId as key and creditId as value on the map
+        // Save the userId as key and creditId as value on the map
         Map<String, String> allCredits = EmployeeCredit.getCreditsInFin(allUser);
+
         Set<Id> uIds = allTimeCards.keySet();
-        //save all CreditTransaction shoud be inserted into Fin
+        // Save all CreditTransaction shoud be inserted into Fin
         List<EmployeeCreditTransaction.CreditTransaction> addCreditTransactions = new List<EmployeeCreditTransaction.CreditTransaction>();
         for(Id id : uIds)
         {
             Integer timeCardNumber = allTimeCards.get(id);
+            
             if(timeCardNumber >= workday)
             {
                 String creditId = allCredits.get(String.valueOf(id));
                 if(creditId != null && creditId != '')
                 {
-                    EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction( 0.3, creditId, 'Perfect Attendence' + year + '-' + month, Date.today(), true, 'Perfect Attendence');
+                    EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction(ADJUSTMENT, creditId, 'Perfect Attendence' + year + '-' + month, Date.today(), false, 'Perfect Attendence');
                     addCreditTransactions.add(creditTransaction);
                 }
             }
@@ -73,15 +77,8 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
 
     global void finish(Database.BatchableContext BC)
     {
-        if(Test.isRunningTest()) 
-        {
-            workday = null;
-        }        
-        else
-        {
-            workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + (month+1)).Days__c); 
-        }
-        if(workday == null)
+        // Get this month's workday, if get a nullPoint, then send the alert email to user 
+        if(WorkDays__c.getValues(year + '-' + (month+1)) == null)
         {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             String[] toAddresses = new String[] {UserInfo.getUserEmail()}; 
@@ -98,14 +95,16 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
         }
     }
 
-    //execute method for schedule
+    // Execute method for schedule
     global void execute(SchedulableContext SC)
     {
-        workday = Integer.valueOf(WorkDays__c.getValues(year + '-' + month).Days__c);
-        if(workday != null)
+        // Get last month's workday, if get a nullPoint, then the batch won't execute
+        WorkDays__c workdays = WorkDays__c.getValues(year + '-' + month);
+        if(workdays != null)
         {
+            workday = Integer.valueOf(workdays.Days__c);
             PerfectAttendanceCreditJob batch = new PerfectAttendanceCreditJob();
-            Database.executeBatch(batch, 1);
+            Database.executeBatch(batch, 10);
         }
     }
 }

@@ -6,4 +6,3 @@ src/staticresources/
 *.log
 deploy/
 
-src/classes/PerfectAttendanceCreditJob.cls-meta.xml
