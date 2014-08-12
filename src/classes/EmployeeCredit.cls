@@ -30,10 +30,10 @@ public with sharing class EmployeeCredit
 
     public static Map<String, String> getCreditsInFin(Map<String, String> allUser)
     {
-        Set<String> creditUserEmails = allUser.keySet();
-        String soql = 'select Id, Employee__c, Employee__r.Email, Balance__c from Credit__c' +
-                    ' where Employee__r.Email in (';
-        for(String userName : creditUserEmails)
+        Set<String> creditUserNames = allUser.keySet();
+        String soql = 'select Id, Employee__c, Employee__r.UserName, Balance__c from Credit__c' +
+                    ' where Employee__r.UserName in (';
+        for(String userName : creditUserNames)
         {
             if(String.isNotBlank(userName))
             {
@@ -46,10 +46,10 @@ public with sharing class EmployeeCredit
         Map<String, String> allCredits = new Map<String, String>();
         for(EmployeeCredit.Credit c : credits)
         {
-            String email = c.Employee_r.Email;
-            if(email != null )
+            String userName = c.Employee_r.UserName;
+            if(userName != null)
             {
-                allCredits.put(String.valueOf(allUser.get(email)), c.Id);
+                allCredits.put(allUser.get(userName), c.Id);
             }   
         }
         return allCredits;

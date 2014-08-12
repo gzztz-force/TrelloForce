@@ -12,20 +12,18 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
 
     global Database.QueryLocator start(Database.BatchableContext BC)
     {
-        return Database.getQueryLocator([select Id, Name, Email from User where IsActive = true and IsEmployee__c = 1]);
+        return Database.getQueryLocator([select Id, Name, Email, FinUserName__c from User where IsActive = true and IsEmployee__c = 1]);
     }
 
     // Execute method for batch
     global void execute(Database.BatchableContext BC, List<User> users)
     {
-        Set<String> userEmails = new Set<String>();
         Set<Id> userIds = new Set<Id>();
         Map<String, String> allUser = new Map<String, String>();
         for(User user : users)
         {
-            userEmails.add(user.Email);
             userIds.add(user.Id);
-            allUser.put(user.Email, user.Id);
+            allUser.put(user.FinUserName__c, user.Id);
         }
         // All TimeCards last month
         AggregateResult[] timeCards;
