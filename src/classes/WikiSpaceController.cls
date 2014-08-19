@@ -6,13 +6,11 @@ public class WikiSpaceController
     public WikiSpaceController()
     {
         initSpaces();
-
         SpaceId = ApexPages.CurrentPage().getParameters().get('Id');
         if(String.isBlank(SpaceId) && Spaces.size() > 0)
         {
             SpaceId = Spaces[0].Id;
         }
-
         initWikiPages();
     }
 
@@ -20,9 +18,15 @@ public class WikiSpaceController
     {
         get
         {
-           return [select Id, Name from WikiSpace__c where Id = :SpaceId][0].Name;
+            if(String.isBlank(SpaceName))
+            {
+                SpaceName =  [select Id, Name from WikiSpace__c where Id = :SpaceId][0].Name;
+            }
+            return SpaceName;
         }
+        private set;
     }
+
     public String SpaceId { get; private set; }
     public List<WikiSpace__c> Spaces { get; set ; }
     public List<WikiPage> WikiPages { get; set; }
@@ -35,8 +39,7 @@ public class WikiSpaceController
     private void initWikiPages()
     {
         List<WikiPage__c> pages = [select Id, Name, (select Id, Name, Body__c, Title__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl,
-                LastPublishedDate__c, WikiPage__c from WikiPageVersions__r where IsLatestVersion__c = true) from WikiPage__c where WikiSpace__c = :SpaceId];
-
+                                    LastPublishedDate__c, WikiPage__c from WikiPageVersions__r where IsLatestVersion__c = true) from WikiPage__c where WikiSpace__c = :SpaceId];
         WikiPages = new List<WikiPage>();
         for(WikiPage__c page : pages)
         {
