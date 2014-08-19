@@ -1,4 +1,4 @@
-<apex:page controller="WikiNewPageController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki New Page" id="page">
+<apex:page controller="WikiNewPageController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki New Page" id="page" tabStyle="WikiNewPage__tab">
     <style type="text/css">
         select, textarea, input, ul {
             margin: 0px;
@@ -117,31 +117,41 @@
                     </header>
                     <section id="mainContainer" class="row">
                         <div id="leftMainContainer" class="col-md-9" style="padding-right:35px;">
-                            <div id="titleSection" class="row">
-                                <a href="/{!UserInfo.Id}" style="width:4%;display:block;float:left;">
-                                    <span title="{!UserInfo.Name}" class="avatar">
-                                        <img width="35" height="35" title="{!UserInfo.Name}" class="avatar-photo" src="{!UserInfo.SmallPhotoUrl}"/>
-                                    </span>
-                                </a>
-                                <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" html-placeholder="Page Title" style="width:90%; margin-left:10px;" maxlength="80"/>
+                            <div>
+                                <div id="titleSection" class="row" style="margin-left:-9px;">
+                                    <a href="/{!CurrentUserInfo.Id}" style="width:4%;display:block;float:left;">
+                                        <span title="{!CurrentUserInfo.Name}" class="avatar">
+                                            <img width="48" height="40" title="{!CurrentUserInfo.Name}" class="avatar-photo" src="{!CurrentUserInfo.SmallPhotoUrl}"/>
+                                        </span>
+                                    </a>
+                                    <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" html-placeholder="Title" style="width:70%; margin-left:25px;"/>
+                                </div>
                             </div>
+                            
+                            <div id="spaceDiv" class="col-md-4" style="padding-left:0px; width:70%; margin-top:15px; margin-bottom:15px;">
+                                    <span style="float:left; font-size:17px; font-weight:bold; height:34px; margin-left:-9px;" >Space &nbsp;&nbsp;</span>
+                                    <apex:selectList id="selectList" styleclass="select-style form-control" style="height:34px;width:50%;" value="{!WikiSpaceId}" size="1">
+                                        <apex:selectOptions value="{!SpaceOptions}"/>
+                                    </apex:selectList>
+                            </div>
+                            
                             <div id="contentSection" class="row">
                                 <apex:inputTextarea id="contentInput" styleClass="content-input" value="{!LatestPage.Body__c}" rows="0" style="display:none"/>
                                 <div id="epiceditor" class="col-md-12 div-border" style="padding-left:5px; height:550px;"></div>
                             </div>
 
-                            <div id="extensionBar" class="row" style="padding-left:10px; padding-top:10px;">
-                            
+                            <div id="extensionBar" class="row" style="padding-top:10px;">
+                                <!--
                                 <div id="spaceDiv" class="col-md-4" style="padding-left:0px; width:70%;">
                                     <span style="float:left; font-size:18px; font-weight:bold; height:34px; padding-top:4px;" >Space &nbsp;&nbsp;</span>
                                     <apex:selectList id="selectList" styleclass="select-style form-control" style="height:34px;width:50%;" value="{!WikiSpaceId}" size="1">
                                         <apex:selectOptions value="{!SpaceOptions}"/>
                                     </apex:selectList>
                                 </div>
-                                
-                                <div id="buttonDiv" class="col-md-3" style="padding-left:-40px; width:30%;">
-                                    <apex:commandButton id="saveBtn" action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary" style="margin-right:40px;"/>
-                                    <apex:commandButton id="cancelBtn" action="{!cancel}" value="Cancel" styleclass="btn btn-default"/>
+                                -->
+                                <div id="buttonDiv" class="col-md-3" style="margin-left:40%">
+                                    <apex:commandButton id="cancelBtn" action="{!cancel}" value="Cancel" styleclass="btn btn-default" style="margin-right:40px;"/>
+                                    <apex:commandButton id="saveBtn" action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary"/>
                                 </div>
                             </div>
                             <!--
@@ -257,7 +267,7 @@
 
         var wikiEditor = new EpicEditor(opts).load();
 
-    	$(function() {
+        $(function() {
             $('[id$="saveBtn"], [id$="cancelBtn"]').on('click', function() {
                 wikiEditor.remove();
             });

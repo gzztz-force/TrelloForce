@@ -8,22 +8,17 @@ public class WikiNewPageController
     private WikiPage__c parentPage;
     private WikiPageVersion__c versionPageClone;
 
-    public Id WikiSpaceId { get; set; }
-    public Boolean IsValid { get; set; }
-    public WikiPageVersion__c LatestPage { get; set; }
-
     public WikiNewPageController()
     {
         IsValid = true;
+        CurrentUserInfo = [select Id, Name, SmallPhotoUrl from User where Id = :UserInfo.getUserId()];
         pageId = ApexPages.currentPage().getParameters().get('id');
         WikiSpaceId = ApexPages.currentPage().getParameters().get('spaceid');
-
         List<WikiPage__c> pages = [select Id, LastPublishedDate__c, (select Id, VersionNumber__c, WikiPage__c, Title__c, Body__c, WikiPage__r.WikiSpace__r.Name, WikiPage__r.WikiSpace__r.Id
                                     from WikiPageVersions__r where WikiPage__c = :pageId and IsLatestVersion__c = true)
                                     from WikiPage__c where Id = :pageId];
-        isNew = (pages.size() <= 0) ? true : false;
-
-        if (isNew)
+        isNew = (pages.isEmpty()) ? true : false;
+        if(isNew)
         {
             parentPage = new WikiPage__c();
             LatestPage = new WikiPageVersion__c();
@@ -48,50 +43,53 @@ public class WikiNewPageController
 
     }
 
+    public Id WikiSpaceId { get; set; }
+    public Boolean IsValid { get; set; }
+    public WikiPageVersion__c LatestPage { get; set; }
+    public User CurrentUserInfo { get; set; }
+    
     public List<SelectOption> SpaceOptions
     {
        get
         {
             List<SelectOption> options = new List<SelectOption>();
             options.add(new SelectOption('', '--None--'));
-
-            List<WikiSpace__c> spaces = [select Id, Name from WikiSpace__c];
-            if (spaces.size() <= 0)
+            List<WikiSpace__c> spaces;
+            if(SpaceOptions == null )
             {
-                WikiSpace__c space =  new WikiSpace__c(Name = 'Other');
-                insert space;
-                options.add(new SelectOption(space.Id, space.Name));
-            }
-            else
-            {
-                for(WikiSpace__c s : spaces)
+                spaces = [select Id, Name from WikiSpace__c];
+                if(spaces.isEmpty())
                 {
-                    options.add(new SelectOption(s.Id, s.Name));
+                    WikiSpace__c space =  new WikiSpace__c(Name = 'Other');
+                    insert space;
+                    options.add(new SelectOption(space.Id, space.Name));
                 }
-                if(String.isBlank(WikiSpaceId))
+                else
                 {
-                    WikiSpaceId = options[1].getValue();
+                    for(WikiSpace__c item : spaces)
+                    {
+                        options.add(new SelectOption(item.Id, item.Name));
+                    }
+                    if(String.isBlank(WikiSpaceId))
+                    {
+                        WikiSpaceId = options[1].getValue();
+                    }
                 }
             }
             return options;
         }
     }
 
-    public User getUserInfo()
-    {
-        return [select Id, Name, SmallPhotoUrl from User where Id = :UserInfo.getUserId()];
-    }
-
     public PageReference save()
     {
-        Savepoint sp = Database.setSavepoint();
+        Savepoint savePoint = Database.setSavepoint();
         try
         {
             parentPage.WikiSpace__c = WikiSpaceId;
             parentPage.LastPublishedDate__c = System.now();
             parentPage.Title__c = LatestPage.Title__c;
-            parentPage.Name = LatestPage.Title__c;
-            if (isNew)
+            parentPage.Name = LatestPage.Title__c.abbreviate(80);
+            if(isNew)
             {
                 insert parentPage;
             }
@@ -107,7 +105,7 @@ public class WikiNewPageController
         }
         catch (Exception ex)
         {
-            Database.rollback(sp);
+            Database.rollback(savePoint);
             ApexPages.addMessages(ex);
             return null;
         }
