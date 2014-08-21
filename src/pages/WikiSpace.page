@@ -46,7 +46,7 @@
             padding-left:20px;
             padding-top:10px;
             border-radius:10px;
-            padding-left:25%;
+            padding-left:5%;
         }
 
         #div2{
@@ -56,35 +56,16 @@
             padding-top:10px;
             padding-bottom: 10px;
             border-radius:10px;
+            padding-left:30%;
         }
     </style>
-
-    <script>
-        $(document).ready(function(){
-
-            convertContent();
-        });
-
-        function convertContent(){
-
-            $("[id$='showBody']").each(function(){
-                var maxLength = 225;
-                var text = $(this).text();
-                var numWords = text.length;
-                if(numWords > maxLength)
-                {
-                    //$(this).text(text.substring(0, maxLength) + '......');
-                }
-                //$(this).html(markdown.toHTML($(this).text()));
-            });
-        }
-    </script>
 
     <apex:composition template="WikiTemplate">
         <apex:define name="body">
             <apex:form >
                 <div id="force">
-                    <div class="container" style="margin-left:5px; width:100%; margin-top:20px;">
+                    <div class="container" style="margin-left:5px; width:100%; margin-top:20px; font-size:18px;">
+                        
                         <div class="row">
                             <div class="col-md-3">
                                 <div style="padding-bottom:10px;"><h2><span >Wiki Spaces</span></h2></div>
@@ -92,25 +73,30 @@
                                     <table class="table table-hover">
                                         <div class="list-group">
                                         <apex:repeat value="{!Spaces}" var="space">
-                                            <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'black', '#999999')}; font-size:15px;" class="list-group-item">{!space.Name}<span style="float:right;font-weight:bold;">{!space.WikiPages__r.size}</span></a>
+                                            <input type="hidden" class="spaceNameValue" value="{!space.Name}"/>
+                                            <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'black', '#999999')}; font-size:15px;" class="list-group-item spaceName">{!space.Name}<span style="float:right;font-weight:bold;">{!space.WikiPages__r.size}</span></a>
                                         </apex:repeat>
                                         </div>
                                     </table>
                                 </ul>
                             </div>
 
-                            <div class="col-md-9" style="padding-top:20px;">
+                            <div class="col-md-9" style="padding-top:15px;">
                                 <apex:outputPanel rendered="{!WikiPages.size == 0}">
                                     <div id="div1">
-                                        Sorry, no pages!
-                                        <button type="button"  class="btn btn-primary" style="margin-left:35px;" onclick="window.open('{!$Site.Prefix}/apex/WikiNewPage?spaceid={!SpaceId}')">New Page</button>
+                                        Sorry, no pages! You can click
+                                        <button type="button"  class="btn btn-primary" style="margin-left:2px;" onclick="window.open('{!$Site.Prefix}/apex/WikiNewPage?spaceid={!SpaceId}')" >New Page</button>
+                                        to create a new page or go back <a href="{!$Page.WikiHome}" target = "_self">Wiki Home</a>.
+                                        
                                     </div>
-                                </apex:outputPanel>
+                                </apex:outputPanel> 
+
                                 <apex:outputPanel id="pagePanel" rendered="{!WikiPages.size > 0}">
                                     <ul>
                                         <div id="div2">
-                                            Pages about {!SpaceName}
+                                            You can go back <a href="{!$Page.WikiHome}" target = "_self">Wiki Home</a> here.
                                         </div>
+
                                         <apex:repeat value="{!WikiPages}" var="page">
                                             <li>
                                                 <div style="margin-top:10px; margin-bottom:10px;">
