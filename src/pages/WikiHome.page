@@ -1,4 +1,4 @@
-<apex:page controller="WikiHomeController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki Home">
+<apex:page controller="WikiHomeController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki Home" tabstyle="Wiki__tab">
     <head>
         <script type="text/javascript" src="{!URLFOR($Resource.WayPoint)}"></script>
         <style>
@@ -114,10 +114,12 @@
                             <div class="col-md-6">
                                 <h1 class="h1">Wiki Home</h1>
                             </div>
-                            <div class="add-btns col-md-3">
+                            <div class="add-btns col-md-3" style="200px;">
                                 <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
                                 <a href="/apex/WikiNewPage" target="blank" class="btn btn-primary">Add Page</a>
                             </div>
+                            <!-- Search bar -->
+                            <!--
                             <div class="col-md-3">
                                 <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search Pages" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
                                 <div id="theSearchSpanId" class="search-result-dropdown list-group">
@@ -132,18 +134,18 @@
                                     </apex:outputPanel>
                                 </div>
                             </div>
+                            -->
                         </div>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="well new-page">
-                                    <h2 >Hello, world!</h2>
-                                    <ul> Wiki Version 1 Function：
+                                    <h2> Wiki Functions !</h2>
+                                    <ul>
                                         <li> Article Version Control</li>
                                         <li> Comment (Chatter)</li>
-                                        <li> Search</li>
                                         <li> Markdown</li>
                                         <li> Highlight with Code</li>
-                                        <li> Bookmark a page or space</li>
+                                        <li> Bookmark a page or a space</li>
                                     </ul>
                                 </div>
                                 <div class="spaces-pane">
@@ -194,7 +196,7 @@
                                         <a href="#popularDiv" data-toggle="tab" class="tabmark" rel='popular'>Popular</a>
                                     </li>
                                     <li>
-                                        <a href="#allUpdateDiv" data-toggle="tab" class="tabmark" rel="update">All Update</a>
+                                        <a href="#allUpdateDiv" data-toggle="tab" class="tabmark" rel="update">All Updates</a>
                                     </li>
                                 </ul>
                                 <div class="tab-content">
@@ -213,8 +215,8 @@
                                                                 <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!item.WikiPage__c}" target="_self">{!item.Title__c}</a>
                                                                 <div class="page-author">
                                                                     <a href="{!$Site.Prefix}/{!item.CreatedById}" target="_self">{!item.CreatedBy.Name}</a>
-                                                                    <span>
-                                                                        <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                    <span style="font-size:12px;color: #999999;">
+                                                                        <apex:outputText value="{0, date, MMMM d','  yyyy}">
                                                                             <apex:param value="{!item.WikiPage__r.LastPublishedDate__c}"/>
                                                                         </apex:outputText>
                                                                     </span>
@@ -244,8 +246,8 @@
                                                     </div>
                                                 </apex:facet>
                                                 <apex:facet name="stop">
-                                                    <apex:outputPanel rendered="{!Not(HasNextPopularPages)}" style="display:block;" styleClass="well well-sm alert alert-danger">
-                                                        No more pages ...
+                                                    <apex:outputPanel rendered="{!Not(HasNextPopularPages)}" style="display:block; padding-left:35px; color:red; font-size:18px;" styleClass="">
+                                                        No more pages.
                                                     </apex:outputPanel>
                                                 </apex:facet>
                                             </apex:actionStatus>
@@ -267,35 +269,41 @@
                                                             <div class="media pull-left" style="margin-left:20px;margin-top:0px;">
                                                                 <div class="media-body">
                                                                     <div>
+                                                                    
                                                                         <apex:outputPanel rendered="{!item.Type == 'TextPost'}">
                                                                             <div class="page-author">
-                                                                                <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>post a text on the WikiPage —— <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!item.ParentId}" target="_self">{!item.Parent.Title__c}</a>
-                                                                                <div style="margin-top:3px;">{!item.Body}</div>
-                                                                                <div style="margin-top:3px;">at &nbsp;&nbsp;
-                                                                                    <apex:outputText value="{0,date,MM-dd-yyyy}">
-                                                                                        <apex:param value="{!item.CreatedDate}"/>
-                                                                                    </apex:outputText>
+                                                                                <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!item.ParentId}" target="_self" style="font-size:16px;">{!item.Parent.Title__c}</a>
+                                                                                <span class="label label-info">New</span>
+                                                                                <div style="margin-top:10px;font-size:12px;color: #999999;">
+                                                                                    <a href="{!$Site.Prefix}/{!item.CreatedById}">{!item.CreatedBy.Name}</a>
+                                                                                    <span>
+                                                                                        created at
+                                                                                        <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                                                                            <apex:param value="{!item.CreatedDate}"/>
+                                                                                        </apex:outputText>
+                                                                                    </span>
                                                                                 </div>
                                                                             </div>
                                                                         </apex:outputPanel>
+                                                                        
                                                                         <apex:outputPanel rendered="{!item.Type == 'TrackedChange'}">
                                                                             <div class="page-author">
-                                                                                <a href="/{!item.CreatedById}" >{!item.CreatedBy.Name}</a>changed the WikiPage —— <a href="/apex/WikiViewPage?id={!item.ParentId}" target="_self">{!item.Parent.Title__c}</a> <br/>
-                                                                                <div class="update-track-change-div">
+                                                                                <a href="/apex/WikiViewPage?id={!item.ParentId}" target="_self" style="font-size:16px;">{!item.Parent.Title__c}</a> <br/>
+                                                                                <div class="update-track-change-div" style="margin-left:-55px; margin-bottom:10px;font-size:15px;">
                                                                                     <ul>
                                                                                         <apex:repeat value="{!item.FeedTrackedChanges}" var="changeItem">
                                                                                             <li class="page-author">
-                                                                                                {!item.CreatedBy.Name} changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from
+                                                                                                Changed the <span style="background-color:#e4e4e4;padding-left:4px;padding-right:4px;">{!WikiPageFieldLabelMap[changeItem.FieldName]}</span> from
                                                                                                 <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] != 'DATETIME') && (WikiPageField2Type[changeItem.FieldName] != 'DATE') && (WikiPageField2Type[changeItem.FieldName] != 'TIME')}">
                                                                                                     "{!if(isBlank(changeItem.OldValue),'blank', changeItem.OldValue)}" to "{!changeItem.Newvalue}"
                                                                                                 </apex:outputPanel>
 
                                                                                                 <apex:outputPanel rendered="{!(WikiPageField2Type[changeItem.FieldName] == 'DATETIME') || (WikiPageField2Type[changeItem.FieldName] == 'DATE') || (WikiPageField2Type[changeItem.FieldName] == 'TIME')}">
-                                                                                                    "<apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                                    "<apex:outputText value="{0,date,MM/dd/yyyy}">
                                                                                                         <apex:param value="{!changeItem.OldValue}"/>
                                                                                                     </apex:outputText>"
                                                                                                      to
-                                                                                                    "<apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                                    "<apex:outputText value="{0,date,MM/dd/yyyy}">
                                                                                                         <apex:param value="{!changeItem.Newvalue}"/>
                                                                                                     </apex:outputText>"
                                                                                                 </apex:outputPanel>
@@ -303,8 +311,10 @@
                                                                                         </apex:repeat>
                                                                                     </ul>
                                                                                 </div>
-                                                                                <div style="margin-top:3px;">at &nbsp;&nbsp;
-                                                                                    <apex:outputText value="{0,date,MM-dd-yyyy}">
+                                                                                <div style="margin-top:3px;font-size:12px;color: #999999;">
+                                                                                    <a href="{!$Site.Prefix}/{!item.CreatedById}">{!item.CreatedBy.Name}</a>
+                                                                                    updated at
+                                                                                    <apex:outputText value="{0, date, MMMM d','  yyyy}">
                                                                                         <apex:param value="{!item.CreatedDate}"/>
                                                                                     </apex:outputText>
                                                                                 </div>
