@@ -94,25 +94,30 @@
                             <li class="active">{!PubPage.WikiPageVersion.Title__c}</li>
                         </ul>
                     </div>
+                    
+                    <div>
+                        <h1 style="margin-top: 0px;margin-bottom: 0px;margin-right: 150px;margin-left:2px;font-weight: normal;line-height: 1.1;word-wrap: break-word;font-size:25px">
+                            {!PubPage.WikiPageVersion.Title__c}
+                        </h1>
+                        <div class="page-metadata muted">
+                            <a href="/display/~rrobins" class="url fn confluence-userlink userlink-1" data-username="rrobins" title="" data-user-hover-bound="true"  style="color:#428bca; margin-left:-5px;">
+                                <apex:outputField value="{!PubPage.WikiPage.LastModifiedById}"/>
+                            </a>
+                            <span style="font-size:15px;color: #999999;">
+                                edited this page on
+                                <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                   <apex:param value="{!PubPage.WikiPage.LastPublishedDate__c}" />
+                               </apex:outputText>
+                           </span>
+                        </div>
+                        <hr/>
+                    </div>
+                    
                     <div class="page-header">
-                        <h1>{!PubPage.WikiPageVersion.Title__c}</h1>
+                        <h1 style="color:black;">{!PubPage.WikiPageVersion.Title__c}</h1>
                         <a id="editid" href='{!$Site.Prefix}/apex/WikiNewPage?id={!PubPage.WikiPage.Id}' type="button" class="btn-default1 pull-right" style="margin-bottom:10px;">
                             <span class="glyphicon glyphicon-pencil"></span> &nbsp;&nbsp;Edit
                         </a>
-                        <div class="page-metadata muted">
-                            Added by
-                            <a href="/display/~vidya" class="url fn confluence-userlink userlink-0" data-username="vidya" title="" data-user-hover-bound="true"  style="color:#428bca">
-                                <apex:outputField value="{!PubPage.WikiPage.CreatedById}"/>
-                            </a>,
-                            last edited by
-                            <a href="/display/~rrobins" class="url fn confluence-userlink userlink-1" data-username="rrobins" title="" data-user-hover-bound="true"  style="color:#428bca">
-                                <apex:outputField value="{!PubPage.WikiPage.LastModifiedById}"/>
-                            </a>
-                            on
-                            <apex:outputText value="{0, date, yyyy.MM.dd }">
-                               <apex:param value="{!PubPage.WikiPage.LastPublishedDate__c}" />
-                           </apex:outputText>
-                        </div>
                     </div>
                     <div id="page-body" class="page-body"></div>
                     <div id="epicpreview" class="page-body"></div>
@@ -126,8 +131,8 @@
     </apex:composition>
 
     <!-- The data of markdown for js to parse -->
-    <textarea id="text-input" rows="6" cols="60" style="display:none">
-        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false"/>
+    <textarea id="text-input" rows="6" cols="60" style="display:none;">
+        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false" style=""/>
     </textarea>
 
     <script type="text/javascript" src="{!UrlFor($resource.HighLight,'HighLight/highlight.pack.js')}"></script>
@@ -173,7 +178,6 @@
         $(document).ready(function($) {
 
             $("pre,code").css("font-family","Menlo");
-
             $("#editid").bind('mouseenter', function(event) {
                 $(this).removeClass().addClass("btn-primary1 pull-right").css("background-color","#428bca").css("text-decoration","none");
             });
@@ -185,6 +189,7 @@
             $(".glyphicon-pencil").bind('mouseenter', function() {$("#editid").mouseenter();});
 
             $(".glyphicon-pencil").bind('mouseout', function() {});
+            $("#epiceditor-preview ").css("font-size", "");
         });
     </script>
 </apex:page>
