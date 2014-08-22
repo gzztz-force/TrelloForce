@@ -36,12 +36,6 @@
 
         #leftMainContainer input[id$="titleInput"] {
             width: 92%;
-            height: 40px;
-            margin: 0px;
-            padding: 0px 0px 0px 10px;
-            border-radius: 3px;
-            max-height: 50px;
-            font-size: 20px;
         }
 
         #mainContainer #leftMainContainer #contentSection {
@@ -117,6 +111,14 @@
                     </header>
                     <section id="mainContainer" class="row">
                         <div id="leftMainContainer" class="col-md-9" style="padding-right:35px;">
+                        
+                            <div id="spaceDiv"  style="padding-left:0px; width:70%; margin-top:0px; margin-bottom:15px;">
+                                    <span style="float:left; font-size:17px; font-weight:bold; height:34px; margin-left:-9px;" >Space &nbsp;&nbsp;</span>
+                                    <apex:selectList id="selectList" styleclass="select-style form-control" style="height:34px;width:50%;" value="{!WikiSpaceId}" size="1">
+                                        <apex:selectOptions value="{!SpaceOptions}"/>
+                                    </apex:selectList>
+                            </div>
+                            
                             <div>
                                 <div id="titleSection" class="row" style="margin-left:-9px;">
                                     <a href="/{!CurrentUserInfo.Id}" style="width:4%;display:block;float:left;">
@@ -124,15 +126,8 @@
                                             <img width="48" height="40" title="{!CurrentUserInfo.Name}" class="avatar-photo" src="{!CurrentUserInfo.SmallPhotoUrl}"/>
                                         </span>
                                     </a>
-                                    <apex:inputText id="titleInput" value="{!LatestPage.Title__c}" required="true" html-placeholder="Title" style="width:70%; margin-left:25px;"/>
+                                    <apex:inputText value="{!LatestPage.Title__c}" required="true" html-placeholder="Title" styleClass="form-control" style="width:70%; margin-left:65px;height: 40px;padding: 0px 0px 0px 10px;max-height: 50px;font-size: 20px;"/>
                                 </div>
-                            </div>
-                            
-                            <div id="spaceDiv" class="col-md-4" style="padding-left:0px; width:70%; margin-top:15px; margin-bottom:15px;">
-                                    <span style="float:left; font-size:17px; font-weight:bold; height:34px; margin-left:-9px;" >Space &nbsp;&nbsp;</span>
-                                    <apex:selectList id="selectList" styleclass="select-style form-control" style="height:34px;width:50%;" value="{!WikiSpaceId}" size="1">
-                                        <apex:selectOptions value="{!SpaceOptions}"/>
-                                    </apex:selectList>
                             </div>
                             
                             <div id="contentSection" class="row">
@@ -141,29 +136,13 @@
                             </div>
 
                             <div id="extensionBar" class="row" style="padding-top:10px;">
-                                <!--
-                                <div id="spaceDiv" class="col-md-4" style="padding-left:0px; width:70%;">
-                                    <span style="float:left; font-size:18px; font-weight:bold; height:34px; padding-top:4px;" >Space &nbsp;&nbsp;</span>
-                                    <apex:selectList id="selectList" styleclass="select-style form-control" style="height:34px;width:50%;" value="{!WikiSpaceId}" size="1">
-                                        <apex:selectOptions value="{!SpaceOptions}"/>
-                                    </apex:selectList>
-                                </div>
-                                -->
+
                                 <div id="buttonDiv" class="col-md-3" style="margin-left:40%">
                                     <apex:commandButton id="cancelBtn" action="{!cancel}" value="Cancel" styleclass="btn btn-default" style="margin-right:40px;"/>
                                     <apex:commandButton id="saveBtn" action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary"/>
                                 </div>
                             </div>
-                            <!--
-                            <div class="row" >
-                                <div style="padding-top:20px; padding-left:20px;">
-                                    <div id="buttonDiv" class="col-md-3" style="padding-left:0px;">
-                                        <apex:commandButton id="saveBtn" action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary" style="margin-right:40px;"/>
-                                        <apex:commandButton id="cancelBtn" action="{!cancel}" value="Cancel" styleclass="btn btn-default"/>
-                                    </div>
-                                </div>
-                            </div>
-                            -->
+                            
                         </div>
                         <div id="rightMainContainer" class="col-md-3 div-border">
                             <p><span class="tips-title">Help Tips</span></p>
