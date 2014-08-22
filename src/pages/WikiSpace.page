@@ -73,8 +73,7 @@
                                     <table class="table table-hover">
                                         <div class="list-group">
                                         <apex:repeat value="{!Spaces}" var="space">
-                                            <input type="hidden" class="spaceNameValue" value="{!space.Name}"/>
-                                            <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'black', '#999999')}; font-size:15px;" class="list-group-item spaceName">{!space.Name}<span style="float:right;font-weight:bold;">{!space.WikiPages__r.size}</span></a>
+                                            <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'black', '#999999')}; background-color:{!IF(space.Name == SpaceName, '#4183c4', '')}; border-radius:10px; font-size:15px; border:none; padding-top:4px;" class="list-group-item spaceName">{!space.Name}<span style="float:right;font-weight:bold;">{!space.WikiPages__r.size}</span></a>
                                         </apex:repeat>
                                         </div>
                                     </table>
@@ -94,28 +93,52 @@
                                 <apex:outputPanel id="pagePanel" rendered="{!WikiPages.size > 0}">
                                     <ul>
                                         <div id="div2">
-                                            You can go back <a href="{!$Page.WikiHome}" target = "_self">Wiki Home</a> here.
+                                            You can go back <a href="{!$Page.WikiHome}" target = "_self">Wiki Home</a>.
                                         </div>
 
                                         <apex:repeat value="{!WikiPages}" var="page">
                                             <li>
+                                                <div style="margin-top:10px;">
+                                                    <a href="{!$Site.Prefix}/{!Page.WikiPageVersion.CreatedById}" class="pull-left">
+                                                        <span title="{!page.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                            <img width="45" height="45" title="{!page.WikiPageVersion.CreatedBy.Name}" class="avatar-photo" alt="{!page.WikiPageVersion.CreatedBy.Name}" src="{!page.WikiPageVersion.CreatedBy.FullPhotoUrl}" />
+                                                        </span>
+                                                    </a>
+                                                    
+                                                    <div class="page-author" style="margin-left:5px;">
+                                                        <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}" target="_self" style="font-size:18px;margin-left:10px;">{!page.WikiPageVersion.Title__c}</a> <br/>
+                                                        <div class="update-track-change-div" style="margin-left:50px;margin-bottom:10px;margin-top:30px;font-size:15px;">
+                                                            <apex:outputText >
+                                                                {!LEFT(page.WikiPageVersion.Body__c, 200)}
+                                                                <apex:outputPanel rendered="{!len(page.WikiPageVersion.Body__c) > 200}">
+                                                                ...
+                                                                </apex:outputPanel>
+                                                            </apex:outputText>
+                                                        </div>
+                                                        <div style="margin-top:3px;font-size:12px;color: #999999;margin-left:50px;">
+                                                            <a href="{!$Site.Prefix}/{!page.WikiPageVersion.CreatedById}">{!page.WikiPageVersion.CreatedBy.Name}</a>
+                                                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                                                <apex:param value="{!page.WikiPageVersion.LastPublishedDate__c}"/>
+                                                            </apex:outputText>
+                                                        </div>
+                                                    </div>
+                                               </div> 
+                                                <!--
                                                 <div style="margin-top:10px; margin-bottom:10px;">
                                                     <a href="{!$Site.Prefix}/{!Page.WikiPageVersion.CreatedById}">
                                                         <span title="{!page.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto">
                                                             <img width="45" height="45" title="{!page.WikiPageVersion.CreatedBy.Name}" alt="{!page.WikiPageVersion.CreatedBy.Name}" src="{!page.WikiPageVersion.CreatedBy.FullPhotoUrl}"/>
                                                         </span>
-                                                    </a>&nbsp;&nbsp;
-                                                    <span>
-                                                        <a href="#" onclick="window.open('{!$Site.Prefix}/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}')" style="padding-top:-10px;">
-                                                            <h4>{!page.WikiPageVersion.Title__c}</h4>
-                                                        </a>
-                                                    </span>
+                                                    </a>
+                                                    <a href="#" onclick="window.open('{!$Site.Prefix}/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}')" style="margin-top:-10px;">
+                                                        <h4>{!page.WikiPageVersion.Title__c}</h4>
+                                                    </a>
                                                 </div>
                                                 
                                                 <div id="showBody" style="font-size:15px; margin-bottom:10px; margin-left:57px;">
                                                     <apex:outputText >
                                                         {!LEFT(page.WikiPageVersion.Body__c, 200)}
-                                                        <apex:outputPanel rendered="{!len(page.WikiPageVersion.Body__c) > 80}">
+                                                        <apex:outputPanel rendered="{!len(page.WikiPageVersion.Body__c) > 200}">
                                                         ...
                                                         </apex:outputPanel>
                                                     </apex:outputText>
@@ -126,6 +149,7 @@
                                                         <apex:param value="{!page.WikiPageVersion.LastPublishedDate__c}"/>
                                                     </apex:outputText>
                                                 </div>
+                                                -->
                                             </li>
                                         </apex:repeat>
                                     </ul>
