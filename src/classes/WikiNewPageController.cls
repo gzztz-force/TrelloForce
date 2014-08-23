@@ -34,11 +34,6 @@ public class WikiNewPageController
                 WikiSpaceId = pageVersions[0].WikiPage__r.WikiSpace__r.Id;
                 versionPageClone = LatestPage.clone(true);
             }
-            else
-            {
-                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.Error, 'Invalid Id', 'Invalid Id'));
-                IsValid = false;
-            }
         }
 
     }
@@ -70,10 +65,6 @@ public class WikiNewPageController
                     {
                         options.add(new SelectOption(item.Id, item.Name));
                     }
-                    if(String.isBlank(WikiSpaceId))
-                    {
-                        WikiSpaceId = options[1].getValue();
-                    }
                 }
             }
             return options;
@@ -85,6 +76,10 @@ public class WikiNewPageController
         Savepoint savePoint = Database.setSavepoint();
         try
         {
+            if(String.isBlank(WikiSpaceId))
+            {
+                WikiSpaceId = SpaceOptions[1].getValue();
+            }
             parentPage.WikiSpace__c = WikiSpaceId;
             parentPage.LastPublishedDate__c = System.now();
             parentPage.Title__c = LatestPage.Title__c;
@@ -103,7 +98,7 @@ public class WikiNewPageController
             WikiPageVersion__c newVersionPage = new WikiPageVersion__c(Title__c = LatestPage.Title__c, Body__c = LatestPage.Body__c, WikiPage__c = parentPage.Id, IsLatestVersion__c = true, VersionNumber__c = LatestPage.VersionNumber__c + 1, LastPublishedDate__c = System.Now());
             insert newVersionPage;
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
             Database.rollback(savePoint);
             ApexPages.addMessages(ex);
@@ -114,7 +109,7 @@ public class WikiNewPageController
 
     public PageReference cancel()
     {
-        if (!isNew)
+        if(!isNew)
         {
             return new PageReference('/apex/WikiViewPage?id=' + parentPage.Id);
         }
