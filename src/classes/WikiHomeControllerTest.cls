@@ -7,18 +7,16 @@ public class WikiHomeControllerTest
 	@isTest
 	public static void testContructorAndSimpleMethods()
 	{
+		// Load the data for the test
 		WikiDataFactory dataFactory = new WikiDataFactory();
-
-		PageReference pageRef = new ApexPages.PageReference('/apex/WikiHomeTest');
-		Test.setCurrentPage(pageRef);
 		dataFactory.createWikiPagesWithSpaces(5, 6,true);
 
+		PageReference pageRef = new ApexPages.PageReference('/apex/WikiHome');
+		Test.setCurrentPage(pageRef);
 		WikiHomeController controller = new WikiHomeController();
-		List<WikiSpace__c> spaces = controller.getMySpaces();
-		System.assertEquals(spaces.size(), 5);
-		System.assertEquals(spaces[0].WikiPages__r.size(), 6);
-		controller.getMyPages();
-		controller.loadMorePopularPagesAction();
+		List<WikiSpace__c> spaceOptions = controller.MySpaces;
+		List<WikiPageVersion__c> pagesOptions = controller.MyPages; 
+		controller.loadMorePopularPages();
 		List<WikiPage__c> pages = [select LastPublishedDate__c from WikiPage__c limit 3];
 		List<WikiPage__c> modifiedFiledPages = new List<WikiPage__c>();
 		Date testDate = date.newinstance(2014,12,12);
@@ -29,7 +27,7 @@ public class WikiHomeControllerTest
 		}
 		update modifiedFiledPages;
 		controller.getWikiPageFieldLabelMap();
-		System.assertEquals(controller.getPopularPages().size(), 24);
+
 	}
 
 	@isTest
