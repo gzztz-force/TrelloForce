@@ -41,7 +41,8 @@ public with sharing class WikiHomeController
     public List<WikiSpace__c> MySpaces
     {
         get
-        {   if(MySpaces == null)
+        {   
+            if(MySpaces == null)
             {
                 MySpaces = [select Name, Summary__c, (select Id from WikiPages__r) from WikiSpace__c order by CreatedDate desc];
             }
@@ -54,7 +55,7 @@ public with sharing class WikiHomeController
     {
         get
         {
-            if(MyPages == null)
+            if(MyPages == null )
             {
                 MyPages = [select Title__c, WikiPage__c from WikiPageVersion__c where IsLatestVersion__c = true and CreatedById = :UserInfo.getUserId() order by CreatedDate desc];
             }
