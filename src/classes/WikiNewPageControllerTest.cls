@@ -20,7 +20,7 @@ public class WikiNewPageControllerTest
         WikiDataFactory dataFactory = new WikiDataFactory();
         dataFactory.createWikiPagesWithSpaces(3,5,true);
 
-        PageReference pageRef = new ApexPages.PageReference('/apex/WikiNewPageTest');
+        PageReference pageRef = new ApexPages.PageReference('/apex/WikiViewPage');
         Id pageId = [select id from WikiPage__c limit 1].Id;
         pageRef.getParameters().put('id',pageId);
         Test.setCurrentPage(pageRef);
@@ -33,13 +33,14 @@ public class WikiNewPageControllerTest
 
         //Test with Space exits.
         List<SelectOption> spaceOptions = controller.SpaceOptions;
-        controller.getUserInfo();
+
         System.assertEquals(spaceOptions.size(), 4);
         System.assertEquals([select id from WikiPageVersion__c].size(),16);
 
         //Test pages without page Version and the WikiSpaceId is null
-        delete [select Id from WikiPageVersion__c];
-        PageReference pageRef2 = new ApexPages.PageReference('/apex/WikiNewPageTest');
+        PageReference pageRef2 = new ApexPages.PageReference('/apex/WikiViewPage');
+        Id pageId2 = [select id from WikiPage__c limit 1].Id;
+        pageRef.getParameters().put('id',pageId2);
         pageRef2.getParameters().put('spaceid', null);
         Test.setCurrentPage(pageRef2);
         WikiNewPageController controller2 = new WikiNewPageController();
@@ -48,8 +49,6 @@ public class WikiNewPageControllerTest
         delete [select Id from WikiSpace__c];
         List<SelectOption> spaceOptions2 = controller.SpaceOptions;
         controller.cancel();
-
-
         controller.LatestPage = null;
         controller.save();
     }
