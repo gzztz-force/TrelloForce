@@ -37,7 +37,6 @@
                             <li class="active">{!PubPage.WikiPageVersion.Title__c}</li>
                         </ul>
                     </div>
-                    
 
                     <div class="page-header">
                         <h1>{!PubPage.WikiPageVersion.Title__c}</h1>
@@ -112,21 +111,10 @@
 
         hljs.initHighlightingOnLoad();
 
-        $(document).ready(function($) {
 
-            $("pre,code").css("font-family","Menlo");
-            $("#editid").bind('mouseenter', function(event) {
-                $(this).removeClass().addClass("btn-primary1 pull-right").css("background-color","#428bca").css("text-decoration","none");
-            });
 
-            $("#editid").bind('mouseout', function(event) {
-                $(this).removeClass().addClass("btn-default1 pull-right").css("background-color","#fdfdfd");
-            });
 
-            $(".glyphicon-pencil").bind('mouseenter', function() {$("#editid").mouseenter();});
 
-            $(".glyphicon-pencil").bind('mouseout', function() {});
-            $("#epiceditor-preview ").css("font-size", "");
         });
     </script>
 </apex:page>
