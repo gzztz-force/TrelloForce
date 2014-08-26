@@ -2,19 +2,10 @@
     <link rel="stylesheet" type="text/css" href="{!UrlFor($resource.HighLight,'HighLight/styles/default.css')}"/>
     <style>
         .content {
-            padding: 0 25px;
             margin: 0 auto;
             width: 960px;
-            border: 0;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 14px;
-            line-height: 20px;
-            color: #333333;
-            background-color: #ffffff;
-        }
-
-        .page-body {
-            padding-bottom: 15px;
         }
 
         #force .page-header h1 {
@@ -27,61 +18,13 @@
             padding-left: 10px;
             padding-top: 12px;
         }
-
-        .feedpage .feedrightbar {
-            margin-right: 0px;
-        }
-
-        .btn-default1{
-            color: #333333;
-            background-color: #fdfdfd;
-            border-color: #cccccc;
-            display: inline-block;
-            padding: 6px 12px;
-            margin-bottom: 0;
-             font-size: 14px;
-            font-weight: normal;
-            line-height: 1.428571429;
-            text-align: center;
-             white-space: nowrap;
-            vertical-align: middle;
-            cursor: pointer;
-            background-image: none;
-            border: 1px solid #cbcbcb;
-            border-radius: 4px;
-            -webkit-user-select: none;
-        }
-
-        .btn-primary1{
-            color: #ffffff;
-            background-color: #4eaddf;
-            border-color: #357ebd;
-            display: inline-block;
-            padding: 6px 12px;
-            margin-bottom: 0;
-            font-size: 14px;
-            font-weight: normal;
-            line-height: 1.428571429;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: middle;
-            cursor: pointer;
-            background-image: none;
-            border: 1px solid #cbcbcb;
-            border-radius: 4px;
-        }
-
-        .publishercontainer .bottomBar{
-            padding: 5px;
-            height: 40px;
-        }
     </style>
 
     <apex:composition template="WikiTemplate">
         <apex:define name="body" >
-            <div class="content" style=" background-color: f9f9f9;">
+            <div class="content">
                 <div id="force">
-                    <div class="navbar ">
+                    <div class="navbar">
                         <ul class="breadcrumb">
                             <li>
                                 <a href="{!$Page.WikiHome}">Wiki Home</a>
@@ -95,18 +38,19 @@
                         </ul>
                     </div>
                     
+
                     <div class="page-header">
-                        <h1 style="color:black;">{!PubPage.WikiPageVersion.Title__c}</h1>
-                        <a id="editid" href='{!$Site.Prefix}/apex/WikiNewPage?id={!PubPage.WikiPage.Id}' type="button" class="btn-default1 pull-right" style="margin-bottom:10px;">
+                        <h1>{!PubPage.WikiPageVersion.Title__c}</h1>
+                        <a href='{!$Site.Prefix}/apex/WikiNewPage?id={!PubPage.WikiPage.Id}' type="button" class="btn btn-default pull-right" style="margin-bottom:10px;">
                             <span class="glyphicon glyphicon-pencil"></span> &nbsp;&nbsp;Edit
                         </a>
                         <div class="page-metadata muted">
                             <a href="/display/~rrobins" class="url fn confluence-userlink userlink-1" data-username="rrobins" title="" data-user-hover-bound="true"  style="color:#428bca; margin-left:-5px;">
                                 <apex:outputField value="{!PubPage.WikiPage.LastModifiedById}"/>
                             </a>
-                            <span style="font-size:15px;color: #999999;">
+                            <span>
                                 edited this page on
-                                <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                <apex:outputText value="{0, date, MMMM d',' yyyy}">
                                    <apex:param value="{!PubPage.WikiPage.LastPublishedDate__c}" />
                                </apex:outputText>
                            </span>
@@ -124,8 +68,8 @@
     </apex:composition>
 
     <!-- The data of markdown for js to parse -->
-    <textarea id="text-input" rows="6" cols="60" style="display:none;">
-        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false" style=""/>
+    <textarea id="text-input" style="display:none;">
+        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false"/>
     </textarea>
 
     <script type="text/javascript" src="{!UrlFor($resource.HighLight,'HighLight/highlight.pack.js')}"></script>
