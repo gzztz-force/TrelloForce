@@ -1,5 +1,4 @@
 <apex:page showHeader="true" sidebar="false" standardStylesheets="false" controller="WikiViewPageController" title="Wiki View Page" tabStyle="Wiki__tab">
-    <link rel="stylesheet" type="text/css" href="{!UrlFor($resource.HighLight,'HighLight/styles/default.css')}"/>
     <style>
         .content {
             margin: 0 auto;
@@ -108,13 +107,32 @@
 
         var editor = new EpicEditor(opts).load();
         editor.preview();
+        var previewer;
 
-        hljs.initHighlightingOnLoad();
+        var editor = new EpicEditor(opts)
+        .load(function() {
+            previewer = this.getElement('previewer');
 
+            // HighLight JS
+            var scriptTag = previewer.createElement('script');
+            scriptTag.src = "{!URLFOR($resource.HighLight,'HighLight/highlight.pack.js')}";
 
+            // HighLight CSS
+            var cssTag = previewer.createElement('link');
+            cssTag.rel = 'stylesheet';
+            cssTag.type = 'text/css';
+            cssTag.href = "{!URLFOR($resource.HighLight,'HighLight/styles/default.css')}";
 
+            // Add JS / CSS
+            previewer.body.appendChild(scriptTag);
+            previewer.head.appendChild(cssTag);
+        });
 
-
+        editor.on('preview', function() {
+            // Add necessary classes to <code> elements
+            $(previewer.body).find('pre code').each(function(i, e) {
+                hljs.highlightBlock(e)}
+            );
         });
     </script>
 </apex:page>
