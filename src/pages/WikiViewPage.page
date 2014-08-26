@@ -10,14 +10,15 @@
         }
 
         #force .page-header h1 {
-            color: #5a5a5a;
-            font-size: 38.5px;
+            color: #333333;
+            font-size: 32px;
         }
 
         .page-metadata {
-            font-size: 12px;
-            padding-left: 10px;
+            padding-left: 5px;
             padding-top: 12px;
+            font-size: 13px;
+            color: #999;
         }
     </style>
 
