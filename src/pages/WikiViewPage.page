@@ -1,4 +1,6 @@
 <apex:page showHeader="true" sidebar="false" standardStylesheets="false" controller="WikiViewPageController" title="Wiki View Page" tabStyle="Wiki__tab">
+    <!-- Font Awesome -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
     <style>
         .content {
             margin: 0 auto;
@@ -54,8 +56,12 @@
                            </span>
                         </div>
                     </div>
-                    <div id="page-body" class="page-body"></div>
-                    <div id="epicpreview" class="page-body"></div>
+                    <div id="spinner" style="background-color:#fff; min-height:250px; position:absolute; text-align:center; width:960px; z-index:1000;height:90%">
+                        <span style="margin: 200px auto 0; display: block;">
+                            <i class="fa fa-spinner fa-spin fa-4x"></i>
+                        </span>
+                    </div>
+                    <div id="epicpreview" style="height: 500px;"></div>
                     <hr/>
                 </div>
 
@@ -76,7 +82,7 @@
             container: 'epicpreview',
             textarea: 'text-input',
             basePath: '{!URLFOR($Resource.EpicEditor)}',
-            clientSideStorage: true,
+            clientSideStorage: false,
             localStorageName: 'new-wikipage',
             useNativeFullscreen: true,
             parser: marked,
@@ -105,8 +111,6 @@
             autogrow: true
         }
 
-        var editor = new EpicEditor(opts).load();
-        editor.preview();
         var previewer;
 
         var editor = new EpicEditor(opts)
@@ -134,5 +138,15 @@
                 hljs.highlightBlock(e)}
             );
         });
+
+        var myVar = setInterval(function () {
+            if (editor.is('loaded')) {
+                editor.preview();
+
+                $('#spinner').hide();
+                window.clearInterval(myVar)
+            }
+        }, 1000);
+
     </script>
 </apex:page>
