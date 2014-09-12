@@ -4,7 +4,7 @@
 public with sharing class WikiViewPageController
 {
     private String pageId;
-    public PublishedPage PubPage { get; set; }
+    
     public WikiViewPageController()
     {
         pageId = ApexPages.currentPage().getParameters().get('id');
@@ -14,6 +14,8 @@ public with sharing class WikiViewPageController
         }
     }
 
+    public PublishedPage PubPage { get; set; }
+    
     private void getPubishedPage()
     {
         List<WikiPage__c> publishedPages = [select Id, WikiSpace__r.Name, WikiSpace__c, CreatedById, LastModifiedById, LastPublishedDate__c,
