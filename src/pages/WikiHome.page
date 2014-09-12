@@ -91,8 +91,8 @@
                                                 <apex:repeat value="{!PopularPages}" var="item">
                                                     <li class="popular-page">
                                                         <a href="/{!item.CreatedById}" class="pull-left">
-                                                            <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                                <img width="45" height="50" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
+                                                            <span title="{!item.CreatedBy.Name}" class="avatar">
+                                                                <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.SmallPhotoUrl}" />
                                                             </span>
                                                         </a>
                                                         <div class="media pull-left" style="margin-left:20px;margin-top:0px;">
@@ -147,8 +147,8 @@
                                                     <apex:repeat value="{!FeedItems}" var="item">
                                                         <li>
                                                             <a href="/{!item.CreatedById}" class="pull-left">
-                                                                <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                                    <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!IdUserMap[item.CreatedById].FullPhotoUrl}" />
+                                                                <span title="{!item.CreatedBy.Name}" class="avatar">
+                                                                    <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!IdUserMap[item.CreatedById].SmallPhotoUrl}" />
                                                                 </span>
                                                             </a>
                                                             <div class="media pull-left" style="margin-left:20px;margin-top:0px;">

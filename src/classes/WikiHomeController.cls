@@ -113,7 +113,7 @@ public with sharing class WikiHomeController
             {
                 userIds.add(feed.CreatedByid);
             }
-            IdUserMap.putAll(new Map<Id,User>([select Id, FullPhotoUrl from User where Id in :userIds]));
+            IdUserMap.putAll(new Map<Id,User>([select Id, SmallPhotoUrl from User where Id in :userIds]));
             HasMoreFeedMark = FeedItems.size() < feedItemCount;
             feedPageNum += 1;
         }
@@ -140,7 +140,7 @@ public with sharing class WikiHomeController
         List<WikiPageVersion__c> popularWikiPages = new List<WikiPageVersion__c>();
         if(popularPagesSet == null)
         {
-            popularPagesSet = new ApexPages.StandardSetController([select Id, Title__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl, WikiPage__r.LastPublishedDate__c, WikiPage__c, WikiPage__r.Post_Count__c
+            popularPagesSet = new ApexPages.StandardSetController([select Id, Title__c, CreatedById, CreatedBy.Name, CreatedBy.SmallPhotoUrl, WikiPage__r.LastPublishedDate__c, WikiPage__c, WikiPage__r.Post_Count__c
                                                                   from WikiPageVersion__c 
                                                                   where IsLatestVersion__c = true and WikiPage__r.Post_Count__c != null  
                                                                   order by WikiPage__r.Post_Count__c desc, CreatedDate desc]);
