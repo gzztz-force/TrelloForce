@@ -92,7 +92,7 @@
                                                     <li class="popular-page">
                                                         <a href="/{!item.CreatedById}" class="pull-left">
                                                             <span title="{!item.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                                <img width="45" height="45" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
+                                                                <img width="45" height="50" title="{!item.CreatedBy.Name}" class="avatar-photo" alt="{!item.CreatedBy.Name}" src="{!item.CreatedBy.FullPhotoUrl}" />
                                                             </span>
                                                         </a>
                                                         <div class="media pull-left" style="margin-left:20px;margin-top:0px;">

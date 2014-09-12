@@ -44,7 +44,7 @@
                                                 <div style="margin-top:10px;">
                                                     <a href="{!$Site.Prefix}/{!Page.WikiPageVersion.CreatedById}" class="pull-left">
                                                         <span title="{!page.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
-                                                            <img width="45" height="45" title="{!page.WikiPageVersion.CreatedBy.Name}" class="avatar-photo" alt="{!page.WikiPageVersion.CreatedBy.Name}" src="{!page.WikiPageVersion.CreatedBy.FullPhotoUrl}" />
+                                                            <img width="45" height="50" title="{!page.WikiPageVersion.CreatedBy.Name}" class="avatar-photo" alt="{!page.WikiPageVersion.CreatedBy.Name}" src="{!page.WikiPageVersion.CreatedBy.FullPhotoUrl}" />
                                                         </span>
                                                     </a>
                                                     
