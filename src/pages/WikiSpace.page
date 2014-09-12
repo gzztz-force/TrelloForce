@@ -1,65 +1,8 @@
 <apex:page controller="WikiSpaceController" sidebar="false" showheader="true" standardStylesheets="true" title="Wiki Space" tabStyle="Wiki_Space__tab">
-    <style>
-        div, ul, li, a{
-                margin:0px;
-                padding:0px;
-        }
-
-        .col-md-2{
-                margin-top:30px;
-                margin-bottom:10px;
-        }
-
-        .col-md-9{
-            margin-top:20px;
-            padding-right:20px;
-        }
-
-        .col-md-2 ul{
-            margin-top:10px;
-            padding-bottom:10px;
-        }
-
-        .col-md-2 li{
-            font-size: 15px;
-            margin-top:10px;
-            list-style-type:none;
-        }
-
-        .col-md-2 a:hover{
-            color:black;
-            text-decoration: none;
-        }
-
-        .col-md-9 li{
-            margin-top:20px;
-            margin-right:20px;
-            margin-left:0px;
-            list-style-type:none;
-            border-top:1px solid #E6E6E6;
-        }
-
-        #div1{
-            font-size:20px;
-            background-color:#F2DEDE;
-            padding-bottom:10px;
-            padding-left:20px;
-            padding-top:10px;
-            border-radius:10px;
-            padding-left:5%;
-        }
-
-        #div2{
-            font-size:20px;
-            background-color:#D9EDF7;
-            padding-left:20px;
-            padding-top:10px;
-            padding-bottom: 10px;
-            border-radius:10px;
-            padding-left:30%;
-        }
-    </style>
-
+    <head>
+        <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.wiki, 'css/space.css')}"/>
+    </head>
+    
     <apex:composition template="WikiTemplate">
         <apex:define name="body">
             <apex:form >
@@ -73,7 +16,7 @@
                                     <table class="table table-hover">
                                         <div class="list-group">
                                         <apex:repeat value="{!Spaces}" var="space">
-                                            <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'black', '#999999')}; background-color:{!IF(space.Name == SpaceName, '#4183c4', '')}; border-radius:10px; font-size:15px; border:none; padding-top:4px;" class="list-group-item spaceName">{!space.Name}<span style="float:right;font-weight:bold;">{!space.WikiPages__r.size}</span></a>
+                                            <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'white', '#999999')}; background-color:{!IF(space.Name == SpaceName, '#4183c4', '')}; border-radius:10px; font-size:15px; border:none; padding-top:4px;" class="list-group-item spaceName">{!space.Name}<span style="float:right;font-weight:bold;">{!space.WikiPages__r.size}</span></a>
                                         </apex:repeat>
                                         </div>
                                     </table>
@@ -123,33 +66,6 @@
                                                         </div>
                                                     </div>
                                                </div> 
-                                                <!--
-                                                <div style="margin-top:10px; margin-bottom:10px;">
-                                                    <a href="{!$Site.Prefix}/{!Page.WikiPageVersion.CreatedById}">
-                                                        <span title="{!page.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto">
-                                                            <img width="45" height="45" title="{!page.WikiPageVersion.CreatedBy.Name}" alt="{!page.WikiPageVersion.CreatedBy.Name}" src="{!page.WikiPageVersion.CreatedBy.FullPhotoUrl}"/>
-                                                        </span>
-                                                    </a>
-                                                    <a href="#" onclick="window.open('{!$Site.Prefix}/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}')" style="margin-top:-10px;">
-                                                        <h4>{!page.WikiPageVersion.Title__c}</h4>
-                                                    </a>
-                                                </div>
-                                                
-                                                <div id="showBody" style="font-size:15px; margin-bottom:10px; margin-left:57px;">
-                                                    <apex:outputText >
-                                                        {!LEFT(page.WikiPageVersion.Body__c, 200)}
-                                                        <apex:outputPanel rendered="{!len(page.WikiPageVersion.Body__c) > 200}">
-                                                        ...
-                                                        </apex:outputPanel>
-                                                    </apex:outputText>
-                                                </div>
-                                                <div style="margin-left:57px;">
-                                                    <a href="{!$Site.Prefix}/{!page.WikiPageVersion.CreatedById}">{!page.WikiPageVersion.CreatedBy.Name}</a>&nbsp;&nbsp;
-                                                    <apex:outputText value="{0, date, MM-dd-yyyy}">
-                                                        <apex:param value="{!page.WikiPageVersion.LastPublishedDate__c}"/>
-                                                    </apex:outputText>
-                                                </div>
-                                                -->
                                             </li>
                                         </apex:repeat>
                                     </ul>

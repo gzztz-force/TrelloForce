@@ -1,105 +1,7 @@
 <apex:page controller="WikiHomeController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki Home" tabstyle="Wiki__tab">
     <head>
-        <script type="text/javascript" src="{!URLFOR($Resource.WayPoint)}"></script>
-        <style>
-            body {
-                background-color: f9f9f9;
-            }
-            .container-custom {
-                padding: 5px 20px;
-                width: 100%;
-                margin: auto 0px;
-            }
-            .nav-wiki {
-                padding: 10px 0px;
-            }
-            .new-page {
-                padding-top: 25px;
-                background-color: #EEEEEE;
-            }
-            .new-page h2 {
-                border-bottom: 1px solid #bbb;
-                display: block;
-            }
-            .spaces-list a {
-                padding-right: 30px;
-                word-wrap: break-word;
-            }
-            .spaces-list li>div {
-                margin-left: 5px;
-                position: relative;
-            }
-            .spaces-list li, .popular-list li {
-                margin-top: 5px;
-                padding-left: 5px;
-                padding-top: 2px;
-                font-size: 15px;
-                overflow: hidden;
-            }
-            .spaces-list .fav {
-                background-position: 0 0;
-                height: 16px;
-                width: 16px;
-                margin: 2px 15px 0 3px;
-                float: left;
-            }
-            .divider {
-                height: 1px;
-                margin: 9px 0px;
-                overflow: hidden;
-                background-color: #e5e5e5;
-                border-bottom: 1px solid #dfdfdf;
-                padding: 0px;
-            }
-            .popular-list a {
-                margin-right: 10px;
-            }
-            .popular-list .media {
-                width: 75%;
-                margin-top: 0px;
-            }
-            .popular-list .comment {
-                margin-right: 20px
-            }
-            .popular-list .page-author {
-                font-size: 12px;
-                padding-left: 0px;
-                padding-top: 5px;
-            }
-            .add-btns {
-                margin-top: 0px;
-            }
-            .search-result-dropdown {
-                width:90%;
-                float: left;
-                position: absolute;
-                top: 35px;
-                font-size: 14px;
-                z-index:20;
-                border:1px solid gray;
-                background-color:#EAEAEA;
-                display: none;
-                filter:alpha(Opacity=80);
-                -moz-opacity:0.5;
-                opacity: 0.9;
-            }
-            .search-result-dropdown li{
-                list-style: none;
-                line-height:20px;
-                position:relative;
-                text-indent: -0.5cm;
-            }
-            .load-status{
-                margin-left: 28px;
-            }
-            .loadingbottom{
-                text-align:center;
-            }
-            .loadimg{
-                margin:0 auto;
-            }
-        </style>
-        
+        <script type="text/javascript" src="{!URLFOR($Resource.wiki, 'components/Waypoints.js')}"/>
+        <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.wiki, 'css/home.css')}"/>
     </head>
     <apex:form >
         <apex:actionFunction name="loadMorePopularPages" status="loadPage" action="{!loadMorePopularPages}" reRender="popularPagePanel" oncomplete="doneLoad()"/>
@@ -118,23 +20,6 @@
                                 <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
                                 <a href="/apex/WikiNewPage" target="blank" class="btn btn-primary">Add Page</a>
                             </div>
-                            <!-- Search bar -->
-                            <!--
-                            <div class="col-md-3">
-                                <input type="search" id="searchWikiId" class="search col-md-12 pull-left search-query form-control" placeholder="Search Pages" onkeypress="enterPress()" onkeydown="enterPress(Event)" autocomplete="off"/>
-                                <div id="theSearchSpanId" class="search-result-dropdown list-group">
-                                    <apex:outputPanel id="TheSearchSuggest" rendered="{!PagesForSearch.size > 0}">
-                                        <ul>
-                                            <apex:repeat value="{!PagesForSearch}" var="item">
-                                                <li>
-                                                    <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!item.WikiPage__c}" target="_self">{!item.Title__c}</a>
-                                                </li>
-                                            </apex:repeat>
-                                        </ul>
-                                    </apex:outputPanel>
-                                </div>
-                            </div>
-                            -->
                         </div>
                         <div class="row">
                             <div class="col-md-4">
@@ -241,7 +126,7 @@
                                             <apex:actionStatus id="loadPage">
                                                 <apex:facet name="start">
                                                     <div class="loadingbottom">
-                                                        <img src="{!$Resource.loadPic}" class="loadimg"/>
+                                                        <img src="{!URLFOR($Resource.wiki, 'images/loadPic.gif')}" class="loadimg"/>
                                                         Loading ...
                                                     </div>
                                                 </apex:facet>
@@ -333,7 +218,7 @@
                                             <apex:actionStatus id="loadItem">
                                                 <apex:facet name="start">
                                                     <div class="loadingbottom">
-                                                        <img src="{!$Resource.loadPic}" class="lodingimg" />
+                                                        <img src="{!URLFOR($Resource.wiki, 'images/loadPic.gif')}" class="loadimg"/>
                                                         Loading ...
                                                     </div>
                                                 </apex:facet>
@@ -398,8 +283,8 @@
             </div>
         </apex:define>
     </apex:composition>
-     <script type="text/javascript">
-            function pageClass(href,title) {
+    <script>
+        function pageClass(href,title) {
                 this.title__c = title;
                 this.href__c = href;
             }
@@ -523,5 +408,5 @@
                     }
                 }
             }
-     </script>
+    </script>
 </apex:page>

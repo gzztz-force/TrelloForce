@@ -1,248 +1,156 @@
-<apex:page controller="WikiNewPageController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki New Page" id="page" tabStyle="WikiNewPage__tab">
-    <style type="text/css">
-        select, textarea, input, ul {
-            margin: 0px;
-            padding: 0px;
-            list-style: none;
-            box-sizing:border-box;
-            -moz-box-sizing:border-box;
-            -webkit-box-sizing:border-box;
-        }
-
-        .div-border {
-            border-width: 1px;
-            border-color: rgb(199, 198, 198);
-            border-style: solid;
-            box-sizing:border-box;
-            -moz-box-sizing:border-box;
-            -webkit-box-sizing:border-box;
-        }
-
-        .select-style {
-            height: 30px;
-            width: 220px;
-        }
-
-        .nav-header {
-            margin: 10px 0px 20px;
-        }
-
-        #force {
-            height:500px;
-            width:97%;
-            margin-left:auto;
-            margin-right:auto;
-        }
-
-        #leftMainContainer input[id$="titleInput"] {
-            width: 92%;
-        }
-
-        #mainContainer #leftMainContainer #contentSection {
-            margin-top: 20px;
-        }
-
-        #contentSection #toolBar {
-            width: 100%;
-            background-color: #f5f5f5;
-            line-height: 30px;
-            text-align: left;
-            border-bottom-width: 0px;
-        }
-
-        #contentSection textarea[id$="contentInput"] {
-            resize:none;
-            width:100%;
-            width: 100%;
-            height: 472;
-            padding: 0px 0px 0px 5px;
-            float: left;
-        }
-
-        #spaceDiv {
-            display: inline-block;
-            clear: both;
-        }
-
-        #contentSection .nav li a {
-            padding: 5px 35px;
-        }
-        #force #errorTip ul{
-            display: inline-block;
-            margin: 0px 0px 9px;
-        }
-
-        #rightMainContainer {
-            background-color: #f5f5f5;
-            font-size: 12px;
-        }
-
-        #rightMainContainer table
-        {
-            position: relative;
-            left: 5px;
-            top: 5px;
-        }
-
-        #rightMainContainer table code
-        {
-            color: rgb(107,103,109);
-        }
-
-        .tips-title {
-            display: block;
-            width:100%;
-            font-size: 20px;
-            padding: 10px 0px 10px 10px;
-            color: rgb(0,0,0);
-            font-weight: bold;
-            border-bottom: 1px solid rgb(203,203,203);
-        }
-    </style>
+<apex:page controller="WikiNewPageController" showHeader="true" sidebar="false" standardStylesheets="false" title="Wiki New Page" id="page" tabStyle="Wiki__tab">
+    <head>
+        <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.wiki, 'css/new.css')}"/>
+    </head>
 
     <apex:composition template="WikiTemplate">
         <apex:define name="body">
+            <div id="force">
             <apex:form id="form">
-                <div id="force" class="container">
-                    <header class="row nav-header">
+                <div class="container-fluid">
+                    <div class="row">
                         <div id="errorTip">
                             <apex:messages styleClass="label label-danger" /> <!-- layout -->
                         </div>
-                    </header>
+                    </div>
                     <section id="mainContainer" class="row">
-                        <div id="leftMainContainer" class="col-md-9" style="padding-right:35px;">
-                        
-                            <div id="spaceDiv"  style="padding-left:0px; width:70%; margin-top:0px; margin-bottom:15px;">
-                                    <span style="float:left; font-size:17px; font-weight:bold; height:34px; margin-left:-9px;" >Space &nbsp;&nbsp;</span>
-                                    <apex:selectList id="selectList" styleclass="select-style form-control" style="height:34px;width:50%;" value="{!WikiSpaceId}" size="1">
-                                        <apex:selectOptions value="{!SpaceOptions}"/>
-                                    </apex:selectList>
+                        <h1 class="title-header">
+                            <a href="/{!CurrentUserInfo.Id}" style="float:left; margin:-2px 0;">
+                                <span title="{!CurrentUserInfo.Name}" class="avatar">
+                                    <img width="45" height="45" title="{!CurrentUserInfo.Name}" class="avatar-photo" src="{!CurrentUserInfo.SmallPhotoUrl}"/>
+                                </span>
+                            </a>
+                            <div class="title-input-row">
+                                <apex:inputText value="{!LatestPage.Title__c}" required="true" html-placeholder="Title" style="width:100%"/>
                             </div>
-                            
+                        </h1>
+
+                        <div class="sidebar">
+                            <div class="rightpanel">
+                                <p><span class="tips-title">Help Tips</span></p>
+                                <dl>
+                                    <dt> Text Formatting </dt>
+                                    <table width="100%" >
+                                        <tr><td width="60%"> <code>*italic* or _italic_</code></td> <td><em>italic</em></td> </tr>
+                                        <tr><td> <code>**bold** or __bold__</code></td> <td><strong>bold</strong></td> </tr>
+                                        <tr><td> <code>`code`</code></td> <td><code>code</code></td> </tr>
+                                        <tr><td> <code>\* \\</code></td> <td>* \</td> </tr>
+                                    </table>
+                                    <br/>
+                                    <dt>Lists</dt>
+                                    <table>
+                                        <tr><td>Start with a '*','+',or '-' </td><td>Unorder list</td></tr>
+                                        <tr><td>Start with a number dot </td><td>Order list</td></tr>
+                                    </table>
+                                    <br/>
+                                    <dt>Headings</dt>
+                                    <table>
+                                        <tr><td>#text</td><td>H1 heading</td></tr>
+                                        <tr><td>##text</td><td>H2 heading</td></tr>
+                                        <tr><td>###text</td><td>H3 heading</td></tr>
+                                        <tr><td>####text</td><td>H4 heading</td></tr>
+                                        <tr><td>#####text</td><td>H5 heading</td></tr>
+                                        <tr><td>######text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>H6 heading</td></tr>
+                                    </table>
+                                    <br/>
+                                    <dt>Links</dt>
+                                    <table>
+                                        <tr><td><code>[linkText](linkUrl “title”)</code>inline link</td></tr>
+                                        <tr><td><code>[linkId]: linkUrl “title”</code>define a linkId</td></tr>
+                                        <tr><td><code>[linkText][linkId]</code>reference link</td></tr>
+                                        <tr><td><code>[linkId][]</code>reference link</td></tr>
+                                        <tr><td><code>![altText](ImgUrl "Title")</code>image link</td></tr>
+                                    </table>
+                                    <br/>
+                                    <dt>Others</dt>
+                                    <table>
+                                    <tr><td>Put return with two more blanks to go to next row.</td></tr>
+                                    <tr><td>Put ‘>’ to get a BlockQuotes.</td></tr>
+                                    <tr><td>Put more ‘>’ to get a nest BlockQuotes.</td></tr>
+                                    <tr><td>Start with four blanks to get a code block.</td></tr>
+                                    <tr><td>Put three more '*','-' or '_' in a blank to get a horizontal line</td></tr>
+                                    </table>
+                                    <table>
+                                        <tr><td></td><td></td></tr>
+                                    </table>
+                                </dl>
+                                <p>
+                                    <i class="icon-chevron-right"></i>
+                                    Formatting help
+                                    <a href="http://wowubuntu.com/markdown/" target="blank">»»»</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div id="leftMainContainer">
+
                             <div>
-                                <div id="titleSection" class="row" style="margin-left:-9px;">
-                                    <a href="/{!CurrentUserInfo.Id}" style="width:4%;display:block;float:left;">
-                                        <span title="{!CurrentUserInfo.Name}" class="avatar">
-                                            <img width="48" height="40" title="{!CurrentUserInfo.Name}" class="avatar-photo" src="{!CurrentUserInfo.SmallPhotoUrl}"/>
-                                        </span>
-                                    </a>
-                                    <apex:inputText value="{!LatestPage.Title__c}" required="true" html-placeholder="Title" styleClass="form-control" style="width:70%; margin-left:65px;height: 40px;padding: 0px 0px 0px 10px;max-height: 50px;font-size: 20px;"/>
-                                </div>
-                            </div>
-                            
-                            <div id="contentSection" class="row">
-                                <apex:inputTextarea id="contentInput" styleClass="content-input" value="{!LatestPage.Body__c}" rows="0" style="display:none"/>
-                                <div id="epiceditor" class="col-md-12 div-border" style="padding-left:5px; height:550px;"></div>
+                                <apex:inputTextarea id="contentInput" value="{!LatestPage.Body__c}" rows="0" style="display:none"/>
+                                <div id="epiceditor" class="epiceditor-container"></div>
                             </div>
 
-                            <div id="extensionBar" class="row" style="padding-top:10px;">
+                            <div id="spaceDiv" class="wiki-space">
+                                <span>Space:</span>
+                                <apex:selectList id="selectList" styleclass="form-control" value="{!WikiSpaceId}" size="1">
+                                    <apex:selectOptions value="{!SpaceOptions}"/>
+                                </apex:selectList>
+                            </div>
 
-                                <div id="buttonDiv" class="col-md-3" style="margin-left:40%">
-                                    <apex:commandButton id="cancelBtn" action="{!cancel}" value="Cancel" styleclass="btn btn-default" style="margin-right:40px;"/>
+                            <div id="extensionBar">
+                                <div id="buttonDiv" class="btn-group-panel">
                                     <apex:commandButton id="saveBtn" action="{!save}" disabled="{!!IsValid}" value="Save" styleclass="btn btn-primary"/>
+                                    <apex:commandButton id="cancelBtn" action="{!cancel}" value="Cancel" styleclass="btn btn-default" style="margin-left:15px;"/>
                                 </div>
                             </div>
-                            
+
                         </div>
-                        <div id="rightMainContainer" class="col-md-3 div-border">
-                            <p><span class="tips-title">Help Tips</span></p>
-                            <dl>
-                                <dt> Text Formatting </dt>
-                                <table width="100%" >
-                                    <tr><td width="30%"> <code>*italic* or _italic_</code></td> <td><em>italic</em></td> </tr>
-                                    <tr><td> <code>**bold** or __bold__</code></td> <td><strong>bold</strong></td> </tr>
-                                    <tr><td> <code>`code`</code></td> <td><code>code</code></td> </tr>
-                                    <tr><td> <code>\* \\</code></td> <td>* \</td> </tr>
-                                </table>
-                                <br/>
-                                <dt>Lists</dt>
-                                <table>
-                                    <tr><td>Start with a '*','+',or '-' </td><td>Unorder list</td></tr>
-                                    <tr><td>Start with a number dot </td><td>Order list</td></tr>
-                                </table>
-                                <br/>
-                                <dt>Headings</dt>
-                                <table>
-                                    <tr><td>#text</td><td>H1 heading</td></tr>
-                                    <tr><td>##text</td><td>H2 heading</td></tr>
-                                    <tr><td>###text</td><td>H3 heading</td></tr>
-                                    <tr><td>####text</td><td>H4 heading</td></tr>
-                                    <tr><td>#####text</td><td>H5 heading</td></tr>
-                                    <tr><td>######text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>H6 heading</td></tr>
-                                </table>
-                                <br/>
-                                <dt>Links</dt>
-                                <table>
-                                    <tr><td><code>[linkText](linkUrl “title”)</code>inline link</td></tr>
-                                    <tr><td><code>[linkId]: linkUrl “title”</code>define a linkId</td></tr>
-                                    <tr><td><code>[linkText][linkId]</code>reference link</td></tr>
-                                    <tr><td><code>[linkId][]</code>reference link</td></tr>
-                                    <tr><td><code>![altText](ImgUrl "Title")</code>image link</td></tr>
-                                </table>
-                                <br/>
-                                <dt>Others</dt>
-                                <table>
-                                <tr><td>Put return with two more blanks to go to next row.</td></tr>
-                                <tr><td>Put ‘>’ to get a BlockQuotes.</td></tr>
-                                <tr><td>Put more ‘>’ to get a nest BlockQuotes.</td></tr>
-                                <tr><td>Start with four blanks to get a code block.</td></tr>
-                                <tr><td>Put three more '*','-' or '_' in a blank to get a horizontal line</td></tr>
-                                </table>
-                                <table>
-                                    <tr><td></td><td></td></tr>
-                                </table>
-                            </dl>
-                            <p>
-                                <i class="icon-chevron-right"></i>
-                                Formatting help
-                                <a href="http://wowubuntu.com/markdown/" target="blank">»»»</a>
-                            </p>
-                        </div>
+
                     </section>
                 </div>
             </apex:form>
             <topics:widget entity="{!LatestPage.WikiPage__c}"/>
+            </div>
         </apex:define>
     </apex:composition>
 
     <script>
         var opts = {
-                  container: 'epiceditor',
-                  textarea: $('.content-input')[0],
-                  basePath: '{!URLFOR($Resource.EpicEditor)}',
-                  clientSideStorage: false,
-                  localStorageName: 'epiceditor',
-                  useNativeFullscreen: true,
-                  parser: marked,
-                  focusOnLoad: true,
-                  file: {
-                    name: 'epiceditor',
-                    defaultContent: '',
-                    autoSave: 100
-                  },
-                  theme: {
-                      base: '/themes/base/epiceditor.css',
-                      preview: '/themes/preview/github.css',
-                      editor: '/themes/editor/epic-light.css'
-                  },
-                  button: {
-                    preview: true,
-                    fullscreen: true,
-                    bar: "auto"
-                  },
-                  focusOnLoad: false,
-                  shortcut: {
-                    modifier: 18,
-                    fullscreen: 70,
-                    preview: 80
-                  },
-                  string: {
-                    togglePreview: 'Toggle Preview Mode',
-                    toggleEdit: 'Toggle Edit Mode',
-                    toggleFullscreen: 'Enter Fullscreen'
-                  },
-                  autogrow: false
-                }
+            container: 'epiceditor',
+            textarea: $('textarea[id$="contentInput"]')[0],
+            basePath: '{!URLFOR($Resource.wiki, 'components/EpicEditor')}',
+            clientSideStorage: false,
+            localStorageName: 'epiceditor',
+            useNativeFullscreen: true,
+            parser: marked,
+            focusOnLoad: true,
+            file: {
+              name: 'epiceditor',
+              defaultContent: '',
+              autoSave: 100
+            },
+            theme: {
+                base: '/themes/base/epiceditor.css',
+                preview: '/themes/preview/github.css',
+                editor: '/themes/editor/epic-light.css'
+            },
+            button: {
+              preview: true,
+              fullscreen: true,
+              bar: "auto"
+            },
+            focusOnLoad: false,
+            shortcut: {
+              modifier: 18,
+              fullscreen: 70,
+              preview: 80
+            },
+            string: {
+              togglePreview: 'Toggle Preview Mode',
+              toggleEdit: 'Toggle Edit Mode',
+              toggleFullscreen: 'Enter Fullscreen'
+            },
+            autogrow: false
+        }
 
         var wikiEditor = new EpicEditor(opts).load();
 
