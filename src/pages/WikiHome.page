@@ -18,7 +18,7 @@
                             </div>
                             <div class="add-btns col-md-3" style="200px;">
                                 <a id="addSpaceBtn" href="#addSpaceModal" role="button" class="btn btn-default" data-toggle="modal">Add Space</a>
-                                <a href="/apex/WikiNewPage" target="blank" class="btn btn-primary">Add Page</a>
+                                <a href="{!$Site.Prefix}/apex/WikiNewPage" target="_self" class="btn btn-primary">Add Page</a>
                             </div>
                         </div>
                         <div class="row">

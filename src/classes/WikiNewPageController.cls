@@ -11,6 +11,7 @@ public class WikiNewPageController
     public WikiNewPageController()
     {
         IsValid = true;
+        HasError = false;
         CurrentUserInfo = [select Id, Name, SmallPhotoUrl from User where Id = :UserInfo.getUserId()];
         pageId = ApexPages.currentPage().getParameters().get('id');
         WikiSpaceId = ApexPages.currentPage().getParameters().get('spaceid');
@@ -42,7 +43,8 @@ public class WikiNewPageController
     public Boolean IsValid { get; set; }
     public WikiPageVersion__c LatestPage { get; set; }
     public User CurrentUserInfo { get; set; }
-    
+    public Boolean HasError { get; set; }
+
     public List<SelectOption> SpaceOptions
     {
        get
@@ -100,6 +102,7 @@ public class WikiNewPageController
         }
         catch(Exception ex)
         {
+            HasError = true;
             Database.rollback(savePoint);
             ApexPages.addMessages(ex);
             return null;
