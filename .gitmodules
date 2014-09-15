@@ -1,3 +1,12 @@
 [submodule "resource-bundles/PMHtml.resource"]
 	path = resource-bundles/PMHtml.resource
 	url = git@scm.meginfo.com:open-source/pm-html.git
+[submodule "resource-bundles/bootstrap.resource"]
+	path = resource-bundles/bootstrap.resource
+	url = https://github.com/jairzh/bootstrap-sfdc.git
+[submodule "resource-bundles/jQueryValidation.resource"]
+	path = resource-bundles/jQueryValidation.resource
+	url = git@scm.meginfo.com:jair.zheng/jquery-validation.git
+[submodule "resource-bundles/jQueryLatest.resource"]
+	path = resource-bundles/jQueryLatest.resource
+	url = git://github.com/components/jquery.git

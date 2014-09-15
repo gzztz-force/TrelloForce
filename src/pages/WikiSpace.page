@@ -1,0 +1,80 @@
+<apex:page controller="WikiSpaceController" sidebar="false" showheader="true" standardStylesheets="true" title="Wiki Space" tabStyle="Wiki__tab">
+    <head>
+        <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.wiki, 'css/space.css')}"/>
+    </head>
+    
+    <apex:composition template="WikiTemplate">
+        <apex:define name="body">
+            <apex:form >
+                <div id="force">
+                    <div class="container" style="margin-left:5px; width:100%; margin-top:20px; font-size:18px;">
+                        
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div style="padding-bottom:10px;"><h2><span >Wiki Spaces</span></h2></div>
+                                <ul>
+                                    <table class="table table-hover">
+                                        <div class="list-group">
+                                        <apex:repeat value="{!Spaces}" var="space">
+                                            <a href="{!$Site.Prefix}/apex/WikiSpace?id={!space.Id}" style="color:{!IF(space.Name == SpaceName, 'white', '#999999')}; background-color:{!IF(space.Name == SpaceName, '#4183c4', '')}; border-radius:10px; font-size:15px; border:none; padding-top:4px;" class="list-group-item spaceName">{!space.Name}<span style="float:right;font-weight:bold;">{!space.WikiPages__r.size}</span></a>
+                                        </apex:repeat>
+                                        </div>
+                                    </table>
+                                </ul>
+                            </div>
+
+                            <div class="col-md-9" style="padding-top:15px;">
+                                <apex:outputPanel rendered="{!WikiPages.size == 0}">
+                                    <div id="div1">
+                                        Sorry, no pages! You can click
+                                        <button type="button"  class="btn btn-primary" style="margin-left:2px;" onclick="window.open('{!$Site.Prefix}/apex/WikiNewPage?spaceid={!SpaceId}')" >New Page</button>
+                                        to create a new page or go back <a href="{!$Page.WikiHome}" target = "_self">Wiki Home</a>.
+                                        
+                                    </div>
+                                </apex:outputPanel> 
+
+                                <apex:outputPanel id="pagePanel" rendered="{!WikiPages.size > 0}">
+                                    <ul>
+                                        <div id="div2">
+                                            You can go back <a href="{!$Page.WikiHome}" target = "_self">Wiki Home</a>.
+                                        </div>
+
+                                        <apex:repeat value="{!WikiPages}" var="page">
+                                            <li>
+                                                <div style="margin-top:10px;">
+                                                    <a href="{!$Site.Prefix}/{!Page.WikiPageVersion.CreatedById}" class="pull-left">
+                                                        <span title="{!page.WikiPageVersion.CreatedBy.Name}" id="userThumbnailPhoto" class="avatar">
+                                                            <img width="45" height="45" title="{!page.WikiPageVersion.CreatedBy.Name}" class="avatar-photo" alt="{!page.WikiPageVersion.CreatedBy.Name}" src="{!page.WikiPageVersion.CreatedBy.SmallPhotoUrl}" />
+                                                        </span>
+                                                    </a>
+                                                    
+                                                    <div class="page-author" style="margin-left:5px;">
+                                                        <a href="{!$Site.Prefix}/apex/WikiViewPage?id={!page.WikiPageVersion.WikiPage__c}" target="_self" style="font-size:18px;margin-left:10px;">{!page.WikiPageVersion.Title__c}</a> <br/>
+                                                        <div class="update-track-change-div" style="margin-left:50px;margin-bottom:10px;margin-top:30px;font-size:15px;">
+                                                            <apex:outputText >
+                                                                {!LEFT(page.WikiPageVersion.Body__c, 200)}
+                                                                <apex:outputPanel rendered="{!len(page.WikiPageVersion.Body__c) > 200}">
+                                                                ...
+                                                                </apex:outputPanel>
+                                                            </apex:outputText>
+                                                        </div>
+                                                        <div style="margin-top:3px;font-size:12px;color: #999999;margin-left:50px;">
+                                                            <a href="{!$Site.Prefix}/{!page.WikiPageVersion.CreatedById}">{!page.WikiPageVersion.CreatedBy.Name}</a>
+                                                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                                                <apex:param value="{!page.WikiPageVersion.LastPublishedDate__c}"/>
+                                                            </apex:outputText>
+                                                        </div>
+                                                    </div>
+                                               </div> 
+                                            </li>
+                                        </apex:repeat>
+                                    </ul>
+                                </apex:outputPanel>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </apex:form>
+        </apex:define>
+    </apex:composition>
+</apex:page>

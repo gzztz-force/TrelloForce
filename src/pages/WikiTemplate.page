@@ -1,0 +1,13 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" id="tempalte">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <apex:stylesheet value="{!URLFOR($Resource.wiki, 'components/bootstrap3_2/css/bootstrap.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.wiki, 'components/jQueryLatest/jquery.min.js')}"/>
+    <script src="{!URLFOR($Resource.wiki, 'components/EpicEditor/js/epiceditor.min.js')}"></script>
+    
+    <apex:insert name="body"/>
+    
+    <script src="{!URLFOR($Resource.wiki, 'components/bootstrap3_2/js/bootstrap.min.js')}"></script>
+    <script src="{!URLFOR($Resource.wiki, 'components/jQueryValidation/jquery.validate.min.js')}"></script>
+    
+</apex:page>
