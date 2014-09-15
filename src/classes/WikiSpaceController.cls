@@ -38,7 +38,7 @@ public class WikiSpaceController
 
     private void initWikiPages()
     {
-        List<WikiPage__c> pages = [select Id, Name, (select Id, Name, Body__c, Title__c, CreatedById, CreatedBy.Name, CreatedBy.FullPhotoUrl,
+        List<WikiPage__c> pages = [select Id, Name, (select Id, Name, Body__c, Title__c, CreatedById, CreatedBy.Name, CreatedBy.SmallPhotoUrl,
                                     LastPublishedDate__c, WikiPage__c from WikiPageVersions__r where IsLatestVersion__c = true) from WikiPage__c where WikiSpace__c = :SpaceId];
         WikiPages = new List<WikiPage>();
         for(WikiPage__c page : pages)
