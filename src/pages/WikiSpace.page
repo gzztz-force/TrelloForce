@@ -1,4 +1,4 @@
-<apex:page controller="WikiSpaceController" sidebar="false" showheader="true" standardStylesheets="true" title="Wiki Space" tabStyle="Wiki_Space__tab">
+<apex:page controller="WikiSpaceController" sidebar="false" showheader="true" standardStylesheets="true" title="Wiki Space" tabStyle="Wiki__tab">
     <head>
         <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.wiki, 'css/space.css')}"/>
     </head>
