@@ -1,0 +1,14 @@
+<apex:page showHeader="true" sidebar="true" controller="TrelloToConnectController">
+	<script type="text/javascript">
+    function getToken(){
+        var achorElement = window.location.hash.substring(7);
+        console.log(achorElement);
+        document.getElementById("j_id0:j_id2:token").value = achorElement;
+    }
+    </script>
+	<apex:form>
+		<apex:inputHidden value="{!Token}" id="token"/>
+		<a href= "https://trello.com/1/authorize?response_type=token&key=cca16a310f7a1fff02de787a901640da&return_url=https%3A%2F%2Fc.cs1.visual.force.com%2Fapex%2FTrelloToConnect&callback_method=fragment&scope=read%2Cwrite&expiration=never" >Connect to Trello</a>
+		<apex:commandButton onclick="getToken()"  value="SaveToken" action="{!saveToken}"/>
+	</apex:form>
+</apex:page>
