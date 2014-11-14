@@ -1,50 +1,68 @@
+/*
+ * The class to get info from Trello and insert to pm.
+ */
 public with sharing class TrelloFactory
 {
-    public MProject__c project;
-    public Change__c change;
-    public ChangeTask__c changeTask;
-    public List<Change__c> changes;
-    public List<ChangeTask__c> changeTasks;
-    public List<TrelloCard> cards;
-    public List<TrelloCheckList> checkLists;
+    public static MProject__c project;
+    public static Change__c change;
+    public static ChangeTask__c changeTask;
+    public static List<Change__c> changes;
+    public static List<ChangeTask__c> changeTasks;
+    public static List<TrelloCard> cards;
+    public static List<TrelloCheckList> checkLists;
 
-    public TrelloFactory()
+    public TrelloFactory(){}
+
+    public static String Token
     {
-        String vToken = TrelloDetail__c.getInstance('Vicky Zhang').Trello_Token__c;
-        String vKey = TrelloDetail__c.getInstance('Vicky Zhang').Trello_Key__c;
-        if(vToken != null && vKey != null)
+        get
         {
-            Token = vToken;
-            Key = vKey;
+           String vToken = TrelloDetail__c.getInstance('Vicky Zhang').Trello_Token__c;
+           return vToken;
         }
-        BoardId = 'IxV8b29C';
+        set;
     }
+    public static String Key
+    {
+        get
+        {
+            String vKey = TrelloDetail__c.getInstance('Vicky Zhang').Trello_Key__c;
+            return vKey;
+        }
+        set;
+    }
+    public static String BoardId
+    {
+        get
+        {
+            String id = 'IxV8b29C';
+            return id;
+        }
+        set;
+    }
+    public static TrelloBoard Board { get; set; }
+    public static String CardId { get; set; }
 
-    public String Key { get; set; }
-    public String Token { get; set; }
-    public String BoardId { get; set; }
-    public TrelloBoard Board { get; set; }
-    public String CardId { get; set; }
-
-    public TrelloBoard getTrelloBoardInfo()
+    public static void getTrelloBoardInfo()
     {
         HttpRequest request = new HttpRequest();
         request.setEndpoint('https://api.trello.com/1/boards/'+ BoardId +'?fields=name,desc&key='+ Key +'&token='+ Token);
         request.setMethod('GET');
         HttpResponse response = (new Http()).send(request);
-        return (TrelloBoard)JSON.deserialize(response.getBody(), TrelloBoard.class);
+        Board = (TrelloBoard)JSON.deserialize(response.getBody(), TrelloBoard.class);
     }
 
-    public void getTrelloCardInfo()
+    public static void getTrelloCardInfo()
     {
         HttpRequest request = new HttpRequest();
         request.setEndpoint('https://api.trello.com/1/boards/'+ BoardId +'/cards?fields=name,closed,desc,idBoard,idList,due,idMembers&key='+ Key +'&token='+ Token);
         request.setMethod('GET');
         HttpResponse response = (new Http()).send(request);
         cards = (List<TrelloCard>)JSON.deserialize(response.getBody(), List<TrelloCard>.class);
+
     }
 
-    public void getTrelloCheckListInfo()
+    public static void getTrelloCheckListInfo()
     {
         HttpRequest request = new HttpRequest();
         request.setEndpoint('https://api.trello.com/1/boards/'+ BoardId +'/checklists?fields=id,name,idCard&key='+ Key +'&token='+ Token);
@@ -55,9 +73,9 @@ public with sharing class TrelloFactory
     }
 
 //***** Methods Start *****//
-    public void insertBoard()
+    public static void insertBoard()
     {
-        Board = getTrelloBoardInfo();
+        //Board = getTrelloBoardInfo();
         project = new MProject__c();
         project.name = Board.name;
         if(Board.Closed = true)
@@ -70,11 +88,14 @@ public with sharing class TrelloFactory
         upsert project TrelloBoardId__c;
     }
 
-    public void insertCards()
+    public static void insertCards()
     {
         List<Change__c> upsertChanges = new List<Change__c>();
         //cards = getTrelloCardInfo();
+        //System.debug(BoardId+'Key'+Key+Token);
         project = [select Id from MProject__c where TrelloBoardId__c = :BoardId];
+        System.debug(cards.size());
+
         for(TrelloCard card : cards)
         {
             Change__c c = new Change__c();
@@ -86,26 +107,22 @@ public with sharing class TrelloFactory
             upsertChanges.add(c);
         }
         upsert upsertChanges TrelloCardId__c;
-        System.debug(upsertChanges.size());
 
     }
 
-    public void insertItems()
+    public static void insertItems()
     {
         List<ChangeTask__c> upsertTasks = new List<ChangeTask__c>();
-        //CheckLists = getTrelloCheckListInfo();
         Set<String> cardIdSet = new Set<String>();
         Map<String, String> cardIdToChangeIdMap = new Map<String, String>();
         for(TrelloCheckList checklist : CheckLists)
         {
             cardIdSet.add(checklist.IdCard);
         }
-        for(Change__c change : [select Id, TrelloCardId__c from Change__c where TrelloCardId__c in :cardIdSet])
+        for(Change__c changeWithCard : [select Id, TrelloCardId__c from Change__c where TrelloCardId__c in :cardIdSet])
         {
-            cardIdToChangeIdMap.put(change.TrelloCardId__c, change.Id);
+            cardIdToChangeIdMap.put(changeWithCard.TrelloCardId__c, changeWithCard.Id);
         }
-        System.debug(cardIdToChangeIdMap.size());
-
         for(TrelloCheckList checklist : CheckLists)
         {
             String changeId = cardIdToChangeIdMap.get(checklist.IdCard);
@@ -130,8 +147,17 @@ public with sharing class TrelloFactory
             }
 
         }
-        System.debug(upsertTasks.size());
         upsert upsertTasks TrelloItemId__c;
+    }
+
+    @future(callout = 'true')
+    public static void upsertTrello()
+    {
+        getTrelloCardInfo();
+        getTrelloCheckListInfo();
+        insertCards();
+        insertItems();
+
     }
 
 //***** Methods End *****//
@@ -156,7 +182,6 @@ public with sharing class TrelloFactory
         public String IdList { get; set; }
         public Date Due { get; set; }
         public String[] IdMembers { get; set; }
-        public Integer Flag{ get; set; }
 
     }
 
