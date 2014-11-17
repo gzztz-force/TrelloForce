@@ -3,17 +3,9 @@
  */
 public with sharing class TrelloFactory
 {
-    public static MProject__c project;
-    public static Change__c change;
-    public static ChangeTask__c changeTask;
-    public static List<Change__c> changes;
-    public static List<ChangeTask__c> changeTasks;
-    public static List<TrelloCard> cards;
-    public static List<TrelloCheckList> checkLists;
-
     public TrelloFactory(){}
 
-    public static String Token
+    public String Token
     {
         get
         {
@@ -22,7 +14,7 @@ public with sharing class TrelloFactory
         }
         set;
     }
-    public static String Key
+    public String Key
     {
         get
         {
@@ -31,143 +23,144 @@ public with sharing class TrelloFactory
         }
         set;
     }
-    public static String BoardId
-    {
-        get
-        {
-            String id = 'IxV8b29C';
-            return id;
-        }
-        set;
-    }
-    public static TrelloBoard Board { get; set; }
-    public static String CardId { get; set; }
 
-    public static void getTrelloBoardInfo()
+    public List<TrelloBoard> getTrelloBoardInfo()
     {
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('https://api.trello.com/1/boards/'+ BoardId +'?fields=name,desc&key='+ Key +'&token='+ Token);
+        request.setEndpoint('https://api.trello.com/1/members/my/boards/all?fields=id,name,desc,closed&key='+ Key +'&token='+ Token);
         request.setMethod('GET');
         HttpResponse response = (new Http()).send(request);
-        Board = (TrelloBoard)JSON.deserialize(response.getBody(), TrelloBoard.class);
+        return (List<TrelloBoard>)JSON.deserialize(response.getBody(), List<TrelloBoard>.class);
     }
 
-    public static void getTrelloCardInfo()
+    public List<TrelloCard> getTrelloCardInfo(String boardId)
     {
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('https://api.trello.com/1/boards/'+ BoardId +'/cards?fields=name,closed,desc,idBoard,idList,due,idMembers&key='+ Key +'&token='+ Token);
+        request.setEndpoint('https://api.trello.com/1/boards/'+ boardId +'/cards?fields=name,closed,desc,idBoard,idList,due,idMembers&key='+ Key +'&token='+ Token);
         request.setMethod('GET');
         HttpResponse response = (new Http()).send(request);
-        cards = (List<TrelloCard>)JSON.deserialize(response.getBody(), List<TrelloCard>.class);
+        return (List<TrelloCard>)JSON.deserialize(response.getBody(), List<TrelloCard>.class);
 
     }
 
-    public static void getTrelloCheckListInfo()
+    public List<TrelloCheckList> getTrelloCheckListInfo(String boardId)
     {
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('https://api.trello.com/1/boards/'+ BoardId +'/checklists?fields=id,name,idCard&key='+ Key +'&token='+ Token);
+        request.setEndpoint('https://api.trello.com/1/boards/'+ boardId +'/checklists?fields=id,name,idCard&key='+ Key +'&token='+ Token);
         request.setMethod('GET');
         HttpResponse response = (new Http()).send(request);
-        CheckLists = (List<TrelloCheckList>)JSON.deserialize(response.getBody(), List<TrelloCheckList>.class);
+        return (List<TrelloCheckList>)JSON.deserialize(response.getBody(), List<TrelloCheckList>.class);
 
     }
 
 //***** Methods Start *****//
-    public static void insertBoard()
+    public void insertBoards()
     {
-        //Board = getTrelloBoardInfo();
-        project = new MProject__c();
-        project.name = Board.name;
-        if(Board.Closed = true)
+        List<TrelloBoard> boards = getTrelloBoardInfo();
+        List<MProject__c> upsertProjects = new List<MProject__c>();
+        for(TrelloBoard board : boards)
         {
-            project.Status__c = 'Closed';
+            MProject__c project = new MProject__c();
+            project.Name = board.Name;
+            project.TrelloBoardId__c = board.Id;
+            System.debug(board.Closed);
+            if(board.Closed == true)
+            {
+                project.Status__c = 'Closed';
+            }
+            else
+            {
+                project.Status__c = 'In Progress';
+            }
+            System.debug(project.Status__c);
+            upsertProjects.add(project);
         }
-        else
-            project.Status__c = 'In Progress';
-        project.TrelloBoardId__c = Board.Id;
-        upsert project TrelloBoardId__c;
+        upsert upsertProjects TrelloBoardId__c;
     }
 
-    public static void insertCards()
+    public void upsertCard(List<MProject__c> projects)
     {
+        Map<String,List<TrelloCard>> proCardMap = new Map<String,List<TrelloCard>>();
+        for(MProject__c pro : projects)
+        {
+            List<TrelloCard> cards = getTrelloCardInfo(pro.TrelloBoardId__c);
+            proCardMap.put(pro.Id,cards);
+        }
         List<Change__c> upsertChanges = new List<Change__c>();
-        //cards = getTrelloCardInfo();
-        //System.debug(BoardId+'Key'+Key+Token);
-        project = [select Id from MProject__c where TrelloBoardId__c = :BoardId];
-        System.debug(cards.size());
-
-        for(TrelloCard card : cards)
+        for(String id : proCardMap.keySet())
         {
-            Change__c c = new Change__c();
-            c.Name = card.Name;
-            c.TrelloCardId__c = card.Id;
-            c.DueDate__c = card.Due;
-            c.Description__c = card.Description;
-            c.Project__c = project.Id;
-            upsertChanges.add(c);
+            List<TrelloCard> cardList = proCardMap.get(id);
+            for(TrelloCard card : cardList)
+            {
+                Change__c c = new Change__c();
+                c.Name = card.Name;
+                c.TrelloCardId__c = card.Id;
+                c.DueDate__c = card.Due;
+                c.Description__c = card.Description;
+                c.Project__c = id;
+                upsertChanges.add(c);
+            }
         }
+        //System.debug(upsertChanges);
         upsert upsertChanges TrelloCardId__c;
-
     }
 
-    public static void insertItems()
+    public void upsertItem()
     {
-        List<ChangeTask__c> upsertTasks = new List<ChangeTask__c>();
+        Set<List<TrelloCheckList>> checkListsSet = new Set<List<TrelloCheckList>>();
+        List<MProject__c> projects = [select Id, TrelloBoardId__c from MProject__c where TrelloBoardId__c != null];
         Set<String> cardIdSet = new Set<String>();
+        List<ChangeTask__c> upsertTasks = new List<ChangeTask__c>();
         Map<String, String> cardIdToChangeIdMap = new Map<String, String>();
-        for(TrelloCheckList checklist : CheckLists)
+        for(MProject__c pro : projects)
         {
-            cardIdSet.add(checklist.IdCard);
+            List<TrelloCheckList> checklists = getTrelloCheckListInfo(pro.TrelloBoardId__c);
+            checkListsSet.add(checklists);
+            for(TrelloCheckList checklist : checklists)
+            {
+                cardIdSet.add(checklist.IdCard);
+            }
         }
         for(Change__c changeWithCard : [select Id, TrelloCardId__c from Change__c where TrelloCardId__c in :cardIdSet])
         {
             cardIdToChangeIdMap.put(changeWithCard.TrelloCardId__c, changeWithCard.Id);
         }
-        for(TrelloCheckList checklist : CheckLists)
+        for(List<TrelloCheckList> checkLists : checkListsSet)
         {
-            String changeId = cardIdToChangeIdMap.get(checklist.IdCard);
-            if(changeId != null){
-                List<TrelloCheckItem> ChecklistItems = checklist.CheckItems;
-                System.debug(changeId+'--'+checklist.IdCard);
-                for(TrelloCheckItem item : ChecklistItems)
-                {
-                    ChangeTask__c task = new ChangeTask__c();
-                    task.Name = item.Name;
-                    task.TrelloItemId__c = item.Id;
-                    System.debug(task.TrelloItemId__c);
-                    task.Change__c = changeId;
-                    if(item.State == 'incomplete')
+            for(TrelloCheckList checklist : checkLists)
+            {
+                String changeId = cardIdToChangeIdMap.get(checklist.IdCard);
+                if(changeId != null){
+                    List<TrelloCheckItem> ChecklistItems = checklist.CheckItems;
+                    for(TrelloCheckItem item : ChecklistItems)
                     {
-                        task.Status__c = 'In Progress';
+                        ChangeTask__c task = new ChangeTask__c();
+                        task.Name = item.Name;
+                        task.TrelloItemId__c = item.Id;
+                        task.Change__c = changeId;
+                        if(item.State == 'incomplete')
+                        {
+                            task.Status__c = 'In Progress';
+                        }
+                        else
+                            task.Status__c = 'Done';
+                        upsertTasks.add(task);
                     }
-                    else
-                        task.Status__c = 'Done';
-                    upsertTasks.add(task);
                 }
-            }
 
+            }
         }
         upsert upsertTasks TrelloItemId__c;
     }
 
-    @future(callout = 'true')
-    public static void upsertTrello()
-    {
-        getTrelloCardInfo();
-        getTrelloCheckListInfo();
-        insertCards();
-        insertItems();
-
-    }
-
 //***** Methods End *****//
-
 
 //***** Inner Class Start *****//
     public class TrelloBoard
     {
         public String Id { get; set; }
         public String Name { get; set; }
+        public String ShortLink { get; set; }
         public String Description { get; set; }
         public Boolean Closed { get; set; }
     }
