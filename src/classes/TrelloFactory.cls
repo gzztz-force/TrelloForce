@@ -53,6 +53,16 @@ public with sharing class TrelloFactory
 
     }
 
+    public List<TrelloMember> getTrelloAllMembers(String boardId)
+    {
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint('https://api.trello.com/1/boards/'+ boardId +'/members?fields=id,fullName&key='+ Key +'&token='+ Token);
+        request.setMethod('GET');
+        HttpResponse response = (new Http()).send(request);
+        return (List<TrelloMember>)JSON.deserialize(response.getBody(), List<TrelloMember>.class);
+    }
+
+
 //***** Methods Start *****//
     public void insertBoards()
     {
@@ -81,10 +91,15 @@ public with sharing class TrelloFactory
     public void upsertCard(List<MProject__c> projects)
     {
         Map<String,List<TrelloCard>> proCardMap = new Map<String,List<TrelloCard>>();
+        List<TeamMember__c> teamMembers = [select Id, Name, TrelloMemberId__c from TeamMember__c];
+        List<User> users = [select Id, Name from User];
+        List<TeamMember__c> addTeamMembers = new List<TeamMember__c>();
+        List<ChangeMember__c> addChangeMembers = new List<ChangeMember__c>();
         for(MProject__c pro : projects)
         {
             List<TrelloCard> cards = getTrelloCardInfo(pro.TrelloBoardId__c);
             proCardMap.put(pro.Id,cards);
+
         }
         List<Change__c> upsertChanges = new List<Change__c>();
         for(String id : proCardMap.keySet())
@@ -101,8 +116,83 @@ public with sharing class TrelloFactory
                 upsertChanges.add(c);
             }
         }
-        //System.debug(upsertChanges);
-        upsert upsertChanges TrelloCardId__c;
+        for(MProject__c pro : projects)
+        {
+            List<TrelloMember> proMembers =  getTrelloAllMembers(pro.TrelloBoardId__c);
+            for(TrelloMember member : proMembers)
+            {
+                for(TeamMember__c teamMember : teamMembers)
+                {
+                    if(teamMember.name.equalsIgnoreCase(member.FullName))
+                    {
+                        if(teamMember.TrelloMemberId__c == null)
+                        {
+                            teamMember.TrelloMemberId__c = member.Id;
+                            addTeamMembers.add(teamMember);
+                        }
+                        member.TeamMemberId = teamMember.Id;
+                    }
+                }
+            }
+            for(TrelloMember member : proMembers)
+            {
+                if(member.TeamMemberId == null)
+                {
+                    for(User user : users)
+                    {
+                        if(user.Name.equalsIgnoreCase(member.FullName))
+                        {
+                            TeamMember__c teMember = new TeamMember__c();
+                            teMember.Name = member.FullName;
+                            teMember.TrelloMemberId__c = member.Id;
+                            teMember.User__c = user.Id;
+                            teMember.Project__c = pro.Id;
+                            addTeamMembers.add(teMember);
+                        }
+                    }
+                }
+            }
+        }
+        try
+        {
+            upsert upsertChanges TrelloCardId__c;
+            upsert addTeamMembers Id;
+        }
+        catch(Exception ex)
+        {
+            System.debug(ex);
+        }
+        List<Change__c> changes = [select id, TrelloCardId__c from Change__c];
+        Map<String,String> changeCardIdMap = new Map<String,String>();
+        for(Change__c change : changes)
+        {
+            changeCardIdMap.put(change.TrelloCardId__c, change.Id);
+        }
+        List<TeamMember__c> teamMemberList = [select Id, Name, TrelloMemberId__c from TeamMember__c where TrelloMemberId__c != null];
+        Map<String,TeamMember__c> teamMemberMap = new Map<String, TeamMember__c>();
+        for(TeamMember__c member : teamMemberList)
+        {
+            teamMemberMap.put(member.TrelloMemberId__c, member);
+        }
+        for(List<TrelloCard> cards : proCardMap.values())
+        {
+            for(TrelloCard card : cards)
+            {
+                    for(String id : card.IdMembers)
+                    {
+                        if(teamMemberMap.get(id)!=null)
+                        {
+                            ChangeMember__c changeMember = new ChangeMember__c();
+                            changeMember.Name = teamMemberMap.get(id).Name;
+                            changeMember.Change__c = changeCardIdMap.get(card.Id);
+                            changeMember.TeamMember__c = teamMemberMap.get(id).Id;
+                            addChangeMembers.add(changeMember);
+                        }
+                    }
+
+            }
+        }
+        insert addChangeMembers;
     }
 
     public void upsertItem()
@@ -174,7 +264,7 @@ public with sharing class TrelloFactory
         public String IdBoard { get; set; }
         public String IdList { get; set; }
         public Date Due { get; set; }
-        public String[] IdMembers { get; set; }
+        public List<String> IdMembers { get; set; }
 
     }
 
@@ -191,6 +281,13 @@ public with sharing class TrelloFactory
         public String Id { get; set; }
         public String Name { get; set; }
         public String State { get; set; }
+    }
+
+    public class TrelloMember
+    {
+        public String Id { get; set; }
+        public String FullName { get; set; }
+        public String TeamMemberId { get; set; }
     }
     //***** Inner Class End *****//
 
