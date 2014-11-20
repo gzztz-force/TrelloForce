@@ -123,13 +123,11 @@ public with sharing class TrelloFactory
             {
                 for(TeamMember__c teamMember : teamMembers)
                 {
-                    if(teamMember.name.equalsIgnoreCase(member.FullName))
+                    if(teamMember.name.equalsIgnoreCase(member.FullName)&&(teamMember.Project__c == pro.Id || teamMember.Project__c == null))
                     {
-                        if(teamMember.TrelloMemberId__c == null)
-                        {
-                            teamMember.TrelloMemberId__c = member.Id;
-                            addTeamMembers.add(teamMember);
-                        }
+                        teamMember.Project__c = pro.Id;
+                        teamMember.TrelloMemberId__c = member.Id;
+                        addTeamMembers.add(teamMember);
                         member.TeamMemberId = teamMember.Id;
                     }
                 }
@@ -162,7 +160,7 @@ public with sharing class TrelloFactory
         {
             System.debug(ex);
         }
-        List<Change__c> changes = [select id, TrelloCardId__c from Change__c];
+        List<Change__c> changes = [select id, TrelloCardId__c from Change__c where TrelloCardId__c != null];
         Map<String,String> changeCardIdMap = new Map<String,String>();
         for(Change__c change : changes)
         {
@@ -180,19 +178,20 @@ public with sharing class TrelloFactory
             {
                     for(String id : card.IdMembers)
                     {
-                        if(teamMemberMap.get(id)!=null)
+                        if(teamMemberMap.get(id) != null)
                         {
                             ChangeMember__c changeMember = new ChangeMember__c();
                             changeMember.Name = teamMemberMap.get(id).Name;
                             changeMember.Change__c = changeCardIdMap.get(card.Id);
                             changeMember.TeamMember__c = teamMemberMap.get(id).Id;
+                            changeMember.ChangeId_MemberId__c = changeCardIdMap.get(card.Id)+teamMemberMap.get(id).Id;
                             addChangeMembers.add(changeMember);
                         }
                     }
 
             }
         }
-        insert addChangeMembers;
+        upsert addChangeMembers ChangeId_MemberId__c;
     }
 
     public void upsertItem()
