@@ -102,6 +102,7 @@ public with sharing class TrelloFactory
         List<Change__c> changesToUpsert = new List<Change__c>();
         Map<String, List<TrelloMember>> proId_TrelloMembers = new Map<String, List<TrelloMember>>();
         Map<String, List<TrelloCard>> proId_trelloCards = new Map<String, List<TrelloCard>>();
+        Map<String, String> cardId_proId = new Map<String, String>();
         for(MProject__c pro : projects)
         {
             List<TrelloCard> cards = getTrelloCardInfo(pro.TrelloBoardId__c);
@@ -124,6 +125,7 @@ public with sharing class TrelloFactory
                 c.Description__c = card.Description;
                 c.Project__c = id;
                 changesToUpsert.add(c);
+                cardId_proId.put(card.Id, id);
             }
         }
         try
@@ -134,37 +136,22 @@ public with sharing class TrelloFactory
         {
             System.debug(ex);
         }
-        deleteChange(proId_trelloCards);
-        upsertTeamMember(projects, proId_TrelloMembers);
-        upsertChangeMember(proId_trelloCards);
+        List<Change__c> changesToDelete = deleteChange(cardId_proId);
+        upsertTeamMember(proId_TrelloMembers);
+        deleteTeamMember(proId_TrelloMembers);
+        Map<String, String> changeId_MemberId = upsertChangeMember(proId_trelloCards);
+        deleteChangeMember(changeId_MemberId);
     }
 
-    public void deleteChange(Map<String, List<TrelloCard>> proId_trelloCards)
+    public List<Change__c> deleteChange(Map<String, String> cardId_proId)
     {
         List<Change__c> changesToDelete = new List<Change__c>();
-        List<Change__c> allchanges = [select id,Project__c, TrelloCardId__c from Change__c where TrelloCardId__c != null];
-        for(String id : proId_trelloCards.keySet())
+        List<Change__c> changes = [select id,Project__c, TrelloCardId__c from Change__c where TrelloCardId__c != null];
+        for(Change__c change : changes)
         {
-            List<TrelloCard> cards = proId_trelloCards.get(id);
-            List<Change__c> proChanges = new List<Change__c>();
-            Map<String, TrelloCard> cardId_trelloCard = new Map<String, TrelloCard>();
-            for(Change__c change : allchanges)
+            if(!cardId_proId.containsKey(change.TrelloCardId__c))
             {
-                if(change.Project__c == id)
-                {
-                    proChanges.add(change);
-                }
-            }
-            for(TrelloCard card : cards)
-            {
-                cardId_trelloCard.put(card.Id, card);
-            }
-            for(Change__c proChange : proChanges)
-            {
-                if(!cardId_trelloCard.containsKey(proChange.TrelloCardId__c))
-                {
-                    changesToDelete.add(proChange);
-                }
+                changesToDelete.add(change);
             }
         }
         try
@@ -175,21 +162,22 @@ public with sharing class TrelloFactory
         {
             System.debug(ex);
         }
+        return changesToDelete;
     }
 
-    public void upsertTeamMember(List<MProject__c> projects, Map<String, List<TrelloMember>> proId_TrelloMembers)
+    public void upsertTeamMember(Map<String, List<TrelloMember>> proId_TrelloMembers)
     {
         List<TeamMember__c> teamMembersToUpsert = new List<TeamMember__c>();
         List<TeamMember__c> teamMembers = [select Id, Name, TrelloMemberId__c, Project__c from TeamMember__c];
         List<User> users = [select Id, Name from User];
-        for(MProject__c pro : projects)
+        for(String proId : proId_TrelloMembers.keySet())
         {
-            List<TrelloMember> proMembers = proId_TrelloMembers.get(pro.Id);
+            List<TrelloMember> proMembers = proId_TrelloMembers.get(proId);
             for(TrelloMember member : proMembers)
             {
                 for(TeamMember__c teamMember : teamMembers)
                 {
-                    if(teamMember.name.equalsIgnoreCase(member.FullName)&&(teamMember.Project__c == pro.Id))
+                    if(teamMember.name.equalsIgnoreCase(member.FullName)&&(teamMember.Project__c == proId))
                     {
                         teamMember.TrelloMemberId__c = member.Id;
                         teamMembersToUpsert.add(teamMember);
@@ -209,7 +197,7 @@ public with sharing class TrelloFactory
                             teMember.Name = member.FullName;
                             teMember.TrelloMemberId__c = member.Id;
                             teMember.User__c = user.Id;
-                            teMember.Project__c = pro.Id;
+                            teMember.Project__c = proId;
                             teamMembersToUpsert.add(teMember);
                         }
                     }
@@ -226,7 +214,38 @@ public with sharing class TrelloFactory
         }
     }
 
-    public void upsertChangeMember(Map<String, List<TrelloCard>> proId_trelloCards)
+    public void deleteTeamMember(Map<String, List<TrelloMember>> proId_TrelloMembers)
+    {
+        List<TeamMember__c> teamMembersToDelete = new List<TeamMember__c>();
+        Map<String, TrelloMember> trelloMemberId_trelloMember = new Map<String, TrelloMember>();
+        List<TeamMember__c> teamMembers = [select TrelloMemberId__c, Project__c from TeamMember__c where TrelloMemberId__c != null];
+        for(String proId : proId_TrelloMembers.keySet())
+        {
+            List<TrelloMember> trelloMembers = proId_TrelloMembers.get(proId);
+            for(TrelloMember trelloMember : trelloMembers)
+            {
+                trelloMemberId_trelloMember.put(trelloMember.Id + proId,trelloMember);
+            }
+        }
+        for(TeamMember__c teamMember : teamMembers)
+        {
+            if(!trelloMemberId_trelloMember.containsKey(teamMember.TrelloMemberId__c + teamMember.Project__c))
+            {
+                teamMembersToDelete.add(teamMember);
+            }
+        }
+        try
+        {
+            delete teamMembersToDelete;
+        }
+        catch(Exception ex)
+        {
+            System.debug(ex);
+        }
+
+    }
+
+    public Map<String, String> upsertChangeMember(Map<String, List<TrelloCard>> proId_trelloCards)
     {
         List<ChangeMember__c> changeMembersToUpsert = new List<ChangeMember__c>();
         List<Change__c> changes = [select Id,Project__c, TrelloCardId__c from Change__c where TrelloCardId__c != null];
@@ -234,6 +253,7 @@ public with sharing class TrelloFactory
         List<TeamMember__c> teamMemberList = [select Id, Name, TrelloMemberId__c from TeamMember__c where TrelloMemberId__c != null];
         Map<String,TeamMember__c> trelloMemberId_TeamMember = new Map<String, TeamMember__c>();
         List<ChangeMember__c> changeMembers = [select Change__c, TeamMember__c from ChangeMember__c];
+        Map<String,String> changeId_MemberId = new Map<String, String>();
         for(Change__c change : changes)
         {
             trelloCardId_changeId.put(change.TrelloCardId__c, change.Id);
@@ -255,6 +275,7 @@ public with sharing class TrelloFactory
                             changeMember.Change__c = trelloCardId_changeId.get(card.Id);
                             changeMember.TeamMember__c = trelloMemberId_TeamMember.get(id).Id;
                             changeMember.ChangeId_MemberId__c = trelloCardId_changeId.get(card.Id)+trelloMemberId_TeamMember.get(id).Id;
+                            changeId_MemberId.put(trelloCardId_changeId.get(card.Id)+trelloMemberId_TeamMember.get(id).Id, id);
                             changeMembersToUpsert.add(changeMember);
                         }
                     }
@@ -269,33 +290,55 @@ public with sharing class TrelloFactory
         {
             System.debug(ex);
         }
+        return changeId_MemberId;
     }
 
-    public void upsertItem()
+    public void deleteChangeMember(Map<String, String> changeId_MemberId)
+    {
+        List<ChangeMember__c> changeMembersToDelete = new List<ChangeMember__c>();
+        List<ChangeMember__c> changeMembers = [select ChangeId_MemberId__c from ChangeMember__c];
+        for(ChangeMember__c changeMember : changeMembers)
+        {
+            if(!changeId_MemberId.containsKey(changeMember.ChangeId_MemberId__c))
+            {
+                changeMembersToDelete.add(changeMember);
+            }
+        }
+        try
+        {
+            delete changeMembersToDelete;
+        }
+        catch(Exception ex)
+        {
+            System.debug(ex);
+        }
+    }
+
+    public void upsertItem(List<MProject__c> projects)
     {
         Set<List<TrelloCheckList>> checkListsSet = new Set<List<TrelloCheckList>>();
-        List<MProject__c> projects = [select Id, TrelloBoardId__c from MProject__c where TrelloBoardId__c != null];
-        Set<String> cardIdSet = new Set<String>();
+        List<String> cardIds = new List<String>();
         List<ChangeTask__c> tasksToUpsert = new List<ChangeTask__c>();
-        Map<String, String> cardIdToChangeIdMap = new Map<String, String>();
+        Map<String, String> cardId_ChangeId = new Map<String, String>();
+        Map<String, TrelloCheckItem> itemId_Item = new Map<String, TrelloCheckItem>();
         for(MProject__c pro : projects)
         {
             List<TrelloCheckList> checklists = getTrelloCheckListInfo(pro.TrelloBoardId__c);
             checkListsSet.add(checklists);
             for(TrelloCheckList checklist : checklists)
             {
-                cardIdSet.add(checklist.IdCard);
+                cardIds.add(checklist.IdCard);
             }
         }
-        for(Change__c changeWithCard : [select Id, TrelloCardId__c from Change__c where TrelloCardId__c in :cardIdSet])
+        for(Change__c changeWithCard : [select Id, TrelloCardId__c from Change__c where TrelloCardId__c in :cardIds])
         {
-            cardIdToChangeIdMap.put(changeWithCard.TrelloCardId__c, changeWithCard.Id);
+            cardId_ChangeId.put(changeWithCard.TrelloCardId__c, changeWithCard.Id);
         }
         for(List<TrelloCheckList> checkLists : checkListsSet)
         {
             for(TrelloCheckList checklist : checkLists)
             {
-                String changeId = cardIdToChangeIdMap.get(checklist.IdCard);
+                String changeId = cardId_ChangeId.get(checklist.IdCard);
                 if(changeId != null){
                     List<TrelloCheckItem> ChecklistItems = checklist.CheckItems;
                     for(TrelloCheckItem item : ChecklistItems)
@@ -311,6 +354,7 @@ public with sharing class TrelloFactory
                         else
                             task.Status__c = 'Done';
                         tasksToUpsert.add(task);
+                        itemId_Item.put(task.TrelloItemId__c, item);
                     }
                 }
 
@@ -319,6 +363,27 @@ public with sharing class TrelloFactory
         try
         {
             upsert tasksToUpsert TrelloItemId__c;
+        }
+        catch(Exception ex)
+        {
+            System.debug(ex);
+        }
+        deleteItem(itemId_Item);
+    }
+    public void deleteItem(Map<String, TrelloCheckItem> itemId_Item)
+    {
+        List<ChangeTask__c> tasksToDelete = new List<ChangeTask__c>();
+        List<ChangeTask__c> changeTasks = [select Id, TrelloItemId__c from ChangeTask__c where TrelloItemId__c != null];
+        for(ChangeTask__c changeTask : changeTasks)
+        {
+            if(!itemId_Item.containsKey(changeTask.TrelloItemId__c))
+            {
+                tasksToDelete.add(changeTask);
+            }
+        }
+        try
+        {
+            delete tasksToDelete;
         }
         catch(Exception ex)
         {
