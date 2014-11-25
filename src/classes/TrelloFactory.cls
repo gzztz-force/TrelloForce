@@ -66,6 +66,16 @@ public with sharing class TrelloFactory
 
 
 //***** Methods Start *****//
+    public Map<String, String> getBoardNames()
+    {
+        List<TrelloBoard> boards = getTrelloBoardInfo();
+        Map<String, String> boardId_boardName = new Map<String,String>();
+        for(TrelloBoard board : boards)
+        {
+            boardId_boardName.put(board.Id, board.Name);
+        }
+        return boardId_boardName;
+    }
     public void upsertBoard()
     {
         List<TrelloBoard> boards = getTrelloBoardInfo();
