@@ -207,6 +207,35 @@ public with sharing class ProjectDetailController
         }
     }
 
+
+    public MProject__c Board
+    {
+        get
+        {
+            System.debug('getboard');
+            return [select TrelloBoardId__c from MProject__c where Id = :prj.Id];
+        }
+    }
+
+
+    public Boolean IsAuthed
+    {
+        get
+        {
+           if (TrelloDetail__c.getInstance(prj.Id) == null)
+           {
+            System.debug('false');
+            return false;
+           }
+           else
+           {
+                System.debug('true');
+                return true;
+            }
+        }
+    }
+    public MProject__c prjInfo{ get{ return prj;} set;}
+    public String Token{ get; set; }
     public Integer AllMemberCount { get { return [select count() from TeamMember__c where Project__c=:prj.Id]; } }
     public Boolean ShowAllMembers { get; set; }
     public Boolean ShowClosedChanges { get; set; }
@@ -233,6 +262,22 @@ public with sharing class ProjectDetailController
         displayingChanges = null;
         OpenAllChanges = true;
         return null;
+    }
+
+    public void saveToken()
+    {
+        TrelloDetail__c trelloInfo = new TrelloDetail__c();
+        trelloInfo.Trello_Token__c = Token;
+        trelloInfo.Trello_Key__c = 'cca16a310f7a1fff02de787a901640da';
+        trelloInfo.Name = UserInfo.getName();
+        System.debug(Token);
+        upsert trelloInfo Name;
+    }
+    public PageReference goToAuth()
+    {
+        PageReference trelloPage = new PageReference('https://trello.com/1/authorize?response_type=token&key=cca16a310f7a1fff02de787a901640da&return_url=https%3A%2F%2Fc.cs1.visual.force.com%2Fapex%2FProjectDetail?id%3D'+prj.Id+'&sfdc&name=TrelloWithPM&callback_method=fragment&scope=read%2Cwrite&expiration=never');
+        trelloPage.setRedirect(true);
+        return trelloPage;
     }
 
     @isTest

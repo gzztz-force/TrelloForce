@@ -5,7 +5,7 @@ public with sharing class TrelloFactory
 {
     public TrelloFactory(){}
 
-    public List<ChangeMember__c> changeMembersToDelete { get; set; }
+    //public List<ChangeMember__c> changeMembersToDelete { get; set; }
 
     public String Token
     {
@@ -26,13 +26,19 @@ public with sharing class TrelloFactory
         set;
     }
 
-    public List<TrelloBoard> getTrelloBoardInfo()
+    public List<TrelloBoard> getTrelloBoardInfo(String key, String token)
     {
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('https://api.trello.com/1/members/my/boards/all?fields=id,name,desc,closed&key='+ Key +'&token='+ Token);
+        request.setEndpoint('https://api.trello.com/1/members/my/boards/all?fields=id,name,desc,closed&key='+ key +'&token='+ token);
         request.setMethod('GET');
         HttpResponse response = (new Http()).send(request);
-        return (List<TrelloBoard>)JSON.deserialize(response.getBody(), List<TrelloBoard>.class);
+        List<TrelloBoard> boards = (List<TrelloBoard>)JSON.deserialize(response.getBody(), List<TrelloBoard>.class);
+        if(boards.size() == null)
+        {
+            TrelloBoard board = new TrelloBoard();
+            boards.add(board);
+        }
+        return boards;
     }
 
     public List<TrelloCard> getTrelloCardInfo(String boardId)
@@ -66,46 +72,46 @@ public with sharing class TrelloFactory
 
 
 //***** Methods Start *****//
-    public Map<String, String> getBoardNames()
-    {
-        List<TrelloBoard> boards = getTrelloBoardInfo();
-        Map<String, String> boardId_boardName = new Map<String,String>();
-        for(TrelloBoard board : boards)
-        {
-            boardId_boardName.put(board.Id, board.Name);
-        }
-        return boardId_boardName;
-    }
-    public void upsertBoard()
-    {
-        List<TrelloBoard> boards = getTrelloBoardInfo();
-        List<MProject__c> projectsToUpsert = new List<MProject__c>();
-        for(TrelloBoard board : boards)
-        {
-            MProject__c project = new MProject__c();
-            project.Name = board.Name;
-            project.TrelloBoardId__c = board.Id;
-            System.debug(board.Closed);
-            if(board.Closed == true)
-            {
-                project.Status__c = 'Closed';
-            }
-            else
-            {
-                project.Status__c = 'In Progress';
-            }
-            System.debug(project.Status__c);
-            projectsToUpsert.add(project);
-        }
-        try
-        {
-            upsert projectsToUpsert TrelloBoardId__c;
-        }
-        catch(Exception ex)
-        {
-            System.debug(ex);
-        }
-    }
+    //public Map<String, String> getBoardNames()
+    //{
+    //    List<TrelloBoard> boards = getTrelloBoardInfo();
+    //    Map<String, String> boardId_boardName = new Map<String,String>();
+    //    for(TrelloBoard board : boards)
+    //    {
+    //        boardId_boardName.put(board.Id, board.Name);
+    //    }
+    //    return boardId_boardName;
+    //}
+    //public void upsertBoard()
+    //{
+    //    List<TrelloBoard> boards = getTrelloBoardInfo();
+    //    List<MProject__c> projectsToUpsert = new List<MProject__c>();
+    //    for(TrelloBoard board : boards)
+    //    {
+    //        MProject__c project = new MProject__c();
+    //        project.Name = board.Name;
+    //        project.TrelloBoardId__c = board.Id;
+    //        System.debug(board.Closed);
+    //        if(board.Closed == true)
+    //        {
+    //            project.Status__c = 'Closed';
+    //        }
+    //        else
+    //        {
+    //            project.Status__c = 'In Progress';
+    //        }
+    //        System.debug(project.Status__c);
+    //        projectsToUpsert.add(project);
+    //    }
+    //    try
+    //    {
+    //        upsert projectsToUpsert TrelloBoardId__c;
+    //    }
+    //    catch(Exception ex)
+    //    {
+    //        System.debug(ex);
+    //    }
+    //}
 
     public void upsertCard(List<MProject__c> projects)
     {
@@ -119,10 +125,7 @@ public with sharing class TrelloFactory
             proId_trelloCards.put(pro.Id, cards);
             List<TrelloMember> proMembers =  getTrelloAllMembers(pro.TrelloBoardId__c);
             proId_TrelloMembers.put(pro.Id, proMembers);
-            System.debug(cards);
         }
-        System.debug(proId_trelloCards.keySet());
-        System.debug(proId_trelloCards.values());
         for(String id : proId_trelloCards.keySet())
         {
             List<TrelloCard> cardList = proId_trelloCards.get(id);

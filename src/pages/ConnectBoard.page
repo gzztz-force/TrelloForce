@@ -1,0 +1,40 @@
+<apex:page showHeader="false" sidebar="false" standardController="MProject__c"  extensions="ConnectBoardController">
+
+<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+	j$ = jQuery.noConflict();
+	j$(
+	function getToken(){
+        var achorElement = window.location.hash.substring(7);
+        console.log("achorElement"+achorElement);
+       	j$("[id$='token']").val(achorElement);
+        if(achorElement!=""){
+        	saveToken();
+
+    	}
+    })
+</script>
+
+<apex:form>
+
+    <apex:sectionHeader title="Projects" subtitle="Connect Board"/>
+    <apex:pageMessages/>
+    <apex:pageBlock >
+        <apex:pageBlockSection  rendered="{!NOT(IsAuthed)}">
+            <apex:outputText value="you have no authencication" />
+            <a href="{!authLink}"><button>GoToAuth</button></a>
+            <apex:actionFunction name="saveToken" action="{!saveToken}"/>
+            <apex:inputHidden id="token" value="{!Token}"></apex:inputHidden>
+        </apex:pageBlockSection>
+
+        <apex:pageBlockSection title="Trello Board">
+            <apex:pageBlockTable value="{!Boards}" var="board" rendered="{!Boards.size > 0}" >
+                <apex:column headervalue="Name">
+                    <apex:commandLink value="{!board.Name}" action="{!connectBoard}"/>
+                    <apex:param name="BoardId" value="{!board.Id}" assignTo="{!BoardId}"/>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>
