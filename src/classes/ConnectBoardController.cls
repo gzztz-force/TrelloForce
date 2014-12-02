@@ -1,12 +1,11 @@
-public with sharing class ConnectBoardController {
+public with sharing class ConnectBoardController
+{
 
-    public TrelloFactory trelloData;
-    private MProject__c prj;
     private String link;
     private PageReference returnPage;
     private String key;
 
-
+    public TrelloFactory trelloData;
 
     public ConnectBoardController(ApexPages.StandardController ctrl)
     {
@@ -22,23 +21,55 @@ public with sharing class ConnectBoardController {
         System.debug('username='+UserInfo.getUserId());
     }
 
+    public Boolean IsAuthed
+    {
+        get
+        {
+            if (TrelloDetail__c.getInstance(UserInfo.getUserId()) != null)
+            {
+                System.debug('true');
+                return true;
+            }
+            else
+            {
+                System.debug('false');
+                return false;
+            }
+        }
+    }
+
+    public  MProject__c prj {get; set;}
+    public String AuthLink { get{ return link; } set;}
+    public String Token { get; set; }
+    public String BoardId { set; get; }
+
+
+    public List<TrelloModel.TrelloBoard> Boards
+    {
+        get
+        {
+            System.debug('test');
+            if(Boards == null && Token != null)
+            {
+                Boards = trelloData.getTrelloBoardInfo(key, Token);
+            }
+            return Boards;
+        }
+        set;
+    }
+
     public void connectBoard()
     {
-        String projectId = prj.Id;
-        MProject__c project = [select Id,TrelloBoardId__c from MProject__c where Id = :projectId limit 1];
-        project.TrelloBoardId__c = BoardId;
-        update project;
+        update new MProject__c(Id = prj.Id, TrelloBoardId__c = BoardId );
         System.debug('connect success');
     }
 
-    //public void assignToBoards()
-    //{
-    //    if(Token != null)
-    //        {
-    //            Boards = trelloData.getTrelloBoardInfo(key,Token);
-    //        }
-
-    //}
+    public void editToken()
+    {
+        System.debug('setToken');
+        Token = TrelloDetail__c.getInstance(UserInfo.getUserId()).Trello_Token__c;
+        System.debug('Token:'+Token);
+    }
 
     public void saveToken()
     {
@@ -48,10 +79,11 @@ public with sharing class ConnectBoardController {
         trelloInfo.Trello_Key__c = 'cca16a310f7a1fff02de787a901640da';
         trelloInfo.Name = UserInfo.getUserId();
         upsert trelloInfo Name;
+        Token = null;
         System.debug('upsert done');
     }
 
-       public String getUserName()
+    public String getUserName()
     {
         HttpRequest request = new HttpRequest();
         request.setEndpoint('https://trello.com/1/members/me?key='+ Key +'&token='+ Token);
@@ -61,40 +93,7 @@ public with sharing class ConnectBoardController {
         return member.FullName;
     }
 
-    public Boolean IsAuthed
-    {
-        get
-        {
-           if (TrelloDetail__c.getInstance(UserInfo.getUserId()).Trello_Token__c != null)
-           {
-                System.debug('true');
-                return true;
-           }
-           else
-            {
-                System.debug('false');
-                return false;
-            }
-        }
-    }
-
-    public String authLink{ get{ return link; } set;}
-    public String Token{ get; set; }
-    public String BoardId{ set; get; }
-    public List<TrelloModel.TrelloBoard> Boards
-    {
-        get
-        {
-            if(Token != null)
-            {
-                return trelloData.getTrelloBoardInfo(key,Token);
-            }
-            else return false;
-        }
-        set;
-    }
-
-     public class TrelloMember
+    public class TrelloMember
     {
         public String Id { get; set; }
         public String FullName { get; set; }

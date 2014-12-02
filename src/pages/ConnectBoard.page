@@ -1,6 +1,7 @@
 <apex:page showHeader="false" sidebar="false" standardController="MProject__c"  extensions="ConnectBoardController">
 
 <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js"></script>
+
 <script type="text/javascript">
 	j$ = jQuery.noConflict();
 	j$(
@@ -8,33 +9,61 @@
         var achorElement = window.location.hash.substring(7);
         console.log("achorElement"+achorElement);
        	j$("[id$='token']").val(achorElement);
-        if(achorElement!=""){
+        if(achorElement != ""){
         	saveToken();
-
+             location.reload();
     	}
     })
+    function editToken(){
+        editToken();
+    }
+    function reRender()
+    {
+        reRender();
+    }
+    function showLoadingDiv() {
+        j$("[id$='chooseBoard']").block({
+            message: 'Waiting...',
+            css: { padding: '5px'},
+            overlayCSS: { backgroundColor: '#000', opacity: 0.4}
+        });
+    }
+
+    function hideLoadingDiv() {
+        j$("[id$='chooseBoard']").unblock();
+    }
+
 </script>
 
-<apex:form>
+<apex:form >
 
-    <apex:sectionHeader title="Projects" subtitle="Connect Board"/>
-    <apex:pageMessages/>
+    <apex:sectionHeader title="Connect Board" subtitle="PrjName"/>
+    <apex:pageMessages />
     <apex:pageBlock >
-        <apex:pageBlockSection  rendered="{!NOT(IsAuthed)}">
-            <apex:outputText value="you have no authencication" />
-            <a href="{!authLink}"><button>GoToAuth</button></a>
-            <apex:actionFunction name="saveToken" action="{!saveToken}"/>
-            <apex:inputHidden id="token" value="{!Token}"></apex:inputHidden>
-        </apex:pageBlockSection>
+        <apex:actionRegion >
+            <apex:pageBlockSection rendered="{!NOT(IsAuthed)}">
+                <apex:outputText value="you have no authencication" />
+                <a href="{!authLink}">GoToAuth</a>
 
-        <apex:pageBlockSection title="Trello Board">
-            <apex:pageBlockTable value="{!Boards}" var="board" rendered="{!Boards.size > 0}" >
+                <apex:actionFunction name="reRender"  reRender="chooseBoard"/>
+                <apex:actionFunction name="editToken" action="{!editToken}"  oncomplete="reRender()"/>
+                <apex:actionFunction name="saveToken" action="{!saveToken}" oncomplete="editToken()"/>
+                <apex:inputHidden id="token" value="{!Token}"></apex:inputHidden>
+            </apex:pageBlockSection>
+        </apex:actionRegion>
+        <apex:pageBlockSection id="chooseBoard" title="Trello Board" rendered="{!IsAuthed}">
+            <apex:pageBlockTable value="{!Boards}" var="board"  >
+
                 <apex:column headervalue="Name">
-                    <apex:commandLink value="{!board.Name}" action="{!connectBoard}"/>
+                    <apex:commandLink value="{!board.Name}" action="{!connectBoard}"   oncomplete="top.window.close();top.window.opener.location.reload(true);">
                     <apex:param name="BoardId" value="{!board.Id}" assignTo="{!BoardId}"/>
+                    </apex:commandLink>
                 </apex:column>
             </apex:pageBlockTable>
         </apex:pageBlockSection>
+        <apex:pageBlockButtons>
+            <apex:commandButton value="save" />
+        </apex:pageBlockButtons>
     </apex:pageBlock>
 </apex:form>
 </apex:page>

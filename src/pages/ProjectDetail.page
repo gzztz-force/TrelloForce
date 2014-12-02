@@ -6,7 +6,8 @@
     <apex:includeScript value="{!URLFOR($Resource.jQuery, 'ZeroClipboard.min.js')}"/>
     <apex:includeScript value="{!URLFOR($Resource.PM, 'charts.js')}" />
     <apex:includeScript value="{!URLFOR($Resource.PM, 'expandable.js')}" />
-    <script>
+    <script type="text/javascript">
+
         var globalLink;
         jQuery(document).ready(function()
         {
@@ -25,12 +26,19 @@
             clip.on( 'mouseout', function(client) {
               this.style.color = "black";
             } );
+
+
         });
         function setSelectMemberId(obj, selectMember)
         {
             var selectMemberInput = document.getElementById(selectMember);
             selectMemberInput.value = obj.value;
         }
+
+
+
+
+
     </script>
     <style>
         .CopyBtn:hover
@@ -44,7 +52,7 @@
     <apex:outputText rendered="false">{!MProject__c.OwnerId}</apex:outputText>
     <apex:outputText rendered="false">{!MProject__c.Status__c}</apex:outputText>
     <apex:form >
-        <apex:pageBlock title="Team Members" id="members">
+            <apex:pageBlock title="Team Members" id="members">
             <apex:pageBlockButtons location="top">
                 <apex:commandButton value="New Team Member" rendered="{!HasPowerPrivilege}" action="{!URLFOR($Action.TeamMember__c.New, null, [Name='[New]', CF00N80000003iWor=MProject__c.Name, CF00N80000003iWor_lkid=MProject__c.Id, retURL='/' + MProject__c.Id, saveURL='/' + MProject__c.Id])}"/>
             </apex:pageBlockButtons>
