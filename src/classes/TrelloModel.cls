@@ -65,7 +65,6 @@ public with sharing class TrelloModel {
     {
         public String Id { get; set; }
         public String Name { get; set; }
-        public String NameData { get; set; }
         public Decimal Pos { get; set; }
         public String Type { get; set; }
         public String State { get; set; }
