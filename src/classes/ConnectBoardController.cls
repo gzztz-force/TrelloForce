@@ -1,24 +1,38 @@
 public with sharing class ConnectBoardController
 {
 
-    private String link;
+    
     private PageReference returnPage;
     private String key;
-
-    public TrelloFactory trelloData;
+    private TrelloAPI trelloData;
+    private List<MProject__c> syncProjects;
+    private TrelloFactory factory;
 
     public ConnectBoardController(ApexPages.StandardController ctrl)
     {
+        
         prj = (MProject__c)ctrl.getRecord();
-        trelloData = new TrelloFactory();
+        syncProjects = new List<MProject__c>();
         returnPage = ApexPages.currentPage();
+        if(String.isBlank(prj.TrelloBoardId__c))
+        {
+            IsSychronized = false; 
+        }
+        else
+        {
+            IsSychronized = true;
+        }
+        BoardId = prj.TrelloBoardId__c;
         Key = 'cca16a310f7a1fff02de787a901640da';
-        link = 'https://trello.com/1/authorize?response_type=token&key=cca16a310f7a1fff02de787a901640da&return_url='+Url.getSalesforceBaseUrl().toExternalForm()+returnPage.getUrl().remove('core.apexpages.devmode.url=1&' )+'&sfdc&name=TrelloWithPM&callback_method=fragment&scope=read%2Cwrite&expiration=never';
+        Authlink = 'https://trello.com/1/authorize?response_type=token&key='+Key+'&return_url='+Url.getSalesforceBaseUrl().toExternalForm()+returnPage.getUrl().remove('core.apexpages.devmode.url=1&' )+'&sfdc&name=TrelloWithPM&callback_method=fragment&scope=read%2Cwrite&expiration=never';
         if(IsAuthed)
         {
             Token = TrelloDetail__c.getInstance(UserInfo.getUserId()).Trello_Token__c;
         }
         System.debug('username='+UserInfo.getUserId());
+        trelloData = new TrelloAPI(Key, Token);
+        showBoards = new List<showBoard>();
+       
     }
 
     public Boolean IsAuthed
@@ -38,30 +52,124 @@ public with sharing class ConnectBoardController
         }
     }
 
-    public  MProject__c prj {get; set;}
-    public String AuthLink { get{ return link; } set;}
+    public MProject__c prj { get; set;}
+    public String AuthLink { get{ return Authlink; } set;}
     public String Token { get; set; }
     public String BoardId { set; get; }
+    public String SelectedName { get; set; }
+    public Boolean IsSychronized { get; set; }
 
-
-    public List<TrelloModel.TrelloBoard> Boards
+    public List<showBoard> showBoards
     {
         get
-        {
-            System.debug('test');
-            if(Boards == null && Token != null)
+        {   
+            System.debug('get showBoards'+showBoards);
+            //List<TrelloModel.Board> boardInfoList = trelloData.getBoardInfo();
+            if(showBoards.size() == 0 && Token != null)
             {
-                Boards = trelloData.getTrelloBoardInfo(key, Token);
+                System.debug('showBoards start:'+showBoards.size());
+                if(prj.TrelloBoardId__c != null)
+                {
+                    System.debug('connected and ');
+                    //ShowBoard addBoard = new ShowBoard(false);
+                    //addBoard.name = 'aa';
+                    //System.debug('addboardId:'+addBoard.Id);
+                    showBoards.add(new ShowBoard(false));
+                    for(TrelloModel.Board b : trelloData.getBoardInfo())
+                    {   
+                        System.debug('start for loop');
+                        if(b.Id != prj.TrelloBoardId__c)
+                        {
+                            showBoards.add(new ShowBoard(b.Id,b.Name));
+                            System.debug('    bid:'+b.Id);
+                        }
+                        else
+                        {
+                            showBoards.add(new ShowBoard(b.Id,b.Name,true));
+                            System.debug('Select this option'+'bid:'+b.Id);
+
+
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    System.debug('no connect');
+                    showBoards.add(new showBoard(true));
+                    for(TrelloModel.Board b : trelloData.getBoardInfo())
+                    {
+                        showBoards.add(new showBoard(b.Id,b.name));
+                    }
+
+                }
+                
             }
-            return Boards;
+            System.debug('showBoardsSize:'+showBoards.size());
+            return showBoards; 
         }
         set;
+               
     }
 
+
+    //public List<TrelloModel.Board> Boards
+    //{
+    //    get
+    //    {
+    //        System.debug('test');
+    //        if(Boards == null && Token != null)
+    //        {
+    //            Boards = trelloData.getBoardInfo();
+    //        }
+    //        return Boards;
+    //    }
+    //    set;
+    //}
+
+
+
     public void connectBoard()
-    {
-        update new MProject__c(Id = prj.Id, TrelloBoardId__c = BoardId );
-        System.debug('connect success');
+    {   
+        try
+        {   
+            if(prj.TrelloBoardId__c != BoardId)
+            {
+                prj.TrelloBoardId__c = BoardId;
+                update prj;
+                System.debug('connect success');
+                if(String.isBlank(BoardId))
+                {
+                    ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO,'You have not connneted any Board now'));
+                    IsSychronized = false;
+                }
+                else
+                {
+                    ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO, 'Connect Successfully. You can synchronize your data now.'));
+                    IsSychronized = true; 
+                }
+            }
+            else if(String.isBlank(BoardId))
+            {
+                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO,'You have not connneted any Board now'));
+                IsSychronized = false;
+            }
+            else 
+            {
+                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO, 'Connect Successfully. You can synchronize your data now.'));
+                IsSychronized = true; 
+            }
+        }
+        catch(DmlException ex)
+        {
+            ApexPages.addMessages(ex);
+        } 
+
+        System.debug('aaaBoardId:'+BoardId);
+        
+        factory = new TrelloFactory();
+        factory.deleteWithoutBoardId(prj); 
+
     }
 
     public void editToken()
@@ -71,32 +179,84 @@ public with sharing class ConnectBoardController
         System.debug('Token:'+Token);
     }
 
+    public PageReference showInfo()
+    {
+        return null;
+    }
+
     public void saveToken()
     {
         TrelloDetail__c trelloInfo = new TrelloDetail__c();
         trelloInfo.Trello_Token__c = Token;
         System.debug('Token='+Token);
-        trelloInfo.Trello_Key__c = 'cca16a310f7a1fff02de787a901640da';
+        trelloInfo.Trello_Key__c = Key;
         trelloInfo.Name = UserInfo.getUserId();
-        upsert trelloInfo Name;
+        try
+        {
+            upsert trelloInfo Name;
+        }
+        catch(DmlException ex)
+        {
+            ApexPages.addMessages(ex);
+        }
         Token = null;
         System.debug('upsert done');
     }
 
-    public String getUserName()
+    //public String getUserName()
+    //{
+    //    HttpRequest request = new HttpRequest();
+    //    request.setEndpoint('https://trello.com/1/members/me?key='+ Key +'&token='+ Token);
+    //    request.setMethod('GET');
+    //    HttpResponse response =(new Http()).send(request);
+    //    TrelloMember member = (TrelloMember)JSON.deserialize(response.getBody(), TrelloMember.class);
+    //    return member.FullName;
+    //}
+
+    //public class TrelloMember
+    //{
+    //    public String Id { get; set; }
+    //    public String FullName { get; set; }
+    //}
+
+    public void syncChanges()
     {
-        HttpRequest request = new HttpRequest();
-        request.setEndpoint('https://trello.com/1/members/me?key='+ Key +'&token='+ Token);
-        request.setMethod('GET');
-        HttpResponse response =(new Http()).send(request);
-        TrelloMember member = (TrelloMember)JSON.deserialize(response.getBody(), TrelloMember.class);
-        return member.FullName;
+        syncProjects.add(prj);
+        factory = new TrelloFactory(syncProjects);
+        factory.upsertChange();
+    }
+    public void syncChangeTasks()
+    {
+        System.debug('synctask');
+        factory.upsertChangeTask();
+         ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO, 'Synchronize succeeded'));
+
     }
 
-    public class TrelloMember
+    public class showBoard
     {
-        public String Id { get; set; }
-        public String FullName { get; set; }
+        public showBoard(String bid,String bname)
+        {
+            this.Id = bid;
+            this.Name = bname;
+            this.Checked = false;
+        }
+       
+        public showBoard(Boolean isChecked)
+        {
+            this.Id = null;
+            this.Name = 'None Selected';
+            this.Checked = isChecked;
+        }
+        public showBoard(String bid,String bname,Boolean isChecked)
+        {
+            this.Id = bid;
+            this.Name = bname;
+            this.Checked = isChecked; 
+        }
+        public String Id { get; set;}
+        public String Name { get; set; }
+        public Boolean Checked { get; set; }
     }
 
 

@@ -1,69 +1,111 @@
 <apex:page showHeader="false" sidebar="false" standardController="MProject__c"  extensions="ConnectBoardController">
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js"></script>
+   
+    <style type="text/css">
+        .unselected {
+            background-color:rgba(0,0,0,0.1);
+            font-color:rgba(255，255，255);
+            font-size: 15px;
+        }
 
-<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js"></script>
+        .sync {
+            display: none;
+        }
 
-<script type="text/javascript">
-	j$ = jQuery.noConflict();
-	j$(
-	function getToken(){
-        var achorElement = window.location.hash.substring(7);
-        console.log("achorElement"+achorElement);
-       	j$("[id$='token']").val(achorElement);
-        if(achorElement != ""){
-        	saveToken();
-             location.reload();
-    	}
-    })
-    function editToken(){
-        editToken();
-    }
-    function reRender()
-    {
-        reRender();
-    }
-    function showLoadingDiv() {
-        j$("[id$='chooseBoard']").block({
-            message: 'Waiting...',
-            css: { padding: '5px'},
-            overlayCSS: { backgroundColor: '#000', opacity: 0.4}
-        });
-    }
+        .saveSucceeded{
+            display:none;
+        }
+    </style>
 
-    function hideLoadingDiv() {
-        j$("[id$='chooseBoard']").unblock();
-    }
+    <script type="text/javascript">
+    	j$ = jQuery.noConflict();
+    	j$(
+        	function getToken(){
+                var achorElement = window.location.hash.substring(7);
+                console.log("achorElement"+achorElement);
+               	j$("[id$='token']").val(achorElement);
+                if(achorElement != ""){
+                	saveToken();
+                    location.reload();
+            	}
+            }
 
-</script>
+        )
+        function editToken(){
+            editToken();
+        }
+        function reRender()
+        {
+            reRender();
+        }
+        function showLoadingDiv() {
+            j$("[id$='chooseBoard']").block({
+                message: 'Waiting...',
+                css: { padding: '5px'},
+                overlayCSS: { backgroundColor: '#000', opacity: 0.4}
+            });
+        }
 
-<apex:form >
+        function hideLoadingDiv() {
+            j$("[id$='chooseBoard']").unblock();
+        }
+        function setValue(input, testId) {
+            document.getElementById(testId).value = input;
+            console.log("input:"+input);
+            console.log("Id:"+testId);
+        }
 
-    <apex:sectionHeader title="Connect Board" subtitle="PrjName"/>
-    <apex:pageMessages />
-    <apex:pageBlock >
-        <apex:actionRegion >
+        function cancel(){
+            top.window.close();
+        }  
+
+        function syncTasks(){
+            syncChangeTasks();
+        }  
+        
+    </script>
+
+    <apex:form id="form">
+        <apex:sectionHeader title="Connect Board" subtitle="{!MProject__c.Name}"/>
+        <apex:pageMessages id="message"/>
+        <apex:pageBlock title="Trello Boards">
             <apex:pageBlockSection rendered="{!NOT(IsAuthed)}">
                 <apex:outputText value="you have no authencication" />
-                <a href="{!authLink}">GoToAuth</a>
-
+                <a href="{!authLink}">Go to Auth</a>
                 <apex:actionFunction name="reRender"  reRender="chooseBoard"/>
                 <apex:actionFunction name="editToken" action="{!editToken}"  oncomplete="reRender()"/>
                 <apex:actionFunction name="saveToken" action="{!saveToken}" oncomplete="editToken()"/>
                 <apex:inputHidden id="token" value="{!Token}"></apex:inputHidden>
             </apex:pageBlockSection>
-        </apex:actionRegion>
-        <apex:pageBlockSection id="chooseBoard" title="Trello Board" rendered="{!IsAuthed}">
-            <apex:pageBlockTable value="{!Boards}" var="board"  >
 
-                <apex:column headervalue="Name">
-                    <apex:commandLink value="{!board.Name}" action="{!connectBoard}"   oncomplete="top.window.close();top.window.opener.location.reload(true);">
-                    <apex:param name="BoardId" value="{!board.Id}" assignTo="{!BoardId}"/>
-                    </apex:commandLink>
+            <apex:pageBlockTable value="{!showBoards}" var="board" rendered="{!IsAuthed}" id="BoardName">
+                <apex:column headervalue="Name" styleClass="{!IF(board.id==null, 'unselected', '')}">
+                    <apex:outputPanel rendered="{!board.Checked}">
+                    <input type="radio" name="boards" checked="checked" onclick="setValue('{!board.Id}','{!$Component.selected}');" />{!board.Name}
+                    </apex:outputPanel>
+                     <apex:outputPanel rendered="{!!board.Checked}">
+                    <input type="radio" name="boards"  onclick="setValue('{!board.Id}','{!$Component.selected}');" />{!board.Name} 
+                    </apex:outputPanel>
                 </apex:column>
             </apex:pageBlockTable>
-        </apex:pageBlockSection>
-        <apex:pageBlockButtons>
-            <apex:commandButton value="save" />
-        </apex:pageBlockButtons>
-    </apex:pageBlock>
-</apex:form>
+
+            <apex:actionFunction name="syncChangeTasks" action="{!syncChangeTasks}"/>
+            <apex:inputHidden value="{!BoardId}" id="selected"/>
+
+            <apex:actionStatus id="saveStatus" startText="Saving..." />
+            <apex:actionStatus id="syncChangeStatus" startText="Sync Changes..." />
+            <apex:actionStatus id="syncTaskStatus" startText="Sync Tasks"/>
+
+            <apex:inputHidden value="{!MProject__c.TrelloBoardId__c}"/>
+
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save" action="{!connectBoard}" reRender="syncBtnPanel, message"  status="saveStatus"/>
+                <apex:commandButton value="Cancel" action="cancel()"/>
+
+                <apex:outputPanel id="syncBtnPanel">
+                    <apex:commandButton id="sync" value="Sync Now" action="{!syncChanges}" oncomplete="syncTasks()" rendered="{!IsSychronized}" status="syncChangeStatus"/>
+                </apex:outputPanel>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
 </apex:page>
