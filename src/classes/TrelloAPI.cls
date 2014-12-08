@@ -2,10 +2,10 @@ public with sharing class TrelloAPI
 {
     private String key;
     private String token;
-    private String boards_URL = 'https://api.trello.com/1/members/my/boards/all';
-    private String board_Cards_URL = 'https://api.trello.com/1/boards/{0}/cards';
-    private String board_CheckLists_URL = 'https://api.trello.com/1/boards/{0}/checklists'; 
-    private String board_Members_URL = 'https://api.trello.com/1/boards/{0}/members';
+    private final String BOARDS_URL = 'https://api.trello.com/1/members/my/boards/all';
+    private final String BOARD_CARDS_URL = 'https://api.trello.com/1/boards/{0}/cards';
+    private final String BOARD_CHECKLISTS_URL = 'https://api.trello.com/1/boards/{0}/checklists'; 
+    private final String BOARD_MEMBERS_URL = 'https://api.trello.com/1/boards/{0}/members';
 
     public TrelloAPI(String key, String token)
     {
@@ -34,7 +34,7 @@ public with sharing class TrelloAPI
 
     public List<TrelloModel.Board> getBoardInfo()
     {
-        List<TrelloModel.Board> boards = (List<TrelloModel.Board>)JSON.deserialize(getTrelloInfo(createURL(boards_URL, null)), List<TrelloModel.Board>.class);
+        List<TrelloModel.Board> boards = (List<TrelloModel.Board>)JSON.deserialize(getTrelloInfo(createURL(BOARDS_URL, null)), List<TrelloModel.Board>.class);
         if(boards.size() == null)
         {
             TrelloModel.Board board = new TrelloModel.Board();
@@ -45,17 +45,17 @@ public with sharing class TrelloAPI
 
     public List<TrelloModel.Card> getCardInfo(List<String> params)
     {
-        return (List<TrelloModel.Card>)JSON.deserialize(getTrelloInfo(createURL(board_Cards_URL, params)), List<TrelloModel.Card>.class);
+            return (List<TrelloModel.Card>)JSON.deserialize(getTrelloInfo(createURL(BOARD_CARDS_URL, params)), List<TrelloModel.Card>.class);
     }
 
     public List<TrelloModel.CheckList> getCheckListInfo(List<String> params)
     {
-        return (List<TrelloModel.CheckList>)JSON.deserialize(getTrelloInfo(createURL(board_CheckLists_URL, params)), List<TrelloModel.CheckList>.class);
+            return (List<TrelloModel.CheckList>)JSON.deserialize(getTrelloInfo(createURL(BOARD_CHECKLISTS_URL, params)), List<TrelloModel.CheckList>.class);       
     }
 
     public List<TrelloModel.Member> getAllMembers(List<String> params)
     {
-        return (List<TrelloModel.Member>)JSON.deserialize(getTrelloInfo(createURL(board_Members_URL, params)), List<TrelloModel.Member>.class);
+            return (List<TrelloModel.Member>)JSON.deserialize(getTrelloInfo(createURL(BOARD_MEMBERS_URL, params)), List<TrelloModel.Member>.class);
     }
 
 }
