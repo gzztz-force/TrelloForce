@@ -1,19 +1,19 @@
 <apex:page showHeader="false" sidebar="false" standardController="MProject__c"  extensions="ConnectBoardController">
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js"></script>
-   
+    <apex:includeScript value="{!URLFOR($Resource.block,'jquery/jquery-1.11.1.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.block,'jquery/jquery.blockUI.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.block,'jquery/jquery-ui.min.js')}"/>
     <style type="text/css">
         .unselected {
-            background-color:rgba(0,0,0,0.1);
-            font-color:rgba(255，255，255);
-            font-size: 15px;
+            background-color: rgba(0,0,0,0.1);
+            font-weight: bold;
         }
 
-        .sync {
+        .saveSucceeded {
             display: none;
         }
 
-        .saveSucceeded{
-            display:none;
+        .recommendation {
+            background-color: #dbffdb;
         }
     </style>
 
@@ -29,61 +29,50 @@
                     location.reload();
             	}
             }
-
         )
-        function editToken(){
+
+        function editToken() {
             editToken();
         }
-        function reRender()
-        {
+
+        function reRender() {
             reRender();
         }
-        function showLoadingDiv() {
-            j$("[id$='chooseBoard']").block({
-                message: 'Waiting...',
-                css: { padding: '5px'},
-                overlayCSS: { backgroundColor: '#000', opacity: 0.4}
-            });
-        }
 
-        function hideLoadingDiv() {
-            j$("[id$='chooseBoard']").unblock();
-        }
         function setValue(input, testId) {
             document.getElementById(testId).value = input;
             console.log("input:"+input);
             console.log("Id:"+testId);
         }
 
-        function cancel(){
+        function cancel() {
             top.window.close();
         }  
 
-        function syncTasks(){
+        function syncTasks() {
             syncChangeTasks();
         }  
-        
     </script>
 
     <apex:form id="form">
         <apex:sectionHeader title="Connect Board" subtitle="{!MProject__c.Name}"/>
         <apex:pageMessages id="message"/>
-        <apex:pageBlock title="Trello Boards">
+        <apex:pageBlock title="Trello Boards" id="TrelloBoards">
             <apex:pageBlockSection rendered="{!NOT(IsAuthed)}">
                 <apex:outputText value="you have no authencication" />
-                <a href="{!authLink}">Go to Auth</a>
+                <a href="{!authLink}">Connect with Trello</a>
                 <apex:actionFunction name="reRender"  reRender="chooseBoard"/>
                 <apex:actionFunction name="editToken" action="{!editToken}"  oncomplete="reRender()"/>
                 <apex:actionFunction name="saveToken" action="{!saveToken}" oncomplete="editToken()"/>
                 <apex:inputHidden id="token" value="{!Token}"></apex:inputHidden>
             </apex:pageBlockSection>
 
-            <apex:pageBlockTable value="{!showBoards}" var="board" rendered="{!IsAuthed}" id="BoardName">
-                <apex:column headervalue="Name" styleClass="{!IF(board.id==null, 'unselected', '')}">
-                    <apex:outputPanel rendered="{!board.Checked}">
-                    <input type="radio" name="boards" checked="checked" onclick="setValue('{!board.Id}','{!$Component.selected}');" />{!board.Name}
+            <apex:pageBlockTable value="{!Boards}" var="board" rendered="{!IsAuthed}" id="BoardName">
+                <apex:column headervalue="Name" styleClass="{!IF(board.id==null, 'unselected',IF(MProject__c.Name==board.Name,'recommendation',''))}">
+                    <apex:outputPanel rendered="{!board.IsSelected}">
+                        <input type="radio" name="boards" checked="checked" onclick="setValue('{!board.Id}','{!$Component.selected}');"  />{!board.Name}
                     </apex:outputPanel>
-                     <apex:outputPanel rendered="{!!board.Checked}">
+                     <apex:outputPanel rendered="{!!board.IsSelected}">
                     <input type="radio" name="boards"  onclick="setValue('{!board.Id}','{!$Component.selected}');" />{!board.Name} 
                     </apex:outputPanel>
                 </apex:column>
@@ -91,20 +80,20 @@
 
             <apex:actionFunction name="syncChangeTasks" action="{!syncChangeTasks}"/>
             <apex:inputHidden value="{!BoardId}" id="selected"/>
-
-            <apex:actionStatus id="saveStatus" startText="Saving..." />
-            <apex:actionStatus id="syncChangeStatus" startText="Sync Changes..." />
-            <apex:actionStatus id="syncTaskStatus" startText="Sync Tasks"/>
-
             <apex:inputHidden value="{!MProject__c.TrelloBoardId__c}"/>
 
-            <apex:pageBlockButtons location="bottom">
-                <apex:commandButton value="Save" action="{!connectBoard}" reRender="syncBtnPanel, message"  status="saveStatus"/>
-                <apex:commandButton value="Cancel" action="cancel()"/>
+            <apex:pageBlockButtons location="bottom" rendered="{!IsAuthed}">
+                <apex:commandButton value="Save" action="{!connectBoard}" reRender="syncBtnPanel, message"  status="operateStatus"/>
+                <apex:commandButton value="Cancel" action="cancel()" rendered="{!IsAuthed}"/>
 
                 <apex:outputPanel id="syncBtnPanel">
-                    <apex:commandButton id="sync" value="Sync Now" action="{!syncChanges}" oncomplete="syncTasks()" rendered="{!IsSychronized}" status="syncChangeStatus"/>
+                    <apex:commandButton  value="Sync Now" action="{!syncChanges}" oncomplete="syncTasks()" rendered="{!IsSychronized}" status="operateStatus"/>
                 </apex:outputPanel>
+                <apex:actionStatus id="operateStatus" >
+                    <apex:facet name="start">
+                        <img src="/img/loading.gif" alt="loading..."/> 
+                    </apex:facet>
+                </apex:actionStatus>
             </apex:pageBlockButtons>
         </apex:pageBlock>
     </apex:form>

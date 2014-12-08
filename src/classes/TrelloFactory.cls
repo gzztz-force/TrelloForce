@@ -10,7 +10,13 @@ public with sharing class TrelloFactory
     private List<String> param;
 
     public TrelloFactory()
+<<<<<<< HEAD
     {}
+=======
+    {
+
+    }
+>>>>>>> Add recommend feature and improved code format
 
     public TrelloFactory(List<MProject__c> projects)
     {
@@ -275,7 +281,6 @@ public with sharing class TrelloFactory
                         itemIdToItem.put(task.TrelloItemId__c, item);
                     }
                 }
-
             }
         }
         try
@@ -312,7 +317,11 @@ public with sharing class TrelloFactory
     public void deleteWithoutBoardId (MProject__c prj)
     {
         List<Change__c> changes = [select Id, Name from Change__c where Project__c = :prj.Id and TrelloCardId__c != null];
+<<<<<<< HEAD
         List<TeamMember__c> teamMembers = [select Id, Name from TeamMember__c where Project__c = :prj.Id and TrelloMemberId__c != null]; 
+=======
+        List<TeamMember__c> teamMembers = [select Id, Name from TeamMember__c where Project__c = :prj.Id and TrelloMemberId__c != null];
+>>>>>>> Add recommend feature and improved code format
         if(prj.TrelloBoardId__c == null || prj.TrelloBoardId__c == '')
         {
             try
@@ -324,8 +333,12 @@ public with sharing class TrelloFactory
             {
                 System.debug(ex);
             }
+<<<<<<< HEAD
         }
         
+=======
+        }  
+>>>>>>> Add recommend feature and improved code format
     }
 
 
