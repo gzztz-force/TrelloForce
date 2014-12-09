@@ -1,7 +1,7 @@
 global class TrelloChangeTaskBatch implements Database.Batchable<sObject>, Database.AllowsCallouts, Database.Stateful {
 	
 	String query = 'select Id, Name, TrelloBoardId__c from MProject__c where TrelloBoardId__c != null';
-    TrelloFactory trello;
+    TrelloConnectUtil trello;
 	
 	global TrelloChangeTaskBatch() {
 		
@@ -12,7 +12,7 @@ global class TrelloChangeTaskBatch implements Database.Batchable<sObject>, Datab
 	}
 
    	global void execute(Database.BatchableContext BC, List<sObject> scope) {
-		trello = new TrelloFactory(scope);
+		trello = new TrelloConnectUtil(scope);
         trello.upsertChangeTask();
 	}
 	

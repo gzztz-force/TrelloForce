@@ -1,7 +1,7 @@
 /*
- * The class to get info from Trello and insert to pm.
+ * The class to update Trello data of pm.
  */
-public with sharing class TrelloFactory
+public with sharing class TrelloConnectUtil
 {
     private String key;
     private String token;
@@ -9,19 +9,13 @@ public with sharing class TrelloFactory
     private List<MProject__c> projects;
     private List<String> param;
 
-    public TrelloFactory()
-<<<<<<< HEAD
+    public TrelloConnectUtil()
     {}
-=======
-    {
 
-    }
->>>>>>> Add recommend feature and improved code format
-
-    public TrelloFactory(List<MProject__c> projects)
+    public TrelloConnectUtil(List<MProject__c> projects)
     {
-        token = TrelloToken__c.getInstance(UserInfo.getUserId()).Token__c;
-        key = TrelloKey__c.getInstance().Key__c;
+        token = TrelloUser__c.getInstance(UserInfo.getUserId()).Token__c;
+        key = TrelloConfig__c.getInstance().Key__c;
         trelloApi = new TrelloAPI(key, token);
         this.projects = projects;
     }
@@ -281,6 +275,7 @@ public with sharing class TrelloFactory
                         itemIdToItem.put(task.TrelloItemId__c, item);
                     }
                 }
+
             }
         }
         try
@@ -317,11 +312,7 @@ public with sharing class TrelloFactory
     public void deleteWithoutBoardId (MProject__c prj)
     {
         List<Change__c> changes = [select Id, Name from Change__c where Project__c = :prj.Id and TrelloCardId__c != null];
-<<<<<<< HEAD
         List<TeamMember__c> teamMembers = [select Id, Name from TeamMember__c where Project__c = :prj.Id and TrelloMemberId__c != null]; 
-=======
-        List<TeamMember__c> teamMembers = [select Id, Name from TeamMember__c where Project__c = :prj.Id and TrelloMemberId__c != null];
->>>>>>> Add recommend feature and improved code format
         if(prj.TrelloBoardId__c == null || prj.TrelloBoardId__c == '')
         {
             try
@@ -333,12 +324,8 @@ public with sharing class TrelloFactory
             {
                 System.debug(ex);
             }
-<<<<<<< HEAD
         }
         
-=======
-        }  
->>>>>>> Add recommend feature and improved code format
     }
 
 
