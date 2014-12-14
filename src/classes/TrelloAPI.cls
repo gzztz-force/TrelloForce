@@ -2,10 +2,10 @@ public with sharing class TrelloAPI
 {
     private String key;
     private String token;
-    private final String BOARDS_URL = 'https://api.trello.com/1/members/my/boards/all';
-    private final String BOARD_CARDS_URL = 'https://api.trello.com/1/boards/{0}/cards';
-    private final String BOARD_CHECKLISTS_URL = 'https://api.trello.com/1/boards/{0}/checklists'; 
-    private final String BOARD_MEMBERS_URL = 'https://api.trello.com/1/boards/{0}/members';
+    @TestVisible private final String BOARDS_URL = 'https://api.trello.com/1/members/my/boards/all';
+    @TestVisible private final String BOARD_CARDS_URL = 'https://api.trello.com/1/boards/{0}/cards';
+    @TestVisible private final String BOARD_CHECKLISTS_URL = 'https://api.trello.com/1/boards/{0}/checklists'; 
+    @TestVisible private final String BOARD_MEMBERS_URL = 'https://api.trello.com/1/boards/{0}/members';
 
     public TrelloAPI(String key, String token)
     {
@@ -20,7 +20,6 @@ public with sharing class TrelloAPI
         String compiledUrl = String.format(url, pathParams);
         System.debug(compiledUrl);
         return compiledUrl;
-
     }
 
     public String getTrelloInfo(String url)
@@ -29,19 +28,26 @@ public with sharing class TrelloAPI
         request.setEndpoint(url);
         request.setMethod('GET');
         HttpResponse response = (new Http()).send(request);
+        System.debug('getbody'+response.getBody());
         return response.getBody();
     }
 
     public List<TrelloModel.Board> getBoardInfo()
     {
-        List<TrelloModel.Board> boards = (List<TrelloModel.Board>)JSON.deserialize(getTrelloInfo(createURL(BOARDS_URL, null)), List<TrelloModel.Board>.class);
-        if(boards.size() == null)
+        List<TrelloModel.Board> boards = new List<TrelloModel.Board>();
+        String resString = getTrelloInfo(createURL(BOARDS_URL, null));
+        if(String.isBlank(resString))
         {
             TrelloModel.Board board = new TrelloModel.Board();
             boards.add(board);
+            return boards;
         }
-        return boards;
-    }
+        else
+        {
+            boards = (List<TrelloModel.Board>)JSON.deserialize(resString, List<TrelloModel.Board>.class);
+            return boards;
+        }
+    }  
 
     public List<TrelloModel.Card> getCardInfo(List<String> params)
     {
