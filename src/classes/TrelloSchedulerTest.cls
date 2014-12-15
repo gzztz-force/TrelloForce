@@ -1,7 +1,8 @@
 @isTest
-private class TrelloSchedulerTest {
-	
-	@isTest static void testScheduler() {
+private class TrelloSchedulerTest 
+{
+	@isTest static void testScheduler() 
+	{
 		TrelloUser__c testTrelloUser = new TrelloUser__c();
 		testTrelloUser.Name = UserInfo.getUserId();
 		testTrelloUser.Token__c = 'testToken';
@@ -35,7 +36,4 @@ private class TrelloSchedulerTest {
 		System.assertNotEquals(testTeamMembers.size(), 0);
 		System.assertNotEquals(testChangeTasks.size(), 0);
 	}
-	
-	
-	
 }

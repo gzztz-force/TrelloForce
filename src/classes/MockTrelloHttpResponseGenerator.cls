@@ -25,7 +25,7 @@ public class MockTrelloHttpResponseGenerator implements HttpCalloutMock {
         {
             res.setBody('[{"id":"545735a69a0da4e4721950fd","name":"For Trello Test",' +
                             '"desc":"","closed":false,' + 
-                                '"memberships":[{"id":"545735a69a0da4e4721950fe","idMember":"5456e0a4463c0074fcfa6e17",}]},' + 
+                                '"memberships":[{"id":"545735a69a0da4e4721950fe","idMember":"5456e0a4463c0074fcfa6e17"}]},' + 
                         '{"id":"5466ba22a3a9a861193a1bf0","name":"TimeLoader",' +
                             '"desc":"","closed":false,' +
                                 '"memberships":[{"id":"5466ba22a3a9a861193a1bf1","idMember":"5456e599eb84e75b41283de8"},' +
@@ -73,11 +73,22 @@ public class MockTrelloHttpResponseGenerator implements HttpCalloutMock {
         }
         else if(req.getEndpoint().contains('https://api.trello.com/1/boards/5456dd656a8668e557b82685/checklists'))
         {
-            res.setBody('[{"id":"545ae566569a88c456889a3d","name":"Checklist","idBoard":"5456dd656a8668e557b82685","idCard":"545ae5597bc18d2c4f3abd1c","pos":16384,"checkItems":[{"state":"complete","id":"545ae59de861da11ad8e51a2","name":"Draw a ERD in Lucidchart","nameData":null,"pos":16737},{"state":"complete","id":"545ae5cbff7e74b6c56a6463","name":"Call with Trello API with token in Apex to get cards for one board@jairzheng ","nameData":{"emoji":{}},"pos":33451}]},{"id":"5456dec0d4cdae25e6f899bd","name":"Tasks","idBoard":"5456dd656a8668e557b82685","idCard":"5456de544dd69d13e61d3eb2","pos":16384,"checkItems":[{"state":"complete","id":"5456deedc834ad98e6592c9d","name":"How to access API with user token","nameData":null,"pos":17385}]},{"id":"545b9941a08a1fc76f4ff21c","name":"Code apex to call API","idBoard":"5456dd656a8668e557b82685","idCard":"545b991c45a1ecb44ea0978a","pos":16384,"checkItems":[{"state":"complete","id":"545b996f900754fac25a6283","name":"Create method and class to analysis JSON","nameData":null,"pos":17273},{"state":"complete","id":"545b99c1ca6eda41590d62b0","name":"Call APIs which match PM Objects","nameData":null,"pos":34465}]},{"id":"546052d96f128fb6393bc81e","name":"Insert","idBoard":"5456dd656a8668e557b82685","idCard":"54601ea8c3b55e32bafa35ab","pos":16384,"checkItems":[{"state":"complete","id":"546052df1a5a88d0cf22ca11","name":"Boards","nameData":null,"pos":17263},{"state":"complete","id":"546052eab9d0522b59ec29d8","name":"Cards","nameData":null,"pos":34570},{"state":"complete","id":"546052f77d4689dccf50eb71","name":"CheckListItems","nameData":null,"pos":51670},{"state":"incomplete","id":"546168e5c11633260ab38cac","name":"Match User","nameData":null,"pos":68191}]},{"id":"546477bf744f9b2b0aff8a0f","name":"schedule","idBoard":"5456dd656a8668e557b82685","idCard":"545c709150ce1f750c04b60a","pos":16384,"checkItems":[{"state":"complete","id":"546477d63198d40b2134c8d4","name":"Run every 15 minutes","nameData":null,"pos":16556}]}]');
+            res.setBody('[{"id":"545ae566569a88c456889a3d","name":"Checklist",'+
+                            '"idBoard":"5456dd656a8668e557b82685","idCard":"545ae5597bc18d2c4f3abd1c",'+
+                                '"checkItems":[{"state":"complete","id":"545ae59de861da11ad8e51a2","name":"Draw a ERD in Lucidchart"},'+
+                                    '{"state":"complete","id":"545ae5cbff7e74b6c56a6463","name":"Call with Trello API with token in Apex to get cards for one board@jairzheng "}]},'+
+                        '{"id":"546052d96f128fb6393bc81e","name":"Insert",'+
+                            '"idBoard":"5456dd656a8668e557b82685","idCard":"54601ea8c3b55e32bafa35ab",'+
+                                '"checkItems":[{"state":"complete","id":"546052df1a5a88d0cf22ca11","name":"Boards"},'+
+                                    '{"state":"complete","id":"546052eab9d0522b59ec29d8","name":"Cards"},'+
+                                        '{"state":"complete","id":"546052f77d4689dccf50eb71","name":"CheckListItems"},'+
+                                            '{"state":"incomplete","id":"546168e5c11633260ab38cac","name":"Match User"}]}]');
         }
         else if(req.getEndpoint().contains('https://api.trello.com/1/boards/5456dd656a8668e557b82685/members'))
         {
-            res.setBody('[{"id":"5456e599eb84e75b41283de8","fullName":"Evan Zhong","username":"evanzhong"},{"id":"50ad61a65a55ffe60e00830e","fullName":"Jair Zheng","username":"jairzheng"},{"id":"5456e0a4463c0074fcfa6e17","fullName":"Vicky Zhang","username":"vickyzhang3"}]');
+            res.setBody('[{"id":"5456e599eb84e75b41283de8","fullName":"Evan Zhong","username":"evanzhong"},'+
+                        '{"id":"50ad61a65a55ffe60e00830e","fullName":"Jair Zheng","username":"jairzheng"},'+
+                        '{"id":"5456e0a4463c0074fcfa6e17","fullName":"Vicky Zhang","username":"vickyzhang3"}]');
         }
         else 
         {
