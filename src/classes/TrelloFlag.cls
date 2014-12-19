@@ -4,6 +4,6 @@ global with sharing class TrelloFlag
 	{
 		IsBatchFired = true;
 	}
-
-	global static Boolean IsBatchFired = true	;
+		
+	global static Boolean IsBatchFired = true;
 }

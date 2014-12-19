@@ -28,13 +28,14 @@ public with sharing class TrelloAPI
         request.setEndpoint(url);
         request.setMethod('GET');
         HttpResponse response = (new Http()).send(request);
-        System.debug('getbody'+response.getBody());
+        System.debug('getbody' + response.getBody());
         return response.getBody();
     }
 
     public List<TrelloModel.Board> getBoardInfo()
     {
         List<TrelloModel.Board> boards = new List<TrelloModel.Board>();
+        List<TrelloModel.Board> unclosedBoards = new List<TrelloModel.Board>();
         String resString = getTrelloInfo(createURL(BOARDS_URL, null));
         if(String.isBlank(resString))
         {
@@ -45,7 +46,14 @@ public with sharing class TrelloAPI
         else
         {
             boards = (List<TrelloModel.Board>)JSON.deserialize(resString, List<TrelloModel.Board>.class);
-            return boards;
+            for(TrelloModel.Board board : boards)
+            {
+                if(!board.Closed)
+                {
+                    unclosedBoards.add(board);
+                }
+            }
+            return unclosedBoards;
         }
     }  
 
@@ -63,5 +71,4 @@ public with sharing class TrelloAPI
     {
             return (List<TrelloModel.Member>)JSON.deserialize(getTrelloInfo(createURL(BOARD_MEMBERS_URL, params)), List<TrelloModel.Member>.class);
     }
-
 }

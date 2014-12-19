@@ -35,63 +35,6 @@ public with sharing class TrelloBoardConnectionController
         Boards = new List<Board>();
     }
 
-    public Boolean IsAuthed
-    {
-        get
-        {
-            if (TrelloUser__c.getInstance(UserInfo.getUserId()) != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
-
-    public MProject__c prj { get; set;}
-    public String AuthLink { get; set;}
-    public String Token { get; set; }
-    public String BoardId { set; get; }
-    public String SelectedName { get; set; }
-    public Boolean IsSychronized { get; set; }
-
-    public List<Board> Boards
-    {
-        get
-        {   
-            if(Boards.size() == 0 && Token != null)
-            {
-                if(String.isBlank(prj.TrelloBoardId__c))
-                {
-                    Boards.add(new Board('', nullBoardName, true));
-                    for(TrelloModel.Board b : trelloData.getBoardInfo())
-                    {
-                        Boards.add(new Board(b.Id, b.name, false));
-                    }
-                }
-                else
-                {
-                    Boards.add(new Board('', nullBoardName, false));
-                    for(TrelloModel.Board b : trelloData.getBoardInfo())
-                    {   
-                        if(b.Id != prj.TrelloBoardId__c)
-                        {
-                            Boards.add(new Board(b.Id, b.Name, false));
-                        }
-                        else
-                        {
-                            Boards.add(new Board(b.Id, b.Name, true));
-                        }
-                    }
-                }
-            }
-            return Boards; 
-        }
-        set;      
-    }
-
     public void connectBoard()
     {   
         try
@@ -212,6 +155,61 @@ public with sharing class TrelloBoardConnectionController
         }    
     }
 
+    public MProject__c prj { get; set;}
+    public String AuthLink { get; set;}
+    public String Token { get; set; }
+    public String BoardId { set; get; }
+    public String SelectedName { get; set; }
+    public Boolean IsSychronized { get; set; }
+    public Boolean IsAuthed
+    {
+        get
+        {
+            if (TrelloUser__c.getInstance(UserInfo.getUserId()) != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    public List<Board> Boards
+    {
+        get
+        {   
+            if(Boards.size() == 0 && Token != null)
+            {
+                if(String.isBlank(prj.TrelloBoardId__c))
+                {
+                    Boards.add(new Board('', nullBoardName, true));
+                    for(TrelloModel.Board b : trelloData.getBoardInfo())
+                    {
+                        Boards.add(new Board(b.Id, b.name, false));
+                    }
+                }
+                else
+                {
+                    Boards.add(new Board('', nullBoardName, false));
+                    for(TrelloModel.Board b : trelloData.getBoardInfo())
+                    {   
+                        if(b.Id != prj.TrelloBoardId__c)
+                        {
+                            Boards.add(new Board(b.Id, b.Name, false));
+                        }
+                        else
+                        {
+                            Boards.add(new Board(b.Id, b.Name, true));
+                        }
+                    }
+                }
+            }
+            return Boards; 
+        }
+        set;      
+    }
     public class Board
     {
         public Board(String boardId, String boardName, Boolean isSelected)
