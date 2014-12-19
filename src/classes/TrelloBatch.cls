@@ -11,8 +11,11 @@ global class TrelloBatch implements Database.Batchable<sObject>, Database.Allows
     }
 
     global void execute(Database.BatchableContext BC, List<sObject> scope) {
-        trello = new TrelloConnectUtil(scope);
+        System.debug('scope.size'+scope.size());
+        TrelloFlag.IsBatchFired = false;
+        trello = new TrelloConnectUtil((List<MProject__c>)scope);
         trello.upsertChange();
+
     }
 
     global void finish(Database.BatchableContext BC) {

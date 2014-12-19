@@ -25,7 +25,7 @@ public with sharing class TrelloConnectUtil
         List<Change__c> changesToUpsert = new List<Change__c>();
         Map<String, List<TrelloModel.Member>> proIdToTrelloMembers = new Map<String, List<TrelloModel.Member>>();
         Map<String, List<TrelloModel.Card>> proIdToTrelloCards = new Map<String, List<TrelloModel.Card>>();
-        Map<String, String> cardIdToProId = new Map<String, String>();
+        Set<String> cardIds = new Set<String>();
         for(MProject__c pro : projects)
         {
             param = new List<String>();
@@ -46,7 +46,7 @@ public with sharing class TrelloConnectUtil
                 c.Description__c = card.Description;
                 c.Project__c = proId;
                 changesToUpsert.add(c);
-                cardIdToProId.put(card.Id, proId);
+                cardIds.add(card.Id);
             }
         }
         try
@@ -57,20 +57,18 @@ public with sharing class TrelloConnectUtil
         {
             System.debug(ex);
         }
-        deleteChange(cardIdToProId);
+        deleteChange(cardIds);
         upsertTeamMember(proIdToTrelloMembers);
-        deleteTeamMember(proIdToTrelloMembers);
-        Map<String, String> changeMemberIdToTeamMemberId = upsertChangeMember(proIdToTrelloCards);
-        deleteChangeMember(changeMemberIdToTeamMemberId);
+        upsertChangeMember(proIdToTrelloCards);
     }
 
 //after insert, to delete the change which has been deleted in the trello.
-    public void deleteChange(Map<String, String> cardIdToProId)
+    public void deleteChange(Set<String> cardIds)
     {
         List<Change__c> changesToDelete = new List<Change__c>();
         for(Change__c change : [select Id, Project__c, TrelloCardId__c from Change__c where TrelloCardId__c != null])
         {
-            if(!cardIdToProId.containsKey(change.TrelloCardId__c))
+            if(!cardIds.contains(change.TrelloCardId__c))
             {
                 changesToDelete.add(change);
             }
@@ -128,6 +126,7 @@ public with sharing class TrelloConnectUtil
         try
         {
             upsert teamMembersToUpsert Id;
+            deleteTeamMember(proIdToTrelloMembers);
         }
         catch(Exception ex)
         {
@@ -139,18 +138,18 @@ public with sharing class TrelloConnectUtil
     public void deleteTeamMember(Map<String, List<TrelloModel.Member>> proIdToTrelloMembers)
     {
         List<TeamMember__c> teamMembersToDelete = new List<TeamMember__c>();
-        Map<String, TrelloModel.Member> trelloMemberIdToTrelloMember = new Map<String, TrelloModel.Member>();
+        Set<String> trelloMemberIds = new Set<String>();
         for(String proId : proIdToTrelloMembers.keySet())
         {
             List<TrelloModel.Member> trelloMembers = proIdToTrelloMembers.get(proId);
             for(TrelloModel.Member trelloMember : trelloMembers)
             {
-                trelloMemberIdToTrelloMember.put(trelloMember.Id + proId, trelloMember);
+                trelloMemberIds.add(trelloMember.Id + proId);
             }
         }
         for(TeamMember__c teamMember : [select TrelloMemberId__c, Project__c from TeamMember__c where TrelloMemberId__c != null])
         {
-            if(!trelloMemberIdToTrelloMember.containsKey(teamMember.TrelloMemberId__c + teamMember.Project__c))
+            if(!trelloMemberIds.contains(teamMember.TrelloMemberId__c + teamMember.Project__c))
             {
                 teamMembersToDelete.add(teamMember);
             }
@@ -166,32 +165,32 @@ public with sharing class TrelloConnectUtil
 
     }
 
-    public Map<String, String> upsertChangeMember(Map<String, List<TrelloModel.Card>> proIdToTrelloCards)
+    public void upsertChangeMember(Map<String, List<TrelloModel.Card>> proIdToTrelloCards)
     {
         List<ChangeMember__c> changeMembersToUpsert = new List<ChangeMember__c>();
-        List<TeamMember__c> teamMembers = [select Id, Name, TrelloMemberId__c from TeamMember__c where TrelloMemberId__c != null];
+        List<TeamMember__c> teamMembers = [select Id, Name, Project__c, TrelloMemberId__c from TeamMember__c where TrelloMemberId__c != null];
         Map<String,String> trelloCardIdToChangeId = new Map<String,String>();
-        Map<String,String> changeMemberIdToTeamMemberId = new Map<String, String>();
+        Set<String> changeMemberIds = new Set<String>();
         for(Change__c change : [select Id, Project__c, TrelloCardId__c from Change__c where TrelloCardId__c != null])
         {
             trelloCardIdToChangeId.put(change.TrelloCardId__c, change.Id);
         }
-        for(List<TrelloModel.Card> cards : proIdToTrelloCards.values())
+        for(String proId : proIdToTrelloCards.keySet())
         {
-            for(TrelloModel.Card card : cards)
+            for(TrelloModel.Card card : proIdToTrelloCards.get(proId))
             {
                     for(String trelloMemberId : card.IdMembers)
                     {
                         for(TeamMember__c teamMember : teamMembers)
                         {
-                            if(teamMember.TrelloMemberId__c == trelloMemberId)
+                            if(teamMember.TrelloMemberId__c == trelloMemberId && teamMember.Project__c == proId)
                             {
                                 ChangeMember__c changeMember = new ChangeMember__c();
                                 changeMember.Name = teamMember.Name;
                                 changeMember.Change__c = trelloCardIdToChangeId.get(card.Id);
                                 changeMember.TeamMember__c = teamMember.Id;
                                 changeMember.ChangeId_MemberId__c = trelloCardIdToChangeId.get(card.Id)+teamMember.Id;
-                                changeMemberIdToTeamMemberId.put(trelloCardIdToChangeId.get(card.Id)+teamMember.Id, trelloMemberId);
+                                changeMemberIds.add(trelloCardIdToChangeId.get(card.Id)+teamMember.Id);
                                 changeMembersToUpsert.add(changeMember);
                             }
                         }
@@ -202,20 +201,21 @@ public with sharing class TrelloConnectUtil
         try
         {
             upsert changeMembersToUpsert ChangeId_MemberId__c;
+            deleteChangeMember(changeMemberIds);
         }
         catch(Exception ex)
         {
             System.debug(ex);
         }
-        return changeMemberIdToTeamMemberId;
+        
     }
 
-    public void deleteChangeMember(Map<String, String> changeMemberIdToTeamMemberId)
+    public void deleteChangeMember(Set<String> changeMemberIds)
     {
         List<ChangeMember__c> changeMembersToDelete = new List<ChangeMember__c>();
         for(ChangeMember__c changeMember : [select ChangeId_MemberId__c from ChangeMember__c])
         {
-            if(!changeMemberIdToTeamMemberId.containsKey(changeMember.ChangeId_MemberId__c))
+            if(!changeMemberIds.contains(changeMember.ChangeId_MemberId__c))
             {
                 changeMembersToDelete.add(changeMember);
             }
@@ -236,7 +236,7 @@ public with sharing class TrelloConnectUtil
         List<String> cardIds = new List<String>();
         List<ChangeTask__c> tasksToUpsert = new List<ChangeTask__c>();
         Map<String, String> cardIdToChangeId = new Map<String, String>();
-        Map<String, TrelloModel.CheckItem> itemIdToItem = new Map<String, TrelloModel.CheckItem>();
+        Set<String> itemIds = new Set<String>();
         for(MProject__c pro : projects)
         {
             param = new List<String>();
@@ -272,7 +272,7 @@ public with sharing class TrelloConnectUtil
                         else
                             task.Status__c = 'Done';
                         tasksToUpsert.add(task);
-                        itemIdToItem.put(task.TrelloItemId__c, item);
+                        itemIds.add(task.TrelloItemId__c);
                     }
                 }
 
@@ -286,15 +286,15 @@ public with sharing class TrelloConnectUtil
         {
             System.debug(ex);
         }
-        deleteChangeTask(itemIdToItem);
+        deleteChangeTask(itemIds);
     }
 
-    public void deleteChangeTask(Map<String, TrelloModel.CheckItem> itemIdToItem)
+    public void deleteChangeTask(Set<String> itemIds)
     {
         List<ChangeTask__c> tasksToDelete = new List<ChangeTask__c>();
         for(ChangeTask__c changeTask : [select Id, TrelloItemId__c from ChangeTask__c where TrelloItemId__c != null])
         {
-            if(!itemIdToItem.containsKey(changeTask.TrelloItemId__c))
+            if(!itemIds.contains(changeTask.TrelloItemId__c))
             {
                 tasksToDelete.add(changeTask);
             }

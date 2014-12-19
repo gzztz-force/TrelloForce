@@ -1,12 +1,12 @@
 public with sharing class TrelloBoardConnectionController
 {
-    private PageReference returnPage;
-    private String key;
-    private TrelloAPI trelloData;
-    private List<MProject__c> syncProjects;
-    private TrelloConnectUtil trelloConnectUtil;
-    private String nullBoardName;
-    private ApexPages.StandardController ctrl;      
+    @TestVisible private PageReference returnPage;
+    @TestVisible private String key;
+    @TestVisible private TrelloAPI trelloData;
+    @TestVisible private List<MProject__c> syncProjects;
+    @TestVisible private TrelloConnectUtil trelloConnectUtil;
+    @TestVisible private String nullBoardName;
+    @TestVisible private ApexPages.StandardController ctrl;      
 
     public TrelloBoardConnectionController(ApexPages.StandardController ctrl)
     {

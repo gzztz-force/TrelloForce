@@ -17,7 +17,7 @@ global class TrelloChangeTaskBatch implements Database.Batchable<sObject>, Datab
 	}
 	
 	global void finish(Database.BatchableContext BC) {
-		
+		TrelloFlag.IsBatchFired = true;
 	}
 	
 }
