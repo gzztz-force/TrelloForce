@@ -4,15 +4,17 @@
  */
 global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, Schedulable, Database.AllowsCallouts
 {
+    private final static Decimal ADJUSTMENT = 0.3;
+
     private Date lastMonth = Date.today().addMonths(-1);
     private Integer year = lastMonth.year();
     private Integer month = lastMonth.month();
-    private Integer workday = null;
-    private final static Decimal ADJUSTMENT = 0.3;
+    private Integer workday;
 
     global Database.QueryLocator start(Database.BatchableContext BC)
     {
-        return Database.getQueryLocator([select Id, Name, Email, FinUserName__c from User where IsActive = true and IsEmployee__c = 1]);
+        return Database.getQueryLocator([select Id, Name, FinUserName__c from User where
+                                        FinUserName__c != null and IsActive = true and IsEmployee__c = 1]);
     }
 
     // Execute method for batch
@@ -55,31 +57,34 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
 
         Set<Id> uIds = allTimeCards.keySet();
         // Save all CreditTransaction shoud be inserted into Fin
-        List<EmployeeCreditTransaction.CreditTransaction> addCreditTransactions = new List<EmployeeCreditTransaction.CreditTransaction>();
-        for(Id id : uIds)
+        List<EmployeeCreditTransaction.CreditTransaction> creditTransactionsToAdd = new List<EmployeeCreditTransaction.CreditTransaction>();
+        for(Id uId : uIds)
         {
-            Integer timeCardNumber = allTimeCards.get(id);
-            
+            Integer timeCardNumber = allTimeCards.get(uId);
+
             if(timeCardNumber >= workday)
             {
-                String creditId = allCredits.get(String.valueOf(id));
+                String creditId = allCredits.get(String.valueOf(uId));
                 if(creditId != null && creditId != '')
                 {
                     EmployeeCreditTransaction.CreditTransaction creditTransaction = new EmployeeCreditTransaction.CreditTransaction(ADJUSTMENT, creditId, 'Perfect Attendence' + year + '-' + month, Date.today(), false, 'Perfect Attendence');
-                    addCreditTransactions.add(creditTransaction);
+                    creditTransactionsToAdd.add(creditTransaction);
                 }
             }
         }
-        EmployeeCreditTransaction.createCreditTransactions(addCreditTransactions);
+        if(creditTransactionsToAdd.size() > 0)
+        {
+            EmployeeCreditTransaction.createCreditTransactions(creditTransactionsToAdd);
+        }
     }
 
     global void finish(Database.BatchableContext BC)
     {
-        // Get this month's workday, if get a nullPoint, then send the alert email to user 
+        // Get this month's workday, if get a nullPoint, then send the alert email to user
         if(WorkDays__c.getValues(year + '-' + (month+1)) == null)
         {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            String[] toAddresses = new String[] {UserInfo.getUserEmail()}; 
+            String[] toAddresses = new String[] {UserInfo.getUserEmail()};
             String[] ccAddresses = new String[] {'pm@meginfo.com'};
             mail.setToAddresses(toAddresses);
             mail.setCcAddresses(ccAddresses);
@@ -88,7 +93,7 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
             mail.setSubject('Please Insert New Custom Setting Data');
             mail.setBccSender(false);
             mail.setUseSignature(false);
-            mail.setPlainTextBody('Please insert new Custom Setting data into WorkDays__c at least this month! Or the PerfectAttendanceCreditJob will stop work.');
+            mail.setPlainTextBody('Please insert new Custom Setting data into WorkDays__c at least this month! Or the PerfectAttendanceCreditJob will stop.');
             Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
         }
     }
@@ -102,7 +107,7 @@ global class PerfectAttendanceCreditJob implements Database.Batchable<SObject>, 
         {
             workday = Integer.valueOf(workdays.Days__c);
             PerfectAttendanceCreditJob batch = new PerfectAttendanceCreditJob();
-            Database.executeBatch(batch, 10);
+            Database.executeBatch(batch, 1);
         }
     }
 }
