@@ -148,6 +148,14 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>IsLogatSameDay__c</fullName>
+        <externalId>false</externalId>
+        <formula>DATEVALUE( CreatedDate )  =  Date__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Log at Same Day</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>Project__c</fullName>
         <externalId>false</externalId>
         <label>Project</label>
