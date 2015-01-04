@@ -1,0 +1,118 @@
+<apex:page controller="WiKiSearchController" sidebar="false" showheader="true" standardStylesheets="false" title="Wiki Search">
+    <style type="text/css">
+        body{
+            background: #F9F9F9;
+        }
+
+        #force .list-group-item {
+            margin-left: 0px;
+        }
+
+        #force .alert {
+            font-size: 14px;
+        }
+    </style>
+
+    <apex:stylesheet value="{!URLFOR($Resource.bootstrap3_2, 'css/bootstrap.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQueryLatest, 'jquery.min.js')}"/>
+    <script src="{!URLFOR($Resource.bootstrap3_2, 'js/bootstrap.min.js')}"></script>
+    <div id="force">
+        <div class="container" style="margin-left:5px;">
+            <div class="col-md-4">
+                <div class="page-header">
+                    <h3>Top Popular Pages <span class="label label-info">{!PopularPages.size}</span></h3>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Popular Pages</h4>
+                    </div>
+                    <div class="panel-body" style="padding:0;">
+                        <apex:variable value="1" var="top"/>
+                        <ul class="list-group">
+                            <apex:repeat value="{!PopularPages}" var="page">
+                                <li class="list-group-item">
+                                    <span class="badge" style="background:{!CASE(top, TEXT(1), 'red', TEXT(2), 'green', TEXT(3), 'blue', 'grey')}">{!page.FeedItems}</span>
+                                    <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank" style="font-size:14px;">
+                                        {!page.Title}
+                                    </apex:outputLink>
+                                </li>
+                                <apex:variable value="{!TEXT(VALUE(top) + 1)}" var="top"/>
+                            </apex:repeat>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="page-header">
+                    <h2>WiKi Search <small>please input a search key</small></h2>
+                </div>
+                <div class="row">
+                    <apex:form >
+                        <div class="col-sm-10">
+                            <apex:inputText value="{!Key}" styleClass="form-control" html-placeholder="Search"/>
+                        </div>
+                        <div class="col-sm-2" style="text-align:right;">
+                            <apex:commandButton action="{!search}" value="search key" styleClass="btn btn-default"/>
+                        </div>
+                    </apex:form>
+                </div>
+                <apex:outputPanel id="warning"  rendered="{!AND(Key != null, LEN(Key) < 2)}">
+                    <div class="alert alert-warning" style="margin-top:10px;">
+                        <p>The key must be more than two characters.</p>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!MyWiKiPages.size > 0}">
+                    <apex:outputText rendered="{!LEN(Key) > 2}">
+                        <div class="alert alert-success" style="margin-top:10px;">
+                            <p>We've found {!Results} pages about "{!Key}".</p>
+                        </div>
+                    </apex:outputText>
+
+                    <apex:repeat value="{!MyWiKiPages}" var="page">
+                        <div class=".navbar-left" style="padding:5px 0px;">
+                            <apex:outputLink value="{!$Page.WikiSpace}?Id={!page.SpaceId}" target="_blank" rendered="{!NOT(ISBLANK(page.SpaceName))}">
+                                <h4>{!page.SpaceName}</h4>
+                            </apex:outputLink>
+                            <h4>&nbsp;&nbsp;<apex:outputText value="/" rendered="{!NOT(ISBLANK(page.SpaceName))}"/>&nbsp;&nbsp;</h4>
+                            <apex:outputLink value="{!$Page.WikiViewPage}?id={!page.Id}" target="_blank">
+                                <h4>{!page.Title}</h4>
+                            </apex:outputLink>
+                            <p>{!page.Body}</p>
+                            <p style="font-size:11px;color:#999999;margin:0;">
+                                Last Update:
+                                    <apex:outputText value="{0, date, MM.dd.YYYY}">
+                                        <apex:param value="{!page.LastPublishedDate}"/>
+                                    </apex:outputText>
+                            </p>
+                            <p style="height:1px;border-bottom:1px solid #999999;margin:5px 0px;" />
+                        </div>
+                    </apex:repeat>
+                </apex:outputPanel>
+                <apex:form rendered="{!Results > 10}">
+                    <ul class="pagination">
+                        <li class="{!IF(PageNumber == 1, 'disabled', '')}">
+                            <apex:commandLink value="<<" action="{!previous}" rendered="{!PageNumber != 1}" />
+                            <a href="javascript:void(0)" style="display:{!IF(PageNumber == 1, 'block', 'none')}">&lt;&lt;</a>
+                        </li>
+                        <apex:repeat value="{!Links}" var="link">
+                            <li class="{!IF(link == PageNumber, 'active', '')}">
+                                <apex:commandLink value="{!link}" action="{!paging}">
+                                    <apex:param value="{!link}" name="PageNumber" assignTo="{!PageNumber}" />
+                                </apex:commandLink>
+                            </li>
+                        </apex:repeat>
+                        <li class="{!IF(PageNumber * 10 >= Results, 'disabled', '')}">
+                            <apex:commandLink value=">>" action="{!next}" rendered="{!PageNumber * 10 < Results}" />
+                            <a href="javascript:void(0)" style="display:{!IF(PageNumber * 10 >= Results, 'block', 'none')}">&gt;&gt;</a>
+                        </li>
+                    </ul>
+                </apex:form>
+                <apex:outputPanel rendered="{!AND(MyWiKiPages.size == 0, LEN(Key) > 1)}">
+                    <div class="alert alert-info" style="margin-top:10px;">
+                        <p>There are no result, and please input another key</p>
+                    </div>
+                </apex:outputPanel>
+            </div>
+        </div>
+    </div>
+</apex:page>

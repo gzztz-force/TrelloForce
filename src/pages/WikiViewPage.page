@@ -1,0 +1,135 @@
+<apex:page showHeader="true" sidebar="false" standardStylesheets="false" controller="WikiViewPageController" title="Wiki View Page" tabStyle="Wiki__tab">
+    <!-- Font Awesome -->
+    <head>
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.wiki, 'css/view.css')}"/>
+    </head>
+
+    <apex:composition template="WikiTemplate">
+        <apex:define name="body" >
+            <div class="content">
+                <div id="force">
+                    <div class="navbar">
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="{!$Page.WikiHome}">Wiki Home</a>
+                            </li>
+                            <apex:outputText rendered="{!PubPage.WikiPage.WikiSpace__r.Name != null}">
+                                <li>
+                                    <a href="{!$Site.Prefix}/apex/wikispace?id={!PubPage.WikiPage.WikiSpace__c}">{!PubPage.WikiPage.WikiSpace__r.Name}</a>
+                                </li>
+                            </apex:outputText>
+                            <li class="active">{!PubPage.WikiPageVersion.Title__c}</li>
+                        </ul>
+                    </div>
+
+                    <div class="page-header">
+                        <h1>{!PubPage.WikiPageVersion.Title__c}</h1>
+                        <a href='{!$Site.Prefix}/apex/WikiNewPage?id={!PubPage.WikiPage.Id}' type="button" class="btn btn-default pull-right" style="margin-bottom:10px;">
+                            <span class="glyphicon glyphicon-pencil"></span> &nbsp;&nbsp;Edit
+                        </a>
+                        <div class="page-metadata muted">
+                            <a href="/display/~rrobins" class="url fn confluence-userlink userlink-1" data-username="rrobins" title="" data-user-hover-bound="true"  style="color:#428bca; margin-left:-5px;">
+                                <apex:outputField value="{!PubPage.WikiPage.LastModifiedById}"/>
+                            </a>
+                            <span>
+                                edited this page on
+                                <apex:outputText value="{0, date, MMMM d',' yyyy}">
+                                   <apex:param value="{!PubPage.WikiPage.LastPublishedDate__c}" />
+                               </apex:outputText>
+                           </span>
+                        </div>
+                    </div>
+                    <div id="spinner" style="background-color:#fff; min-height:250px; margin:-10px; position:absolute; text-align:center; width:980px; z-index:1000;height:90%">
+                        <span style="margin:200px auto 0; display:block;">
+                            <i class="fa fa-spinner fa-spin fa-4x"></i>
+                        </span>
+                    </div>
+                    <div id="epicpreview" style="height:500px; margin:0 -10px"></div>
+                    <hr/>
+                </div>
+
+                <topics:widget entity="{!PubPage.WikiPage.Id}" />
+                <chatter:feedWithFollowers entityId="{!PubPage.WikiPage.Id}"/>
+            </div>
+        </apex:define>
+    </apex:composition>
+
+    <!-- The data of markdown for js to parse -->
+    <textarea id="text-input" style="display:none;">
+        <apex:outputText value="{!PubPage.WikiPageVersion.Body__c}" escape="false"/>
+    </textarea>
+    <script type="text/javascript" src="{!URLFOR($Resource.wiki, 'components/HighLight/highlight.pack.js')}"></script>
+    <script>
+        var opts = {
+            container: "epicpreview",
+            textarea: "text-input",
+            basePath: "{!URLFOR($Resource.wiki, 'components/EpicEditor')}",
+            clientSideStorage: false,
+
+            localStorageName: "new-wikipage",
+            useNativeFullscreen: true,
+            parser: marked,
+            file: {
+                name: "epiceditor",
+                defaultContent: "",
+                autoSave: 100
+            },
+            theme: {
+                base: "/themes/base/epiceditor.css",
+                preview: "/themes/preview/github.css",
+                editor: "/themes/editor/epic-light.css"
+            },
+            button: false,
+            focusOnLoad: false,
+            shortcut: {
+                modifier: 18,
+                fullscreen: 70,
+                preview: 80
+            },
+            string: {
+                togglePreview: "Toggle Preview Mode",
+                toggleEdit: "Toggle Edit Mode",
+                toggleFullscreen: "Enter Fullscreen"
+            },
+            autogrow: true
+        }
+
+        var previewer;
+
+        var editor = new EpicEditor(opts)
+        .load(function() {
+            previewer = this.getElement("previewer");
+
+            // HighLight JS
+            var scriptTag = previewer.createElement("script");
+            scriptTag.src = "{!URLFOR($Resource.wiki, 'components/HighLight/highlight.pack.js')}";
+
+            // HighLight CSS
+            var cssTag = previewer.createElement("link");
+            cssTag.rel = "stylesheet";
+            cssTag.type = "text/css";
+            cssTag.href = "{!URLFOR($Resource.wiki, 'components/HighLight/styles/default.css')}";
+
+            // Add JS / CSS
+            previewer.body.appendChild(scriptTag);
+            previewer.head.appendChild(cssTag);
+        });
+
+        editor.on("preview", function() {
+            // Add necessary classes to <code> elements
+            $(previewer.body).find("pre code").each(function(i, e) {
+                hljs.highlightBlock(e)}
+            );
+        });
+
+        var myVar = setInterval(function () {
+            if (editor.is("loaded")) {
+                editor.preview();
+
+                $("#spinner").hide();
+                window.clearInterval(myVar)
+            }
+        }, 2000);
+    </script>
+</apex:page>

@@ -51,6 +51,7 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>false</enableActivities>
+    <enableEnhancedLookup>false</enableEnhancedLookup>
     <enableFeeds>false</enableFeeds>
     <enableHistory>true</enableHistory>
     <enableReports>true</enableReports>
@@ -62,7 +63,7 @@
         <summaryFilterItems>
             <field>QuoteLine__c.IsAdditional__c</field>
             <operation>equals</operation>
-            <value>True</value>
+            <value>true</value>
         </summaryFilterItems>
         <summaryForeignKey>QuoteLine__c.Quote__c</summaryForeignKey>
         <summaryOperation>sum</summaryOperation>
@@ -173,7 +174,7 @@
         <summaryFilterItems>
             <field>QuoteLine__c.IsAdditional__c</field>
             <operation>equals</operation>
-            <value>False</value>
+            <value>false</value>
         </summaryFilterItems>
         <summaryForeignKey>QuoteLine__c.Quote__c</summaryForeignKey>
         <summaryOperation>sum</summaryOperation>
