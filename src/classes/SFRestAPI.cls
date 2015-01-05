@@ -19,8 +19,21 @@ public class SFRestAPI
         request.setMethod('GET');
         request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
 
-        response = (new Http()).send(request);
-
+        // Return a fake response when it is running test class and query object is Credit or CreditTransaction
+        if(Test.isRunningTest() && (q.contains('Credit__c') || q.contains('CreditTransaction__c')))
+        {
+            String objectType = q.contains('Credit__c') ? 'Credit__c' : 'CreditTransaction__c';
+            String queryResponse = getFakeResponse(objectType);
+            
+            response = new HttpResponse();
+            response.setHeader('Content-Type', 'application/json');
+            response.setBody(queryResponse);
+            response.setStatusCode(200);
+        }
+        else
+        {
+           response = (new Http()).send(request);
+        }
         return response;
     }
 
@@ -38,8 +51,14 @@ public class SFRestAPI
         request.setBody(jsonBody);
         request.setHeader('Authorization', 'Bearer ' + oauth.Access_Token);
         request.setHeader('Content-Type', 'application/json');
+        if(Test.isRunningTest())
+        {
 
-        (new Http()).send(request);
+        }
+        else
+        {
+            (new Http()).send(request);
+        }
     }
 
     public static void del(String sObj, String id)
@@ -72,9 +91,7 @@ public class SFRestAPI
         request.setBody(requestBody);
         request.setMethod('POST');
         request.setEndpoint(financeServer.EndPoint__c);//Note if my domain is set up use the proper domain name else use login.salesforce.com for prod or developer or test.salesforce.com for sandbox instance
-
         HttpResponse response = (new Http()).send(request);
-
         OAuth2 objAuth = (OAuth2)JSON.deserialize(response.getbody(), OAuth2.class);
 
         if(String.isBlank(objAuth.Access_Token) || String.isBlank(objAuth.Instance_Url))
@@ -108,4 +125,37 @@ public class SFRestAPI
     }
 
     public class LoginException extends Exception{}
+
+    private static String getFakeResponse(String objectType)
+    {
+        String queryResponse = '';
+        if(objectType.contains('Credit__c'))
+        {
+            queryResponse = '{ "totalSize" : "1", '+
+                                '"done" : true, '+
+                                '"records" : [{ '+
+                                    '"attributes" : { "type" : "Credit__c", "url" : "/services/data/v22.0/sobjects/Credit__c/a07J0000006BFL3IAO"}, '+
+                                    '"Id" : "a07J0000006BFL3IAO", '+
+                                    '"Balance__c" : "0", '+
+                                    '"Employee__r" : { '+
+                                        '"attributes" : { "type" : "User", "url" : "/services/data/v22.0/sobjects/User/005A0000001R7vFIAS"}, '+
+                                        '"Name" : "Jair Zheng", '+
+                                        '"Email" : "jair.zheng@meginfo.com" '+
+                                    '} '+
+                                '}] '+
+                            '}';
+
+        }
+        else
+        {
+            queryResponse = '{ "totalSize" : "1", '+
+                                '"done" : true, '+
+                                '"records" : [{ '+
+                                    '"attributes" : { "type" : "CreditTransaction__c", "url" : "/services/data/v22.0/sobjects/CreditTransaction__c/a07J0005606BFL3IAO"}, '+
+                                    '"Id" : "a07J1100006BFL3IAO" '+
+                                '}] '+
+                            '}';
+        }
+        return queryResponse;
+    }
 }
