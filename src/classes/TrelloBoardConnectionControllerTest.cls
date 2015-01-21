@@ -1,6 +1,7 @@
 @isTest(seeAllData= true)
-private class TrelloBoardConnectionControllerTest {
-    @isTest static void testConnectBoard ()
+private class TrelloBoardConnectionControllerTest 
+{
+    @isTest static void testConnectBoard()
     {
         MProject__c project = new MProject__c (Name = 'testByVicky');
         insert project;
@@ -36,7 +37,6 @@ private class TrelloBoardConnectionControllerTest {
         System.assertEquals(testController.IsSychronized, true);
         System.assertEquals(b.IsSelected, true);
 
-        
         testController.BoardId = null;
         boards.add(new TrelloBoardConnectionController.Board(null, 'test', false));
         testController.reSelect();
@@ -49,9 +49,9 @@ private class TrelloBoardConnectionControllerTest {
 
     }
 
-    @isTest static void testsyncChanges ()
+    @isTest static void testSyncChanges()
     {
-        MProject__c project = new MProject__c ();
+        MProject__c project = new MProject__c();
         project.trelloBoardId__c ='5456dd656a8668e557b82685';
         upsert project trelloBoardId__c;
         PageReference pageRef = Page.TrelloBoardConnection;
@@ -68,9 +68,9 @@ private class TrelloBoardConnectionControllerTest {
         System.assertEquals(changes.size(), 7);
     }
 
-    @isTest static void testsyncChangeTasks ()
+    @isTest static void testSyncChangeTasks()
     {
-        MProject__c project = new MProject__c ();
+        MProject__c project = new MProject__c();
         project.trelloBoardId__c ='5456dd656a8668e557b82685';
         upsert project trelloBoardId__c;
         PageReference pageRef = Page.TrelloBoardConnection;

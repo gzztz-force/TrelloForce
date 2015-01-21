@@ -1,13 +1,12 @@
 @isTest
 private class TrelloBatchTest
 {
-    
     @isTest static void testCardBatch() 
     {
         TrelloUser__c testTrelloUser = new TrelloUser__c();
         testTrelloUser.Name = UserInfo.getUserId();
         testTrelloUser.Token__c = 'testToken';
-        upsert testTrelloUser ;
+        upsert testTrelloUser;
         TrelloConfig__c testTrelloConfig = new TrelloConfig__c();
         testTrelloConfig.Key__c = 'testKey';
         upsert testTrelloConfig;
@@ -20,7 +19,7 @@ private class TrelloBatchTest
             testProjects.add(prj);
         }
         List<MProject__c> checkProjects = [select Id from MProject__c];
-        System.assertEquals(10,checkProjects.size());
+        System.assertEquals(10, checkProjects.size());
         testProjects[5].TrelloBoardId__c = '5456dd656a8668e557b82685';
         upsert testProjects;
         batchProjects.add(testProjects[5]);
@@ -99,8 +98,6 @@ private class TrelloBatchTest
         TrelloModel.Card cardModel = new TrelloModel.Card();
         TrelloModel.Member memberModel = new TrelloModel.member();
         TrelloModel.MemberShips membershipsModel = new TrelloModel.MemberShips();
-
-
     }
 
 }

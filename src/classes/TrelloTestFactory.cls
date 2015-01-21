@@ -1,5 +1,6 @@
 @isTest
-global class TrelloTestFactory {
+global class TrelloTestFactory 
+{
 	private static List<MProject__c> insertProjects;
 
 	public TrelloTestFactory()

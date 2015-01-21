@@ -1,24 +1,9 @@
 @isTest
 public class MockTrelloHttpResponseGenerator implements HttpCalloutMock {
-    //protected Integer code;
-    //protected String status;
-    //protected String body;
-    //protected Map<String, String> responseHeaders;
+
     private String boardResponse = ''; 
-    //'[{"id":"545735a69a0da4e4721950fd","name":"For Trello Test","memberships":[{"id":"545735a69a0da4e4721950fe","idMember":"5456e0a4463c0074fcfa6e17}]},{"id":"5466ba22a3a9a861193a1bf0","name":"TimeLoader","memberships":[{"id":"5466ba22a3a9a861193a1bf1","idMember":"5456e599eb84e75b41283de8"}]}]';
-
-    //public MockTrelloHttpResponseGenerator(Integer code, String status, String body, Map<String, String> responseHeaders) {
-    //    this.code = code;
-    //    this.status = status;
-    //    this.body = body;
-    //    this.responseHeaders = responseHeaders;
-    //}
-
+  
     public HTTPResponse respond(HTTPRequest req) {
-        //System.assertEquals('http://api.salesforce.com/foo/bar', req.getEndpoint());
-        //System.assertEquals('GET', req.getMethod());
-        
-        // Create a fake response
         HttpResponse res = new HttpResponse();
         res.setHeader('Content-Type', 'application/json');
         if(req.getEndpoint().contains('https://api.trello.com/1/members/my/boards/all'))
@@ -94,9 +79,7 @@ public class MockTrelloHttpResponseGenerator implements HttpCalloutMock {
         {
             res.setBody('');
         }
-        
         res.setStatusCode(200);
         return res;
     }
-
 }
